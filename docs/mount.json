@@ -1,0 +1,843 @@
+{
+ "version": 1,
+ "order": "ZYX",
+ "units": {
+  "pos": "cm",
+  "rot": "degrees"
+ },
+ "compose": "world(the part model's mountJoint) = world(hunter bone `joint`) * T(pos) * R(rot, ZYX) * S(scale)",
+ "classes": {
+  "0": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 0,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -47.0,
+       51.0,
+       -24.0
+      ],
+      "rot": [
+       89.0,
+       -4.0,
+       41.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       10.0,
+       0.0,
+       58.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       180.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "7": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 8,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -47.0,
+       51.0,
+       -24.0
+      ],
+      "rot": [
+       89.0,
+       -4.0,
+       41.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       10.0,
+       0.0,
+       58.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       180.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 18,
+     "mountJoint": 4,
+     "sheathed": {
+      "pos": [
+       -47.0,
+       51.0,
+       -24.0
+      ],
+      "rot": [
+       89.0,
+       -4.0,
+       41.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       -47.0,
+       51.0,
+       -24.0
+      ],
+      "rot": [
+       89.0,
+       -4.0,
+       41.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     }
+    }
+   ]
+  },
+  "1": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 1,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       32.6,
+       -1.2,
+       -17.5
+      ],
+      "rot": [
+       97.0,
+       4.0,
+       -84.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       7.9,
+       -0.7,
+       -6.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 2,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -18.5,
+       6.5,
+       3.0
+      ],
+      "rot": [
+       -26.0,
+       -3.0,
+       8.0
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       -18.5,
+       6.5,
+       3.0
+      ],
+      "rot": [
+       -26.0,
+       -3.0,
+       8.0
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "11": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 13,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       32.0,
+       37.0,
+       -16.0
+      ],
+      "rot": [
+       -92.0,
+       -11.0,
+       126.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       7.9,
+       -0.7,
+       -6.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 14,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       17.0,
+       50.0,
+       -18.0
+      ],
+      "rot": [
+       96.0,
+       8.5,
+       -28.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       -7.0,
+       -0.4,
+       -6.5
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       180.0
+      ],
+      "state": 0,
+      "joint": 12,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "2": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 3,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       62.0,
+       8.0,
+       -17.0
+      ],
+      "rot": [
+       82.0,
+       170.0,
+       -70.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       8.0,
+       -2.8,
+       0.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "12": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 15,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -2.0,
+       -60.0,
+       -21.0
+      ],
+      "rot": [
+       -90.0,
+       180.0,
+       0.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       7.0,
+       -6.7,
+       10.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "3": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 4,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -1.2,
+       -24.0,
+       -20.0
+      ],
+      "rot": [
+       -0.7,
+       -98.3,
+       -89.7
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.9
+     },
+     "drawn": {
+      "pos": [
+       7.8,
+       -1.8,
+       -0.6
+      ],
+      "rot": [
+       -3.6,
+       31.0,
+       5.4
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 10,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -16.0,
+       6.5,
+       -2.0
+      ],
+      "rot": [
+       -21.0,
+       8.0,
+       -2.5
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       -16.0,
+       6.5,
+       -2.0
+      ],
+      "rot": [
+       -21.0,
+       8.0,
+       -2.5
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "9": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 11,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       13.0,
+       8.0,
+       -22.0
+      ],
+      "rot": [
+       30.0,
+       91.0,
+       120.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       7.8,
+       -1.8,
+       -0.6
+      ],
+      "rot": [
+       3.6,
+       -31.0,
+       -174.6
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 16,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -16.0,
+       6.5,
+       -2.0
+      ],
+      "rot": [
+       -21.0,
+       8.0,
+       -2.5
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       -16.0,
+       6.5,
+       -2.0
+      ],
+      "rot": [
+       -21.0,
+       8.0,
+       -2.5
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "8": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 9,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -38.0,
+       -22.0,
+       -25.0
+      ],
+      "rot": [
+       92.0,
+       -4.0,
+       122.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 0.9
+     },
+     "drawn": {
+      "pos": [
+       10.0,
+       -1.0,
+       65.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       180.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "14": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 20,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       0.0,
+       53.7,
+       -21.0
+      ],
+      "rot": [
+       93.0,
+       0.0,
+       0.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 0.7
+     },
+     "drawn": {
+      "pos": [
+       7.9,
+       -0.7,
+       -2.0
+      ],
+      "rot": [
+       0.0,
+       0.0,
+       180.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 21,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       0.0,
+       -3.0,
+       -33.0
+      ],
+      "rot": [
+       87.0,
+       0.0,
+       180.0
+      ],
+      "state": 2,
+      "joint": 1,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       -18.5,
+       12.5,
+       -10.0
+      ],
+      "rot": [
+       14.0,
+       3.0,
+       -176.0
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "13": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 17,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       2.0,
+       10.0,
+       -20.0
+      ],
+      "rot": [
+       -90.0,
+       -90.0,
+       27.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       8.8,
+       -2.0,
+       0.0
+      ],
+      "rot": [
+       -1.7,
+       -24.5,
+       -176.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 22,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -15.0,
+       14.0,
+       -7.0
+      ],
+      "rot": [
+       293.0,
+       63.0,
+       292.0
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       -15.0,
+       14.0,
+       -7.0
+      ],
+      "rot": [
+       293.0,
+       63.0,
+       292.0
+      ],
+      "state": 4,
+      "joint": 11,
+      "scale": 0.8
+     }
+    }
+   ]
+  },
+  "6": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 5,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       -21.0,
+       6.0,
+       -7.5
+      ],
+      "rot": [
+       98.0,
+       -15.0,
+       1.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.9
+     },
+     "drawn": {
+      "pos": [
+       8.0,
+       2.0,
+       1.0
+      ],
+      "rot": [
+       0.0,
+       180.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "4": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 5,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       40.0,
+       -14.0,
+       -29.0
+      ],
+      "rot": [
+       -47.0,
+       -95.0,
+       -110.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       8.0,
+       2.0,
+       1.0
+      ],
+      "rot": [
+       0.0,
+       180.0,
+       0.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    }
+   ]
+  },
+  "10": {
+   "parts": [
+    {
+     "index": 0,
+     "type": 12,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       13.0,
+       15.0,
+       -24.0
+      ],
+      "rot": [
+       -90.0,
+       -114.0,
+       58.0
+      ],
+      "state": 2,
+      "joint": 2,
+      "scale": 0.8
+     },
+     "drawn": {
+      "pos": [
+       10.0,
+       -1.0,
+       1.0
+      ],
+      "rot": [
+       90.0,
+       0.0,
+       90.0
+      ],
+      "state": 1,
+      "joint": 8,
+      "scale": 1.0
+     }
+    },
+    {
+     "index": 1,
+     "type": 19,
+     "mountJoint": 0,
+     "sheathed": {
+      "pos": [
+       8.5,
+       0.5,
+       -26.0
+      ],
+      "rot": [
+       -10.0,
+       0.0,
+       -16.0
+      ],
+      "state": 2,
+      "joint": 0,
+      "scale": 1.0
+     },
+     "drawn": {
+      "pos": [
+       8.5,
+       0.5,
+       -26.0
+      ],
+      "rot": [
+       -10.0,
+       0.0,
+       -16.0
+      ],
+      "state": 2,
+      "joint": 0,
+      "scale": 1.0
+     }
+    }
+   ]
+  }
+ },
+ "_about": {
+  "mount": "How the game hangs each weapon part on the hunter, read from the executable (build_weapons.py). A part's type comes from 0x3506d8 (class, part index); each frame 0x34c5d8 picks its state, hunter bone and scale and the getter 0x3553b8 its {pos, rot} record. `sheathed` and `drawn` are the placement with no special motion playing: sheathed = player data +0x30 set (state 2); drawn = 0x350438's default, 1 (0 for the Dual Blades' second blade); shields and the Kinsect held (state 4) -- the Charge Blade shield too while drawn --, the scabbard and the arrows always resting (state 2). Bones: 12 / 8 the hands, 11 the forearm, 1 and 2 the waist and back, 0 the root (the arrows).",
+  "records": "The record tables are filled at boot by the static initialiser 0xd4518c, run in an emulator (static_init.py): 0x109f6a0 states 0 / 4, 0x109f8c8 state 1, 0x109faf0 state 2, 0x109fd18 state 3, 23 types each; the bowguns use 0x109ff40 (drawn) / 0x109ff70 (rest), the second record for the Light Bowgun (0xb0925c). The shared types hold MH3U's own numbers, so the matrix convention is taken from the MH3U Armor Viewer, which ran its joint method.",
+  "inferred": "mountJoint: the joint the record drives is the part's root joint, 0, and 4 for the Long Sword scabbard (its only joint) -- 4U's per-type joint table is not read; 3U's says the same.",
+  "notRead": "Motion-specific placements (0x350438 switches on the motion id; the bowguns and others have per-motion records at 0xf2e8bc), any per-model rest override (3U had one), the weapons' own joint animation and part masks while drawn, the female scabbard offset (0x34cb68)."
+ }
+}

@@ -1,0 +1,3133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MH4U Armor Viewer</title>
+<link rel="icon" href="assets/MH4G-Binoculars_Icon_White.png?v=1">
+<style>
+/* MHFU game font, as the sibling MHGU apps use */
+@font-face{ font-family:'MHFU'; src:url('fonts/mhfu_font.ttf') format('truetype'); font-display:swap; }
+
+:root{
+  --bg:#3e3e3e; --bg1:#000000; --bg2:#333; --hover:#2f2f2f;
+  --accent:#7a7a7a; --accent-hover:#9a9a9a; --cta:#19e0d2;
+  --text:#f3f3f3; --text-dim:#ffffff; --text-hint:#b9b9b9;
+  --stage:#0e1013;
+  --line:#ffffff1f; --card:#ffffff0d;
+}
+*{box-sizing:border-box}
+/* The standard properties and ::-webkit-scrollbar are mutually exclusive in Chrome: set
+   `scrollbar-color` or `scrollbar-width` on an element and the -webkit pseudo-elements
+   below are IGNORED for it. Having both on `*` is why the width here had no effect --
+   scrollbars measured 15px (the `auto` default) no matter what was asked for. So the
+   standard ones are scoped to engines with no -webkit pseudo-element (Firefox), which
+   get the colours; Chrome takes the rules below and an actual custom width. */
+@supports not selector(::-webkit-scrollbar){
+  *{scrollbar-color:var(--accent) var(--bg2);scrollbar-width:auto}
+}
+::-webkit-scrollbar{width:22px;height:22px}
+/* a touch darker than the panel so the channel itself is visible */
+::-webkit-scrollbar-track{background:var(--bg);border-radius:11px}
+/* min-height matters more than width on these lists: an equipment dropdown holds over a
+   thousand options, so a proportional thumb is a few pixels tall and unusable to drag. */
+/* The thumb sat on a track the same colour as the panel behind it, so it read as part of
+   the background. A lighter fill plus a light inset edge gives it a shape of its own
+   without hard-coding a colour that would fight the theme. */
+::-webkit-scrollbar-thumb{background:var(--accent-hover);border-radius:10px;min-height:56px;
+  border:3px solid transparent;background-clip:padding-box;
+  box-shadow:inset 0 0 0 1px #ffffff55}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-hover);background-clip:padding-box;
+  border:2px solid transparent;box-shadow:inset 0 0 0 1px #ffffff99}
+/* Stated again for the dropdown lists. Whether a native <select> popup honours page CSS
+   is up to the engine -- Chrome on Windows draws that list itself and ignores it. */
+select::-webkit-scrollbar{width:22px}
+select::-webkit-scrollbar-thumb{min-height:56px}
+input,select,button,textarea{font-family:inherit}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:'MHFU',"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);
+     font-size:14px;user-select:none;-webkit-user-select:none}
+#app{display:flex;flex-direction:column;height:100vh}
+.hidden{display:none !important}
+
+/* Title bar */
+.titlebar{display:flex;align-items:center;gap:10px;padding:8px 14px}
+.titlebar-header{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('assets/titlebar-background.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+.titlebar h1{font-size:15px;font-weight:600;margin:0;flex:1}
+.titlebar .btn.tiny{margin-right:6px;white-space:nowrap}
+.title-icon{width:32px;height:32px;object-fit:contain}
+.icon-btn{background:transparent;border:none;color:var(--text);font-size:18px;
+  cursor:pointer;padding:6px 9px;border-radius:6px;line-height:1}
+.icon-btn:hover{background:#ffffff1a}
+/* an id rule setting display: would outrank the UA [hidden] rule */
+[hidden]{display:none !important}
+
+/* Layout */
+.layout{display:flex;flex:1;min-height:0}
+/* the sidebar's own gap only reaches its direct children, and the panels are now one
+   level down inside a pane -- so each pane carries the same column gap itself */
+#paneMonster{display:flex;flex-direction:column;gap:8px}
+.sidebar{
+  width:300px;flex-shrink:0;padding:12px;overflow-y:scroll;scrollbar-gutter:stable;
+  display:flex;flex-direction:column;gap:8px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('assets/sidebar-background-texture1.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+/* The render area is the Weapon Tree's stage: --stage, the darkest shade in the set. It is
+   the one surface with no backing of its own — the model sits directly on it. */
+.content{
+  flex:1;min-width:0;position:relative;
+  background-color:var(--stage);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--stage) 78%,transparent),color-mix(in srgb,var(--stage) 78%,transparent)),
+    url('assets/rockyTextureDark2.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+/* The render area is the Weapon Tree's stage: --stage, the darkest shade in the set — the one
+   surface with no backing of its own, with the model sitting directly on it.
+
+   The texture and its tint are the Hunting Log's .editor (its editorPane), verbatim, so the two
+   apps' main working surfaces match: rockyTextureDark.png under an 84% wash of the surface
+   colour, repeated at 200px. */
+.content{
+  flex:1;min-width:0;position:relative;
+  background-color:var(--stage);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--stage) 84%,transparent),color-mix(in srgb,var(--stage) 84%,transparent)),
+    url('assets/rockyTextureDark.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+/* A chroma backdrop has to be a flat, single value for a keyer to pull, so the texture and its
+   tint come off. Nothing else about the app changes — only the surface being keyed. */
+:root.chroma .content{background-image:none}
+#viewport{position:absolute;inset:0}
+/* "Loading..." over the render area until the first framed render (Raven, 2026-09-03) */
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--text-hint);font-size:15px;letter-spacing:.06em;pointer-events:none}
+#loading[hidden]{display:none}
+/* Label/value rows. Every readout in this app used to be one sentence joined by middots, which
+   wrapped mid-value in a 300px sidebar -- "Back 20" split across two lines (Raven, 2026-09-05:
+   "the way the info is display is a bit difficult to read ... List the values in a list"). A
+   fixed label column and tabular figures keep the numbers under each other. */
+dl.info{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0;font-size:11px;
+  color:var(--text-hint);line-height:1.45}
+dl.info dt{color:var(--text-hint);opacity:.8;white-space:nowrap}
+dl.info dd{margin:0;color:var(--text);font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere}
+/* The hit-zone chart, floating over the render area: parts down, damage types across. It lives
+   here rather than in the sidebar because ten numeric columns do not fit a 300px column. */
+#zonePanel{position:absolute;top:12px;left:12px;z-index:5;max-width:calc(100% - 24px);
+  max-height:calc(100% - 90px);display:flex;flex-direction:column;
+  background:var(--bg2);
+  border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.45);
+  overflow:hidden}
+/* The title bar is the drag handle: the table below it scrolls and its column headers pick the
+   damage type, so neither of those can be one. touch-action:none so a drag on a touch screen
+   moves the window instead of scrolling the page. */
+#zoneHead{display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px;
+  border-bottom:1px solid var(--line);cursor:move;user-select:none;touch-action:none}
+/* while dragging, the table underneath stops swallowing the pointer */
+#zonePanel.dragging #monZoneWrap{pointer-events:none}
+#zoneTitle{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-hint);flex:1}
+#zoneClose{background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:15px;
+  line-height:1;padding:2px 5px;border-radius:4px}
+#zoneClose:hover{color:var(--text);background:#ffffff1a}
+/* One table at a time. Three stacked in a fixed box made the window a scrolling column of
+   unrelated grids; Raven, 2026-09-06: "can we have the pop up use tabs that switch if they are
+   selected in the drop down" and "this window can be resize with the table, no need to keep the
+   element the same size". The panel has no width of its own, so with a single table showing it
+   shrink-wraps whichever one that is. */
+/* A DROPDOWN PICKS THE TABLE, NOT A STRIP OF TABS. Raven, 2026-09-13: "I would like to have a drop
+   down menu to help keep it compact". The five tabs needed 352px on one row, so the window was 354px
+   whichever table it showed -- measured on Khezu at 1280x800, where the tables themselves run from
+   127px (Stun/Exhaust) to 239px (Elemental). One select is narrower than the title row, so the window
+   now shrink-wraps the title and the table. Styled as the sidebar's dropdowns, at the window's 11px:
+   those read as a lighter box on a darker panel, and this window IS --bg2, so the fill is lifted a
+   step. Opaque on purpose -- Chrome draws the open list in the select's own background colour. */
+#zoneTabRow{padding:3px 6px;border-bottom:1px solid var(--line)}
+#zoneTabSel{background:color-mix(in srgb,var(--bg2) 90%,#fff);color:var(--text);
+  border:1px solid var(--line);border-radius:5px;font-size:11px;line-height:1.4;padding:2px 6px;
+  max-width:100%}
+#monZoneWrap > table{display:none}
+#monZoneWrap > table.shown{display:table}
+#monZoneWrap{overflow:auto;max-width:100%}
+/* The panes share two shapes, so these are classes rather than a growing list of ids:
+   .zchart is a damage grid (parts down, types across), .pchart the narrow part-record table. */
+.zchart,.pchart{border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums}
+.pchart{margin:6px}
+.zchart th,.zchart td{padding:2px 5px;text-align:center;white-space:nowrap}
+.pchart th,.pchart td{padding:2px 8px;text-align:center;white-space:nowrap}
+.zchart thead th,.pchart thead th{color:var(--text-hint);font-weight:600;
+  border-bottom:1px solid var(--line);user-select:none}
+.zchart thead th{cursor:pointer}
+.zchart thead th:hover{color:var(--text)}
+.zchart tbody th,.pchart tbody th{text-align:left;font-weight:400;color:var(--text)}
+/* A zone the ROM defines that the heat map never paints -- see zoneSlots(). Listed, but marked. */
+.zchart tbody th.unpainted,.pchart tbody th.unpainted{font-style:italic;color:var(--text-hint)}
+.zchart tbody th{position:sticky;left:0;background:var(--bg2)}
+/* Selecting a type lights the WHOLE COLUMN, not each cell in it. Ported from the Zenny Gauntlet's
+   crosshair, whose comment records why: every single-cell marker there "read as off", while a lit
+   band is visible from anywhere on the board. Outlining each cell separately drew a stack of little
+   boxes rather than one column, which is the same failure.
+   That app spans its band with a single grid-placed overlay; these are <table>s, so the band is
+   drawn instead by giving the column's cells their left and right edges, the header its top and the
+   last row its bottom. border-collapse merges them into one unbroken rectangle.
+   The dark sandwich is the Zenny trick too: these cells carry heat colours from dark blue to red,
+   and a bare accent line cannot separate itself from a cell of similar lightness. A dark hairline
+   inside the accent gives it an edge to read against whatever it lands on. */
+.zchart th.sel,.pchart th.sel{color:var(--cta)}
+.zchart .sel,.pchart .sel{border-left:2px solid var(--cta);border-right:2px solid var(--cta);
+  box-shadow:inset 1px 0 rgba(0,0,0,.55), inset -1px 0 rgba(0,0,0,.55)}
+.zchart thead th.sel,.pchart thead th.sel{border-top:2px solid var(--cta);
+  box-shadow:inset 1px 1px rgba(0,0,0,.55), inset -1px 0 rgba(0,0,0,.55)}
+.zchart tbody tr:last-child td.sel,.pchart tbody tr:last-child td.sel{
+  border-bottom:2px solid var(--cta);
+  box-shadow:inset 1px -1px rgba(0,0,0,.55), inset -1px 0 rgba(0,0,0,.55)}
+/* ROOM FOR THE BAND. Raven, 2026-09-13: "when selecting a column, the table expands, it would be best
+   to have the spacing accomendate the selection highlight". The band's 2px edges used to be ADDED on
+   selection, growing the table 4px each way (Khezu's Raw table 151x94 -> 155x98) and shoving every
+   column to its right. Every cell a band can land on now carries those edges already, transparent, so
+   selecting recolours them and moves nothing. `inset` is deliberate: a collapsed border goes to the
+   wider edge, then to the higher-priority style, and inset is the lowest -- so where a reserved edge
+   meets a band edge, the band's `solid` shows on both sides. With the same style the tie would go to
+   the cell on the left, and the band would lose its left edge. */
+.zchart td,.pchart td,.zchart thead th + th,.pchart thead th + th{
+  border-left:2px inset transparent;border-right:2px inset transparent}
+.zchart thead th + th,.pchart thead th + th{border-top:2px inset transparent}
+.zchart tbody tr:last-child td,.pchart tbody tr:last-child td{border-bottom:2px inset transparent}
+/* A PICKED ZONE lights its row, the column band turned on its side (see pickZone). Drawn with inset
+   shadows rather than borders so picking moves nothing, and with the same dark hairline inside the accent
+   so the edge reads against any heat colour. Where the row crosses a lit column the cell keeps both. */
+.zchart tbody th,.pchart tbody th{cursor:pointer}
+.zchart tbody tr.zpick > *,.pchart tbody tr.zpick > *{
+  box-shadow:inset 0 2px var(--cta),inset 0 3px rgba(0,0,0,.55),inset 0 -2px var(--cta),inset 0 -3px rgba(0,0,0,.55)}
+.zchart tbody tr.zpick > th,.pchart tbody tr.zpick > th{color:var(--cta)}
+.zchart tbody tr.zpick > td.sel,.pchart tbody tr.zpick > td.sel{
+  box-shadow:inset 0 2px var(--cta),inset 0 -2px var(--cta),inset 1px 0 rgba(0,0,0,.55),inset -1px 0 rgba(0,0,0,.55)}
+/* Floating toolbar over the render area, matching the Weapon Tree's #bar.
+   width:max-content is load-bearing: with left:50% the default shrink-to-fit only
+   counts the space from the centre to the right edge, so the bar would cap at half
+   the viewport and wrap into a stack while the left half sat empty. */
+#bar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  width:max-content;max-width:calc(100% - 32px);
+  padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background-color:var(--bg2);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 84%,transparent),
+                    color-mix(in srgb,var(--bg2) 84%,transparent)),
+    url('assets/rockyTextureDark2.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+  box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#bar > *{flex:0 0 auto}
+#bar button{white-space:nowrap}
+#bar .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+#bar .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+#bar .btn:disabled{opacity:.4;pointer-events:none}
+/* the Animation panel: Loop, frame stepping, the scrubber and a frame readout. Greyed
+   out until an animation is playing, so the panel never has to hide or move. */
+#anim{display:flex;flex-direction:column;gap:6px}
+#anim .row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}   /* Raven: centred */
+#anim .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+#animPlay{min-width:var(--play-w,58px)}   /* one width for "Play" and "Pause" (Raven) */
+#anim input[type=range]{width:100%;margin:0}
+#anim.idle .transport .btn,#anim.idle .transport input{opacity:.4;pointer-events:none}
+#anim .transport{display:flex;flex-direction:column;gap:6px}
+#anim .chain-head{font-size:13px;font-weight:600;color:var(--text-dim);margin-top:6px}
+#anim .row.pick{justify-content:flex-start;flex-wrap:nowrap}
+#anim .row.pick select{flex:1 1 auto;min-width:0}
+#anim .row.pick .btn{flex:0 0 auto}
+#animFrame{font-size:12px;color:var(--text-hint);text-align:center}   /* under the scrubber, centred (Raven) */
+/* the chain, listed in order under its buttons (Raven); the playing link is lit, the x removes */
+.chain{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chain li{display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 8px;border:1px solid var(--line);border-radius:6px;background:#ffffff14}
+.chain li.on{border-color:var(--accent-hover);background:#ffffff26}
+.chain li.off .lab{opacity:.45}
+/* the hunter slots: click a row to switch to that hunter; the one on screen is lit */
+.chain.hunters li{cursor:pointer}
+.chain.hunters li.on{cursor:default}
+.chain.hunters .tag{font-size:11px;color:var(--text-hint)}
+.chain.hunters input{flex:1 1 auto;min-width:0;font:inherit;font-size:12px;padding:1px 4px;background:#00000033;color:var(--text);border:1px solid var(--line);border-radius:4px}
+.chain li .n{color:var(--text-hint);min-width:1.4em}
+.chain li .lab{flex:1 1 auto}
+.chain li .x{cursor:pointer;color:var(--text-hint);padding:0 4px}
+.chain li .x:hover{color:var(--text)}
+.chain-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+/* Toggled off, the toolbar MOVES into the header rather than disappearing, so the
+   controls stay reachable while the render area is left clear. It is the same element,
+   so `#bar .sep` and `#bar .btn.on` keep applying -- which is why the whole bar moves
+   rather than its buttons being reparented one by one. */
+header #bar{position:static;transform:none;width:auto;max-width:none;
+  padding:0;border:none;border-radius:0;background:none;box-shadow:none;flex-wrap:nowrap}
+header #bar .sep{height:16px}
+/* the titlebar adds its own margin to .btn.tiny, which doubles up with #bar's gap */
+header #bar .btn.tiny{margin-right:0}
+/* The camera bar's controls are icons, their labels moved into the tooltip as
+   "Label: what it does" (Raven, 2026-09-04). Equal squares, so a button that the state
+   renames can no longer shunt the ones beside it -- which is what the two width-pinning
+   measurements this app used to run were for. */
+#bar .ico{display:inline-flex;align-items:center;justify-content:center;width:32px;padding:3px 0}
+#bar .ico svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* the Record button is bright red in both states, the dot and the stop square */
+#clipBtn svg{color:#ff2a2a}
+/* The clip countdown, the Armor Viewer's (Raven there, 2026-09-05: "a timer that counts down ... :30 -> :09 format
+   ... remains the same size"; here, 2026-09-19: "I would like to make both apps have the same camera controls bar"):
+   tabular digits in a fixed box, so :30 and :09 take the same room and nothing beside it shifts. Amber through the
+   3 s lead, red while the clip runs, and a flash of :00 when it ends. The Record button blinks in step: fast through
+   the lead, once a second while recording -- opacity only, so the button never changes size. */
+#bar .clip-timer{display:inline-flex;align-items:center;justify-content:center;width:34px;height:22px;
+  font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:var(--text-hint);user-select:none}
+#bar .clip-timer.pre{color:#ffb020}
+#bar .clip-timer.on{color:#ff2a2a}
+#bar .clip-timer.end{color:#ff2a2a;animation:clipEndFlash .45s steps(1,end) 4}
+#clipBtn.pre svg{animation:clipBlink .5s steps(1,end) infinite}
+#clipBtn.on svg{animation:clipBlink 1s steps(1,end) infinite}
+@keyframes clipBlink{50%{opacity:.15}}
+@keyframes clipEndFlash{50%{opacity:.1}}
+@media (prefers-reduced-motion: reduce){#clipBtn.pre svg,#clipBtn.on svg,#bar .clip-timer.end{animation:none}}
+/* the first-person camera's prompt, above the bar; no pointer events, so the click it asks
+   for reaches the canvas */
+#flyHint{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);
+  white-space:nowrap;font-size:12px;line-height:1.4;color:var(--text);background:rgba(0,0,0,.55);
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;pointer-events:none}
+#orbitLock{display:inline-flex;align-items:center;gap:6px}
+#orbitLock img{width:14px;height:14px;display:block}
+/* the monster's own icon, from the set the sibling apps share */
+.mon-icon{width:34px;height:34px;flex:0 0 auto;object-fit:contain;
+  image-rendering:auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+/* the dropdown's row keeps the icon's height when a monster has none, so the dropdown does not jump
+   4px on the way to or from one */
+#monPick{min-height:34px}
+#viewport canvas{display:block;width:100%;height:100%}
+#viewport.fly canvas{cursor:crosshair}   /* the first-person camera; Hide Cursor below still wins */
+/* Scoped to the render area on purpose: #bar and the overlays are SIBLINGS of #viewport,
+   so the toolbar keeps its pointer and stays usable while the cursor is hidden. */
+#viewport.nocursor,#viewport.nocursor canvas{cursor:none}
+
+/* Buttons */
+.btn{background:#ffffff14;color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:8px 14px;cursor:pointer;font-size:14px}
+.btn:hover{background:#ffffff24}
+.btn.block{width:100%}
+.btn.tiny{padding:3px 10px;font-size:12px}
+.btn.block,.btn.tiny{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('assets/banner-background.png');
+  background-position:right;
+}
+.btn.accent{background:var(--bg1);border-color:#000;color:#fff;font-weight:600}
+/* Reset: the Bingo app's accent button on the theme's complementary colour (--cta) */
+.btn.cta{background:var(--cta);background-image:none;border-color:rgba(0,0,0,.45);color:#fff;font-weight:600;
+  text-shadow:-1px 0 rgba(0,0,0,.55),1px 0 rgba(0,0,0,.55),0 -1px rgba(0,0,0,.55),0 1px rgba(0,0,0,.55)}
+.btn.cta:hover{background:color-mix(in srgb,var(--cta) 84%,#ffffff)}
+/* Selected gender. Was a fixed green (#3d6b45) that ignored the theme entirely; this is the
+   theme's own colour instead — var(--hover) is darken(hex,.30), the family's deep shade.
+
+   The white border does the selecting, not the fill. A lighter fill was the obvious try (the
+   family's .btn.on white wash) and it reads well but costs legibility: white label text drops
+   to 3.67:1 on the pale themes, against 6.5:1 on the green it replaced, so it made the button
+   worse to read in order to look righter. --hover goes the other way and holds white text at
+   14.7:1 everywhere. The fill difference alone is slight, which is why the border is white and
+   the label bold — that pair is unambiguous without asking the fill to carry it. */
+.btn.accent.on{background:var(--hover);border-color:#fff;color:#fff;font-weight:600}
+
+/* Collapsible panels */
+.panel{border:1px solid var(--line);border-radius:8px;overflow:clip;background:var(--bg2)}
+.panel-head{width:100%;text-align:left;background:transparent;border:none;color:var(--text);
+  padding:8px 14px;font-size:16px;font-weight:600;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('assets/banner-background.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+.panel-head:hover{background-color:#ffffff0d}
+/* a kept-open panel has nothing to toggle, so its head does not light up or take a pointer */
+/* The panel chevrons are hidden -- the accordion only ever has one panel open, so the
+   open one is obvious from the panel body and the arrows were just noise. The spans stay
+   in the markup so the heads keep their layout. */
+.chev{display:none}
+.panel-body{display:none;padding:8px 12px 12px;flex-direction:column;gap:6px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg1) 60%,transparent),color-mix(in srgb,var(--bg1) 60%,transparent)),
+    url('assets/panel-body-bg.png');
+  background-size:contain 100%;background-position:left center;background-repeat:repeat;
+}
+.panel[data-open="true"] .panel-body{display:flex}
+
+/* Controls */
+.chk{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;line-height:1.3}
+.chk input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;flex-shrink:0}
+.chk:hover{color:var(--accent-hover)}
+.hint{color:var(--text-hint);font-size:12px;margin:2px 0}
+.row{display:flex;align-items:center}
+.row.gap{gap:8px}
+.field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--text-dim)}
+.field .row.gap > select{flex:1;min-width:0}
+/* The Parts panel is a stack of label-over-dropdown pairs, and without room between them a label
+   sits as close to the select ABOVE it as to its own. So each label is pulled nearer its own
+   control and the rows are pushed apart from each other. Scoped to #monGroups, because every other
+   panel in the app is a form where the tighter rhythm is right. */
+#monGroups .field{gap:5px}
+#monGroups .field + .field{margin-top:13px}
+/* THE MHGU VIEWERS' LIGHTING, CAMERA AND EFFECTS PANELS, 2026-10-04: a row of preset buttons, and
+   the small heads between an effects panel's groups. Its rules, verbatim. */
+.light-row{display:flex;gap:4px;flex-wrap:wrap}
+.light-row .btn{flex:1 1 30%}
+.light-row .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+.fx-head{margin:8px 0 2px;font-size:11px;color:var(--text-hint);text-transform:uppercase;letter-spacing:.05em}
+.hexbtn{flex:1;min-width:0;background:transparent;border:1px solid transparent;
+  color:var(--text-hint);font-family:inherit;font-size:12px;letter-spacing:.02em;
+  text-align:left;padding:3px 5px;border-radius:5px;cursor:text}
+.hexbtn:hover{border-color:var(--line);color:var(--text)}
+.hexbtn:focus{border-color:var(--accent-hover);color:var(--text);outline:none;
+  background:var(--bg2)}
+.rgb-input{flex:0 0 auto;width:34px;height:30px;padding:0;cursor:pointer;
+  background:var(--bg2);border:1px solid var(--line);border-radius:7px}
+.rgb-input::-webkit-color-swatch-wrapper{padding:2px}
+/* the colour itself gets the black edge, so a pale pigment still reads as a swatch */
+.rgb-input::-webkit-color-swatch{border:1px solid #000;border-radius:5px}
+.rgb-input::-moz-color-swatch{border:1px solid #000;border-radius:5px}
+.field select,.field input[type=text]{
+  background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:7px;
+  padding:6px 8px;font-size:13px;line-height:1.4;
+  /* option names run past 60 chars; without min-width:0 a flex select forces the
+     sidebar far wider than its declared width */
+  width:100%;min-width:0;max-width:100%;text-overflow:ellipsis;
+}
+
+/* no focus ring on selects: a select just picked stays focused, and the ring around it
+   read as a stray highlight (Raven, 2026-09-04: "We don't need the highlight around the
+   box") -- Chrome keeps :focus-visible on after its popup closes, so it goes outright */
+select:focus{outline:none}
+.field input[type=text]::placeholder{color:var(--text-hint);opacity:1}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* Pigment swatches */
+#pig{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-height:170px;overflow-y:auto}
+#pig i{display:block;aspect-ratio:1;border-radius:3px;cursor:pointer;border:1px solid #0006}
+#pig i.on{outline:2px solid var(--accent-hover);outline-offset:1px}
+
+/* Viewport overlays */
+
+#err{position:absolute;bottom:12px;left:12px;color:#ff6b6b;white-space:pre;max-width:60ch}
+/* sits over the render area; pointer-events off so it never eats an orbit drag */
+#renderNote{position:absolute;top:10px;left:0;right:0;margin:0;text-align:center;
+  font-size:12px;line-height:1.4;color:var(--text-hint);opacity:.75;
+  pointer-events:none;padding:0 12px}
+#legend{font-size:11px;line-height:1.35}
+
+/* In-game pigment palette. Opens per pigment row and writes into that row's hex field,
+   so it is a way to REACH the game's 125 colours through the existing RGB interface
+   rather than a second interface beside it. */
+.palbtn{flex:0 0 auto;width:26px;height:26px;padding:0;line-height:1;font-size:13px;
+  background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;
+  cursor:pointer}
+.palbtn:hover{background:#ffffff1a;border-color:var(--accent-hover)}
+#pigModal .modal-card{width:min(420px,92vw)}
+#pigGrid,.pig-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:12px 0}
+/* black, not --line: a pale swatch against the panel had no edge at all, so light
+   colours ran together and white was invisible */
+#pigGrid button,.pig-grid button{aspect-ratio:1;padding:0;border:1px solid #000;
+  border-radius:4px;cursor:pointer}
+#pigGrid button:hover,.pig-grid button:hover{border-color:#fff}
+#pigGrid button.sel,.pig-grid button.sel{outline:2px solid #fff;outline-offset:1px}
+#pigDeviant .stage-h{margin:14px 0 0}
+#pigDevList .stage-h{margin:14px 0 6px}
+#pigPalettes .stage-h,#pigBaseHead .stage-h{margin:16px 0 0;font-size:13px}
+#pigPalettes .hx,#pigBaseHead .hx{font-weight:400;font-size:11px;opacity:.6}
+#pigPalettes .stage-h:first-child{margin-top:6px}
+#pigModal .stage-h{margin:14px 0 0;font-size:13px}
+#pigModal .stage-h .hx{font-weight:400;font-size:11px;opacity:.6;margin-left:4px}
+.devrow{display:flex;align-items:center;gap:6px;margin:0 0 4px}
+.devpick{display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:5px 8px;
+  background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--text);
+  cursor:pointer;font:inherit;font-size:12px;text-align:left}
+.devpick:hover{border-color:var(--accent-hover);background:#ffffff12}
+.devanim{flex:0 0 auto;width:76px}
+.devrow .sw{width:16px;height:16px;border-radius:3px;border:1px solid #000;flex:0 0 auto}
+.devrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.devrow .hx{opacity:.65;font-size:11px}
+
+/* Modals (About, Settings) — the block is shared verbatim with the sibling apps. */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;
+  align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:20px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto}
+.modal-card h2{margin:0 0 12px;font-size:22px}
+.modal-card h3{margin:16px 0 6px;font-size:14px;color:var(--text-dim)}
+.modal-card code{font-size:12px;opacity:.85}
+.modal-card p{line-height:1.55;font-size:13px}
+.modal-card a{color:var(--accent-hover)}
+.modal-card .muted{color:var(--text-dim);font-size:13px;opacity:.75}
+/* Backdrop override, above the swatches so it is seen. Chroma chips sit on the two key buttons so
+   the colour is visible on the control that sets it. */
+.stage-h{margin:0 0 4px;font-size:14px}
+.stage-row{margin-bottom:15px}
+.stage-row .btn{position:relative;padding-left:26px}
+.stage-row .btn::before{content:"";position:absolute;left:8px;top:50%;width:10px;height:10px;
+  margin-top:-5px;border-radius:2px;border:1px solid #0006;background:var(--chip,transparent)}
+#stgTheme::before{display:none}
+#stgGreen{--chip:#00FF00}
+#stgBlue{--chip:#0000FF}
+
+/* Settings modal — Theme and Backdrop live here too, because "Theme" on its own was
+   easy to miss when looking for a setting. The swatch grid is copied verbatim from the
+   other apps; the id stays `themeModal` so the shared theme script needs no change. */
+/* A modal card is 560px; the family sizes the THEME card at 460 so a swatch comes out the
+   same size here as in every other app. Scoped so the About card is untouched. */
+#themeModal .modal-card{width:min(460px,90vw)}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:15px}
+.swatch{aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;padding:0}
+.swatch.sel{border-color:#fff}
+.swatch-icon{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:60%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.swatch span{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:10px;line-height:1.5;color:#fff;background:rgba(0,0,0,.45)}
+.row.end{justify-content:flex-end}
+.app-links{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:10px}
+.app-links li{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#ffffff08}
+.app-links li.current{opacity:.72}
+.app-links a,.app-name{font-weight:600;font-size:14px}
+.app-here{font-weight:400;font-size:11px;opacity:.7;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin-left:7px}
+.app-desc{display:block;margin-top:3px;font-size:12px;opacity:.8;line-height:1.4}
+/* MH4U Armor Viewer: a colour chip beside a colour select, and the game's colour board */
+.chip{display:inline-block;flex:0 0 26px;width:26px;height:26px;border-radius:5px;border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+.board-wrap canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair;border-radius:4px;border:1px solid rgba(255,255,255,.35)}
+#skinTone{flex:1;min-width:0}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="titlebar titlebar-header">
+    <img class="title-icon" src="assets/MonsterIcons/MH4U-Question_Mark_Icon.png" alt="">
+    <h1>MH4U Armor Viewer</h1>
+    <button id="barBtn" class="btn tiny on" title="Show or hide the camera controls">Camera Controls</button>
+    <button id="resetBtn" class="btn tiny cta" title="Restore the defaults for the hunter on screen: no armour, the first face, hair and clothing, the Default lighting and no effects; its gender is kept">Reset</button>
+    <button id="aboutBtn" class="icon-btn" title="About" aria-label="About">&#9432;</button>
+    <button id="themeBtn" class="icon-btn" title="Settings" aria-label="Settings">&#9881;</button>
+    <button id="linksBtn" class="icon-btn" title="Other MH4U apps" aria-label="Other MH4U apps">&#128279;</button>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <div id="paneMonster">
+
+      <!-- HUNTERS: the MHGU Armor Viewer's hunter slots. Raven, 2026-10-04: "Also, add the Hunter slots of the
+           GU Armor Viewer". Each slot is a named hunter; click a row to switch to it. -->
+      <section class="panel" id="huntersPanel" data-open="false">
+        <button class="panel-head">Hunters <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <ol id="hunterList" class="chain hunters"></ol>
+          <div class="row">
+            <button id="hunterNew" class="btn tiny" title="A new hunter, starting as a copy of this one">New</button>
+            <button id="hunterRename" class="btn tiny" title="Rename this hunter">Rename</button>
+            <button id="hunterDelete" class="btn tiny" title="Delete this hunter">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-open="true">
+        <button class="panel-head">Equipment <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field"><label for="htype">Type</label><select id="htype">
+            <option value="all">Both</option>
+            <option value="b">Blademaster</option>
+            <option value="g">Gunner</option></select></div>
+          <div class="field"><input type="text" id="filter" placeholder="Filter by name&hellip;"></div>
+          <div class="field"><label for="s_helm">Head</label><select id="s_helm" data-slot="helm"></select></div>
+          <div class="field"><label for="s_body">Chest</label><select id="s_body" data-slot="body"></select></div>
+          <div class="field"><label for="s_arm">Arms</label><select id="s_arm" data-slot="arm"></select></div>
+          <div class="field"><label for="s_wst">Waist</label><select id="s_wst" data-slot="wst"></select></div>
+          <div class="field"><label for="s_leg">Legs</label><select id="s_leg" data-slot="leg"></select></div>
+        </div>
+      </section>
+
+      <section class="panel" data-open="false">
+        <button class="panel-head">Hunter <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field"><label for="genderSel">Gender</label><select id="genderSel">
+            <option value="f">Female</option>
+            <option value="m">Male</option></select></div>
+          <div class="field"><label for="faceStyle">Face</label><select id="faceStyle"></select></div>
+          <div class="field"><label for="hairStyle">Hair</label><select id="hairStyle"></select></div>
+          <div class="field"><label for="clothing">Clothing</label><select id="clothing"></select></div>
+          <div class="field"><label for="features">Features</label><select id="features"></select></div>
+        </div>
+      </section>
+
+      <!-- WEAPON: the game's own weapon tables (weapons.json) hung on the hunter by the game's own mount
+           (mount.json, scripts/build_weapons.py): each part sits on a hunter bone with the placement the game
+           uses for its carry state, sheathed or drawn. Drawn puts the Pose panel on the class's own motion
+           list. -->
+      <section class="panel" id="weaponPanel" data-open="false">
+        <button class="panel-head">Weapon <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field"><label for="weaponClass">Class</label><select id="weaponClass"></select></div>
+          <div class="field" id="weaponModelField"><label for="weaponModel">Weapon</label><select id="weaponModel"></select></div>
+          <div class="field" id="kinsectField"><label for="kinsect">Kinsect</label><select id="kinsect"></select></div>
+          <div class="field" id="weaponModeField"><label for="weaponMode">Mode</label><select id="weaponMode"></select></div>
+          <div class="field" id="weaponDrawnField"><label for="weaponDrawn">Carry</label><select id="weaponDrawn"><option value="1">Drawn</option><option value="0">Sheathed</option></select></div>
+        </div>
+      </section>
+
+      <!-- THE CHARACTER COLOURS (CharMake: Skin Tone, Clothing Color, Feature Color, Hair Color). Each colour is
+           written into the albedo colour of the materials of one colour type; see armor.json _about.colors. The
+           game's own presets for these menus are not read yet, so each row offers the viewer's starting colour
+           and Custom, a pixel of the game's own colour board (lyt\lobby\texture\lby_colorscale). -->
+      <section class="panel" data-open="false">
+        <button class="panel-head">Colors <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field"><label for="skinColor">Skin Tone</label>
+            <div class="row gap"><select id="skinColor" data-color="skin"></select><span class="chip" id="skinChip"></span></div></div>
+          <div class="field"><label for="hairColor">Hair Color</label>
+            <div class="row gap"><select id="hairColor" data-color="hair"></select><span class="chip" id="hairChip"></span></div></div>
+          <div class="field"><label for="clothColor">Clothing Color</label>
+            <div class="row gap"><select id="clothColor" data-color="cloth"></select><span class="chip" id="clothChip"></span></div></div>
+          <div class="field"><label for="featColor">Feature Color</label>
+            <div class="row gap"><select id="featColor" data-color="feat"></select><span class="chip" id="featChip"></span></div></div>
+          <div class="field board-wrap" id="boardWrap" hidden>
+            <label id="boardLabel" for="board">Color Board</label>
+            <canvas id="board" title="Click or drag to pick a color from the game's own color board"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ARMOUR PIGMENT: every piece draws its pigment region (colour type 3) in its own default colour,
+           armour record +0x13 into the game's 70-colour table (0x2f854c). The item box's "Change your armor
+           color" can give a piece its own colour; Custom picks one from the colour board. An empty slot shows
+           the clothing, whose pigment is the Clothing Color. The rows are the MHGU Armor Viewer's (Raven,
+           2026-10-08: GU parity): a tick, a hex field, an RGB swatch, and the palette button, which opens the
+           game's 70 pigments and its colour board. -->
+      <section class="panel" data-open="false">
+        <button class="panel-head">Pigment <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <label class="chk" title="Show which parts of each piece take its pigment: the pigment region in magenta, the rest dimmed"><input type="checkbox" id="maskdbg">Dye mask</label>
+          <div id="slotPig"></div>
+        </div>
+      </section>
+
+      <!-- THE GAME'S OWN MOTIONS: the hunter's motion lists (player\mot\co\co_*, lco_*, pl_make, pl_gc,
+           pl_arena, and player\mot\wNN per weapon class). The clips carry no names in the game data, so they
+           are listed as the game stores them. -->
+      <section class="panel" data-open="false">
+        <button class="panel-head">Pose <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field"><label for="poseList">Motion List</label><select id="poseList"></select></div>
+          <div class="field"><label for="poseClip">Clip</label><select id="poseClip"></select></div>
+        </div>
+      </section>
+
+      <!-- LIGHTING, CAMERA AND EFFECTS: the MHGU viewers' panels, as the MH3U Armor Viewer has them.
+           The lighting is generic three.js lighting, not the game's (MH4U's shading is undecoded):
+           Default is the rig this app has drawn from the start, the rest are the MHGU Armor Viewer's
+           presets. -->
+      <section class="panel" id="lightPanel" data-open="false">
+        <button class="panel-head">Lighting <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="row light-row" id="lightRow">
+            <button class="btn tiny" data-light="default" title="This viewer's own rig: a white key, a blue rim, a soft fill, the hemisphere and ambient lights, the headlight on">Default</button>
+            <button class="btn tiny" data-light="studio" title="The MHGU Armor Viewer's default: a cool key, blue rim, soft fill">Studio</button>
+            <button class="btn tiny" data-light="warm" title="Amber key and rim, warm fill">Warm</button>
+            <button class="btn tiny" data-light="cool" title="Blue-white key, strong blue rim">Cool</button>
+            <button class="btn tiny" data-light="even" title="Flat, near-shadowless light on purpose: for checking dye colours">Even</button>
+            <button class="btn tiny" data-light="rim" title="Dark, with a strong rim: for silhouettes">Rim</button>
+            <button class="btn tiny" data-light="dusk" title="A low amber sun with a blue sky fill">Dusk</button>
+          </div>
+          <div class="field"><label for="lKeyAz">Key light angle</label><input id="lKeyAz" type="range" min="0" max="360" step="1" title="Where the key light comes from, around the figure as you see it: 0 from your side, 90 from the right, 180 from behind it"></div>
+          <div class="field"><label for="lKeyEl">Key light height</label><input id="lKeyEl" type="range" min="-30" max="89" step="1" title="How high the key light sits, from below the figure to overhead"></div>
+          <div class="field"><label for="lKey">Key</label><div class="row gap"><input id="lKey" type="range" min="0" max="4" step="0.05" title="Key light strength"><input id="lKeyCol" type="color" class="rgb-input" title="Key light colour"></div></div>
+          <div class="field"><label for="lRim">Rim</label><input id="lRim" type="range" min="0" max="3" step="0.05" title="Rim light strength"></div>
+          <div class="field"><label for="lFill">Fill</label><input id="lFill" type="range" min="0" max="2" step="0.05" title="Fill light strength"></div>
+          <div class="field"><label for="lAmb">Ambient</label><input id="lAmb" type="range" min="0" max="2" step="0.05" title="Ambient light strength"></div>
+          <div class="row gap" style="flex-direction:column;align-items:flex-start">
+            <label class="chk" title="A light on the camera: lights whatever faces you, from any angle"><input type="checkbox" id="lHead">Headlight</label>
+            <label class="chk" title="Turns the key light slowly around the figure"><input type="checkbox" id="lSpin">Orbit the key light</label>
+          </div>
+        </div>
+      </section>
+      <section class="panel" id="camPanel" data-open="false">
+        <button class="panel-head">Camera <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="field" id="camModeField"><label for="camMode">Camera</label><select id="camMode" title="Orbit: dragging turns the figure. First person: fly through the scene with WASD and the mouse"><option value="orbit">Orbit</option><option value="fly">First person</option></select></div>
+          <div class="field"><label for="camLens">Lens</label><select id="camLens" title="Standard is the plain lens. Fisheye is a true curved wide angle. Orthographic has no perspective at all (orbit only; the focal length then makes no difference). Anamorphic is the widescreen squeeze with oval bokeh and streak flares. Tilt-shift keeps a band sharp and blurs above and below it"><option value="standard">Standard</option><option value="fisheye">Fisheye</option><option value="ortho">Orthographic</option><option value="anamorphic">Anamorphic</option><option value="tiltshift">Tilt-shift</option></select></div>
+          <div class="field" id="lensP1Field" hidden><label for="lensP1"><span id="lensP1Label"></span> <span class="hx" id="lensP1Val"></span></label><input id="lensP1" type="range" min="0" max="1000" step="1"></div>
+          <div class="field" id="lensP2Field" hidden><label for="lensP2"><span id="lensP2Label"></span> <span class="hx" id="lensP2Val"></span></label><input id="lensP2" type="range" min="0" max="1000" step="1"></div>
+          <div class="field"><label for="camFocal">Focal length <span class="hx" id="camFocalVal"></span></label><input id="camFocal" type="range" min="0" max="1000" step="1" title="5 mm is a fisheye-wide view with the deepest perspective, 300 mm a long lens that has flattened it; 35 mm is the default"></div>
+          <div class="field" id="camSpeedField" hidden><label for="camSpeed">Move speed <span class="hx" id="camSpeedVal"></span></label><input id="camSpeed" type="range" min="0" max="1000" step="1" title="How fast the keys move the camera, 0.05 to 20 metres a second; the wheel changes it too while the mouse is locked"></div>
+          <div class="field" id="camTrackField">
+            <label for="camAim">Hunter tracking: aim at</label><select id="camAim" title="The point the face lock and the depth of field aim at"><option value="head">Head</option><option value="chest">Chest</option><option value="center">Centre</option></select>
+            <label class="chk" title="First person only. The camera keeps facing the hunter and every key orbits: A/D round, E/Q up and down, W/S closer and farther, the wheel zooms. L toggles it while the mouse is captured"><input type="checkbox" id="camFace">Face the hunter (first person)</label>
+            <label class="chk" title="With depth of field on (Effects), the focus follows the hunter as the camera moves"><input type="checkbox" id="camFollow">Keep the hunter in focus (depth of field)</label>
+          </div>
+          <div class="field"><label for="camSpin">Turntable <span class="hx" id="camSpinVal"></span></label><input id="camSpin" type="range" min="0" max="10" step="1" title="The turntable speed, the same steps the Rotate button cycles through"></div>
+          <div class="row gap" style="flex-direction:column;align-items:flex-start">
+            <label class="chk" title="Turn the other way"><input type="checkbox" id="camSpinRev">Turn clockwise</label>
+            <label class="chk" title="Orbit and pan glide to a stop instead of stopping dead"><input type="checkbox" id="camDamp">Smooth orbit</label>
+            <label class="chk" title="The wheel zooms toward the pointer instead of the centre of the view"><input type="checkbox" id="camZoomCursor">Zoom toward the pointer</label>
+          </div>
+          <div class="row"><button id="camReset" class="btn tiny" title="Camera settings back to their defaults: Orbit, Standard lens, 35 mm, turntable off, smooth orbit on, zoom at the centre, no face lock, aiming at the head. The view itself stays where it is (Fit to View frames it)">Reset camera settings</button></div>
+        </div>
+      </section>
+      <section class="panel" id="fxPanel" data-open="false">
+        <button class="panel-head">Effects <span class="chev">&#9662;</span></button>
+        <div class="panel-body">
+          <div class="row light-row" id="fxRow">
+            <button class="btn tiny" data-fx="off" title="No effects: the plain render">Off</button>
+            <button class="btn tiny" data-fx="photo" title="A light touch: a little glow, a soft vignette, a hint of grain">Photo</button>
+            <button class="btn tiny" data-fx="cinematic" title="Glow, vignette, aberration and grain under a film tone map">Cinematic</button>
+            <button class="btn tiny" data-fx="glow" title="Strong bloom: the brightest parts glow">Glow</button>
+            <button class="btn tiny" data-fx="noir" title="Black and white, high contrast, heavy vignette and grain">Noir</button>
+          </div>
+          <div class="fx-head">Bloom</div>
+          <label class="chk" title="Light that spills from the bright parts"><input type="checkbox" id="fxBloomOn">Bloom</label>
+          <div class="field"><label for="fxBloomStr">Strength <span class="hx" id="fxBloomStrVal"></span></label><input id="fxBloomStr" type="range" min="0" max="2" step="0.05"></div>
+          <div class="field"><label for="fxBloomThr">Threshold</label><input id="fxBloomThr" type="range" min="0" max="1.5" step="0.05" title="How bright a pixel must be to glow"></div>
+          <div class="field"><label for="fxBloomRad">Radius</label><input id="fxBloomRad" type="range" min="0" max="1" step="0.05" title="How far the glow spreads"></div>
+          <div id="fxDofGroup">
+            <div class="fx-head">Depth of field</div>
+            <label class="chk"><input type="checkbox" id="fxDofOn">Depth of field</label>
+            <div class="field"><label for="fxDofFocus">Focus distance <span class="hx" id="fxDofFocusVal"></span></label><input id="fxDofFocus" type="range" min="0" max="1000" step="1"></div>
+            <div class="field"><label for="fxDofAper">Aperture</label><input id="fxDofAper" type="range" min="0" max="10" step="0.1"></div>
+            <div class="field"><label for="fxDofBlur">Blur</label><input id="fxDofBlur" type="range" min="0" max="0.05" step="0.0025" title="The largest blur, as a share of the view's height"></div>
+          </div>
+          <div class="fx-head">Lens character</div>
+          <div class="field"><label for="fxVig">Vignette</label><input id="fxVig" type="range" min="0" max="1" step="0.05"></div>
+          <div class="field"><label for="fxAber">Chromatic aberration</label><input id="fxAber" type="range" min="0" max="1" step="0.05"></div>
+          <div class="field"><label for="fxGrain">Grain</label><input id="fxGrain" type="range" min="0" max="1" step="0.05"></div>
+          <div class="fx-head">Colour</div>
+          <div class="field"><label for="fxExp">Exposure <span class="hx" id="fxExpVal"></span></label><input id="fxExp" type="range" min="0.25" max="4" step="0.05"></div>
+          <div class="field"><label for="fxCon">Contrast</label><input id="fxCon" type="range" min="0.5" max="2" step="0.05"></div>
+          <div class="field"><label for="fxSat">Saturation</label><input id="fxSat" type="range" min="0" max="2" step="0.05"></div>
+          <div class="field"><label for="fxTone">Tone map</label><select id="fxTone"><option value="none">None</option><option value="aces">ACES</option><option value="reinhard">Reinhard</option><option value="neutral">Neutral</option></select></div>
+        </div>
+      </section>
+
+      </div>
+    </aside>
+
+    <section class="content">
+      <div id="viewport"></div>
+      <div id="loading">Loading...</div>
+      <div id="flyHint" hidden>Click to look around &middot; WASD move &middot; Q/E up/down &middot; Shift fast &middot; Esc frees the mouse</div>
+      <p id="renderNote">Some models may not render correctly at this time or some oddities may happen</p>
+      <div id="err"></div>
+      <div id="bar">
+        <button id="fitBtn" class="btn tiny ico" aria-label="Fit to View" title="Fit to View: Frame the whole hunter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/></svg></button>
+        <button id="spinBtn" class="btn tiny ico" aria-label="Rotate" title="Rotate: Cycle the turntable speed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 4v4.5H16"/></svg></button>
+        <button id="orbitLock" class="btn tiny ico" aria-label="Orbit" title="Orbit: Lock the orbit so dragging pans the view instead of rotating it"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><ellipse cx="12" cy="12" rx="9.6" ry="4.3" transform="rotate(-30 12 12)"/></svg></button>
+        <button id="flyBtn" class="btn tiny ico" aria-label="First person" title="First person: Fly the camera: WASD moves, the mouse looks. Click the view to look around, Esc frees the mouse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12c2.4-4 5.6-6 9.5-6s7.1 2 9.5 6c-2.4 4-5.6 6-9.5 6s-7.1-2-9.5-6Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button id="wireBtn" class="btn tiny ico" aria-label="Wireframe" title="Wireframe: Draw the meshes as wireframe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20.5 8v8L12 21 3.5 16V8L12 3Z"/><path d="M3.5 8 12 12.5 20.5 8M12 12.5V21"/></svg></button>
+        <button id="shotBtn" class="btn tiny ico" aria-label="Screenshot" title="Screenshot: Save a PNG of the render area"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 8.6h3.2L8.2 6.5h7.6l1.5 2.1h3.2v10.4H3.5V8.6Z"/><circle cx="12" cy="13.6" r="3.3"/></svg></button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- THE PIGMENT PALETTE, the MHGU Armor Viewer's modal: opened from a pigment row's palette button, it writes
+     into that row. Default = the piece's own colour; the game's 70 pigments; the game's colour board. -->
+<div id="pigModal" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="pigTitle">Pigment</h2>
+    <button id="pigDefault" class="btn block" title="The piece's own colour, which follows the armor">Default</button>
+    <h3 class="stage-h">Armor pigments <span class="hx" id="pigGameCount"></span></h3>
+    <div id="pigGrid"></div>
+    <div class="field board-wrap" id="pigBoardWrap">
+      <h3 class="stage-h" id="pigBoardLabel">Color board</h3>
+      <canvas id="pigBoard" title="Click or drag to pick a color from the game's own color board"></canvas>
+    </div>
+    <div class="row end gap">
+      <button id="pigClose" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="linksModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Other MH4U Apps</h2>
+    <p class="muted">For Non-MH4U Apps, you can visit the <a href="https://armoredraven17.github.io/" target="_blank" rel="noopener">Home Page</a></p>
+    <ul class="app-links">
+      <!-- every MH4U app, in the hub's order (apps.js); this app's own row is the "you are here" one -->
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-collection-tracker/" target="_blank" rel="noopener">Collection Tracker</a>
+        <span class="app-desc">Tracks which MH4U weapons and armor you own, and what it costs to finish them.</span>
+      </li>
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-weapon-trees/" target="_blank" rel="noopener">Weapon Trees</a>
+        <span class="app-desc">Browse every MH4U weapon upgrade tree, with full stats on any node you click.</span>
+      </li>
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-hunting-log/" target="_blank" rel="noopener">Hunting Log</a>
+        <span class="app-desc">Keeps a running record of your MH4U hunts — what you were after, what you wore, who came along.</span>
+      </li>
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-quest-randomizer/" target="_blank" rel="noopener">Quest Randomizer</a>
+        <span class="app-desc">Rolls a random MH4U quest and weapon when you can't decide what to hunt.</span>
+      </li>
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-monster-viewer/" target="_blank" rel="noopener">Monster Viewer</a>
+        <span class="app-desc">Renders every MH4U monster in 3D with its own motion lists, so you can watch what they actually do.</span>
+      </li>
+      <li class="current">
+        <span class="app-name">Armor Viewer <span class="app-here">you are here</span></span>
+        <span class="app-desc">Renders a hunter in 3D with every MH4U armor piece swappable, so you can mix and match a set.</span>
+      </li>
+    </ul>
+    <div class="row end gap">
+      <button id="linksClose" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="themeModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>Settings</h2>
+    <h3 class="stage-h">Display</h3>
+    <label class="chk"><input type="checkbox" id="setNote">Hide rendering notice</label>
+    <h3 class="stage-h">Backdrop</h3>
+    <p class="hint">Overrides the render background so the model can be keyed out.</p>
+    <div class="row gap stage-row">
+      <button id="stgTheme" class="btn accent" style="flex:1">Theme</button>
+      <button id="stgGreen" class="btn accent" style="flex:1">Digital Green</button>
+      <button id="stgBlue"  class="btn accent" style="flex:1">Digital Blue</button>
+    </div>
+    <h3 class="stage-h">Theme</h3>
+    <div id="swatches" class="swatches"></div>
+    <button id="themeClose" class="btn accent">Done</button>
+  </div>
+</div>
+
+<div id="aboutModal" class="modal hidden">
+  <div class="modal-card">
+    <h2>About</h2>
+    <p class="muted">A fan-made viewer for the armour of Monster Hunter 4 Ultimate, with the game's own models, textures and names. Not affiliated with, endorsed by, or supported by Capcom.</p>
+
+    <h3>Game content</h3>
+    <p>Monster Hunter 4 Ultimate and all of its models, textures, animations and data tables are &copy; CAPCOM CO., LTD. All rights reserved. Every asset here was extracted from a personally owned copy of the game and is shown for reference only.</p>
+
+    <h3>What you are looking at</h3>
+    <p>Each armour piece is its own model in the game, worn over the hunter's skeleton. The names, which model a piece draws for each gender, the clothing shown under an empty slot, each piece's own pigment, and which parts of the hair and face a helm leaves visible all come from the game's own tables.</p>
+
+    <h3>Tools used to build this</h3>
+    <ul class="app-links">
+      <li><span class="app-name">RevilLib / RevilToolset</span> &mdash; by PredatorCZ (Lukas Cone)
+        <span class="app-desc">Converted MT Framework <code>.mod</code> meshes to glTF, <code>.tex</code> textures to DDS and <code>.lmt</code> motion lists to animation.</span></li>
+      <li><span class="app-name">three.js</span>
+        <span class="app-desc">Renders the scene, with GLTFLoader, OrbitControls and SkeletonUtils.</span></li>
+      <li><span class="app-name">Pillow</span>
+        <span class="app-desc">Converted the extracted textures during the build.</span></li>
+    </ul>
+
+    <h3>Assets</h3>
+    <p>The theme icons are the game's own monster icons. The UI textures and the MHFU font are shared with the same author's MHGU fan apps. Armour names come from the game's own text files.</p>
+
+    <div class="row end gap">
+      <button id="aboutClose" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Plain script, not the module below: the modals and the view preferences are independent of the
+  // viewer, and reading them here means a hidden notice or bar never flashes before the module loads.
+  (function () {
+    var am = document.getElementById("aboutModal");
+    document.getElementById("aboutBtn").onclick = function () { am.classList.remove("hidden"); };
+    document.getElementById("aboutClose").onclick = function () { am.classList.add("hidden"); };
+    am.onclick = function (e) { if (e.target === am) am.classList.add("hidden"); };
+
+    // mh4u-armor-: its own keys, so it never reads another viewer's preferences on a shared origin
+    var UI_KEY = "mh4u-armor-viewer-ui";
+    var ui = { note: true, bar: true };
+    try { ui = Object.assign(ui, JSON.parse(localStorage.getItem(UI_KEY) || "{}")); } catch (_) {}
+    var noteEl = document.getElementById("renderNote"),
+        barEl = document.getElementById("bar"),
+        barHome = barEl.parentNode,
+        barBtn = document.getElementById("barBtn"),
+        header = barBtn.parentNode,
+        setNote = document.getElementById("setNote");
+    function paintUi() {
+      noteEl.hidden = !ui.note;
+      if (ui.bar) barHome.appendChild(barEl);
+      else header.insertBefore(barEl, barBtn);
+      barBtn.classList.toggle("on", ui.bar);
+      setNote.checked = !ui.note;
+      try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (_) {}
+    }
+    paintUi();
+    barBtn.onclick = function () { ui.bar = !ui.bar; paintUi(); };
+    setNote.onchange = function () { ui.note = !setNote.checked; paintUi(); };
+
+    var m = document.getElementById("linksModal");
+    document.getElementById("linksBtn").onclick = function () { m.classList.remove("hidden"); };
+    document.getElementById("linksClose").onclick = function () { m.classList.add("hidden"); };
+    m.onclick = function (e) { if (e.target === m) m.classList.add("hidden"); };
+  })();
+</script>
+
+<script>
+  // Theme system — the MHGU family's, installed from mhgu-fishing/docs/theme.js. Every shade
+  // is derived from ONE chosen colour by moving only its lightness in HSL, so hue and
+  // saturation are preserved and every derived surface stays "in family". That is why the
+  // palette can be a list of bare hexes rather than a set of hand-built themes.
+  //
+  // THE PALETTE HAS ONE INVARIANT: every swatch holds white text and a white checkbox tick.
+  // Both come off one number — the browser picks a checkbox tick itself, white below relative
+  // luminance .1791 and black above, and white body text needs its ground at .1833 or below to
+  // clear 4.5:1 — so the checkbox line is the stricter of the two. Every theme clears it, which
+  // is why this app paints white text unconditionally and has no light-theme branch.
+  //
+  // A NEW COLOUR HAS TO CLEAR THAT. Do not add one without checking it.
+  //
+  // MH4U NAMES ON THE FAMILY'S COLOURS: the MH4U Collection Tracker's list, its names and its
+  // icons (cut from the game's own icon atlas by that app's scripts/build_data.py). The hexes are
+  // the MHGU apps' own, unchanged, so the invariant above still holds and LEGACY_HEX still
+  // applies. A name too long for a swatch is shortened and its full name kept in `icon`.
+  (function () {
+    const THEMES = [
+    { name: "Black Gravios", hex: "#570B0B" },
+    { name: "Rathalos", hex: "#b51717" },
+    { name: "Cephadrome", hex: "#783E0F" },
+    { name: "Daimyo Hermitaur", hex: "#C7620E" },
+    { name: "Desert Seltas", hex: "#74631D" },
+    { name: "G. Rathian", hex: "#9C8328", icon: "Gold Rathian" },
+    { name: "Seltas", hex: "#436713" },
+    { name: "Genprey", hex: "#67922E" },
+    { name: "Seltas Queen", hex: "#0B570F" },
+    { name: "Rathian", hex: "#39993E" },
+    { name: "Basarios", hex: "#14503d" },
+    { name: "Blue Yian Kut-Ku", hex: "#279773" },
+    { name: "A. Rathalos", hex: "#0C5D68", icon: "Azure Rathalos" },
+    { name: "Tidal Najarala", hex: "#118898" },
+    { name: "Velocidrome", hex: "#005984" },
+    { name: "Gypceros", hex: "#0080c1" },
+    { name: "Black Diablos", hex: "#0B2757" },
+    { name: "Ash Kecha Wacha", hex: "#0b3f97" },
+    { name: "Purple Gypceros", hex: "#1F0B57" },
+    { name: "Great Jaggi", hex: "#4e2fa2" },
+    { name: "Plum D. Hermitaur", hex: "#62008f", icon: "Plum Daimyo Hermitaur" },
+    { name: "S. Nerscylla", hex: "#8e50ab", icon: "Shrouded Nerscylla" },
+    { name: "P. Rathian", hex: "#D4358C", icon: "Pink Rathian" },
+    { name: "Yian Kut-Ku", hex: "#C8679D" },
+    { name: "Ruby Basarios", hex: "#5a411f" },
+    { name: "D. Seltas Queen", hex: "#997c54", icon: "Desert Seltas Queen" },
+    { name: "Kecha Wacha", hex: "#835A32" },
+    { name: "Gravios", hex: "#B17A47" },
+    { name: "S. Rathalos", hex: "#505358", icon: "Silver Rathalos" },
+    { name: "White Monoblos", hex: "#7C879B" },
+    { name: "Forbidden", hex: "#1E2025", icon: "Question Mark" },
+    ];
+    // mh4u-: this app can share an origin with the other viewers and keeps its own theme
+    const KEY = "mh4u-armor-viewer-theme";
+    const DEFAULT_HEX = "#1E2025";           // Forbidden, the family default
+
+    // Backdrop override for the render area. The stage is normally darken(hex,.18) — the
+    // Weapon Tree's factor — but these two are chroma-key colours, so a screenshot of the
+    // model can be keyed out. They deliberately do NOT follow the theme: the whole point is a
+    // flat, known value the keyer can pull. Everything else (sidebar, titlebar, panels) still
+    // follows the theme, so only the surface being composited is overridden.
+    //
+    // Full-gun primaries, #00FF00 and #0000FF, chosen deliberately over the SMPTE-ish digital
+    // greens and blues. Those key more forgivingly on real footage, where the backdrop is lit
+    // cloth, but here the backdrop is a flat framebuffer value with no lighting on it at all,
+    // so the reason to prefer them does not apply and a full channel is the easier pull.
+    const STAGE_KEY = "mh4u-armor-viewer-stage";
+    const STAGES = { theme: null, green: "#00FF00", blue: "#0000FF" };
+    let stageMode = "theme";
+    try { const v = localStorage.getItem(STAGE_KEY); if (v && v in STAGES) stageMode = v; } catch (e) {}
+
+    const FALLBACK_ICON = "assets/MonsterIcons/MH4U-Question_Mark_Icon.png";
+
+    const byHex = new Map(THEMES.map(t => [t.hex.toUpperCase(), t]));
+    const monsterIcon = name => `assets/MonsterIcons/MH4U-${name.replace(/ /g, "_")}_Icon.png`;
+
+    // A saved theme is a bare hex, so anyone sitting on a retired one keeps a colour that is no
+    // longer in the list: it never picks up the change, and anything keyed off the hex stops
+    // matching. Remap on read, not on write. Kept identical to the other apps rather than
+    // trimmed to this app's own history, because a per-app map is one more thing to drift.
+    const LEGACY_HEX = {
+      '#C8A319': '#74631D', '#57470B': '#74631D', '#5E4D0C': '#74631D',           // Tigrex
+      '#574916': '#74631D', '#68581A': '#74631D',
+      '#F1D364': '#9C8328', '#B59417': '#9C8328', '#C39F19': '#9C8328',           // Rajang
+      '#BEA031': '#9C8328',
+      '#C65900': '#783E0F', '#FC933E': '#C7620E',                                 // Tetsucabra, Agnaktor
+      '#68360D': '#783E0F', '#B5590D': '#C7620E',
+      '#3A9B3F': '#39993E', '#2DAE85': '#279773',                                 // Rathian, Zinogre
+      '#D84696': '#D4358C', '#CE79A8': '#C8679D',                                 // Mizutsune, Congalala
+      '#B57C45': '#835A32', '#CFAA87': '#B17A47',                                 // Barroth, Bulldrome
+      '#AEB5C1': '#7C879B',                                                       // Valstrax
+
+    };
+    const migrateHex = (h) => (h && LEGACY_HEX[h.toUpperCase()]) || h;
+
+    const hexRgb = h => { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+    const clamp = n => Math.max(0, Math.min(255, Math.round(n)));
+    const clamp01 = n => Math.max(0, Math.min(1, n));
+    const rgbToHsl = ([r, g, b]) => {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+      const l = (max + min) / 2;
+      if (d === 0) return [0, 0, l];
+      const s = d / (1 - Math.abs(2 * l - 1));
+      const h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) / 6
+        : max === g ? ((b - r) / d + 2) / 6
+          : ((r - g) / d + 4) / 6;
+      return [h, s, l];
+    };
+    const hslToRgb = ([h, s, l]) => {
+      const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h * 6) % 2 - 1)), m = l - c / 2;
+      const hi = Math.floor(h * 6) % 6;
+      const [r, g, b] = hi === 0 ? [c, x, 0] : hi === 1 ? [x, c, 0] : hi === 2 ? [0, c, x]
+        : hi === 3 ? [0, x, c] : hi === 4 ? [x, 0, c] : [c, 0, x];
+      return [r + m, g + m, b + m].map(v => clamp(v * 255));
+    };
+    // darken/lighten only nudge lightness, so every derived shade keeps the chosen
+    // colour's hue and saturation.
+    const darken = (rgb, f) => { const [h, s, l] = rgbToHsl(rgb); return hslToRgb([h, s, clamp01(l * f)]); };
+    const lighten = (rgb, t) => { const [h, s, l] = rgbToHsl(rgb); return hslToRgb([h, s, clamp01(l + (1 - l) * t)]); };
+    const css = rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+    // The complementary colour, the Bingo app's rule for its highlight (winColor): the hue
+    // rotated a full 180 deg from the theme, saturation .95, the lightest shade from .60 down
+    // that keeps white text at 4.5:1. The Reset button wears it (Raven, 2026-09-03:
+    // "complementary colored, refer to Bingo App").
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    const relLum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    const contrast = (a, b) => { const x = relLum(a), y = relLum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    const WHITE = [255, 255, 255];
+    function complement(c) {
+      const hue = (rgbToHsl(c)[0] + 0.5) % 1;
+      for (let l = 0.60; l >= 0.20; l -= 0.01) {
+        const cand = hslToRgb([hue, 0.95, l]);
+        if (contrast(cand, WHITE) >= 4.5) return cand;
+      }
+      return hslToRgb([hue, 0.95, 0.20]);
+    }
+
+    let current = DEFAULT_HEX;
+
+    function applyTheme(hex) {
+      const c = hexRgb(hex), r = document.documentElement.style;
+      r.setProperty("--bg", css(darken(c, .70)));
+      r.setProperty("--bg1", css(darken(c, .80)));
+      r.setProperty("--bg2", css(darken(c, .95)));
+      r.setProperty("--hover", css(darken(c, .30)));
+      r.setProperty("--accent", css(darken(c, .70)));
+      r.setProperty("--accent-hover", css(lighten(c, .40)));
+      r.setProperty("--cta", css(complement(c)));
+      // Weapon Trees' factor, verbatim — unless a chroma backdrop is overriding it.
+      r.setProperty("--stage", STAGES[stageMode] || css(darken(c, .18)));
+      r.setProperty("--text", "#ffffff");
+      r.setProperty("--text-dim", "#fffffff5");
+      r.setProperty("--line", "rgba(11, 8, 8, 0.12)");
+      r.setProperty("--card", "rgba(255,255,255,0.05)");
+
+      current = hex;
+      try { localStorage.setItem(KEY, hex); } catch (e) { /* private mode */ }
+
+      document.querySelectorAll(".swatch").forEach(s => s.classList.toggle("sel", s.dataset.hex === hex));
+
+      // Flat for a chroma key, textured for a theme colour. The canvas is transparent, so
+      // .content is what shows and this is the only switch needed.
+      document.documentElement.classList.toggle("chroma", stageMode !== "theme");
+      const icon = document.querySelector(".title-icon");
+      if (icon) {
+        const t = byHex.get(hex.toUpperCase());
+        icon.src = t ? monsterIcon(t.icon || t.name) : FALLBACK_ICON;
+        icon.alt = t ? t.name : "";
+      }
+    }
+
+    function renderSwatches() {
+      const grid = document.getElementById("swatches");
+      if (!grid) return;
+      grid.textContent = "";
+      for (const t of THEMES) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "swatch" + (t.hex === current ? " sel" : "");
+        b.dataset.hex = t.hex;
+        b.style.background = t.hex;      // the tile IS the colour, as in every other app
+        b.title = t.icon && t.icon !== "Question Mark" ? t.icon : t.name;   // the full name where the tile shortens it
+        const img = document.createElement("img");
+        img.className = "swatch-icon";
+        img.alt = "";
+        img.src = monsterIcon(t.icon || t.name);
+        img.onerror = () => { img.onerror = null; img.src = FALLBACK_ICON; };
+        const span = document.createElement("span");
+        span.textContent = t.name;
+        b.append(img, span);
+        b.addEventListener("click", () => applyTheme(t.hex));
+        grid.appendChild(b);
+      }
+    }
+
+    let saved = DEFAULT_HEX;
+    try { saved = migrateHex(localStorage.getItem(KEY)) || DEFAULT_HEX; } catch (e) { /* private mode */ }
+    if (!byHex.has(saved.toUpperCase())) saved = DEFAULT_HEX;
+    applyTheme(saved);
+    renderSwatches();
+    applyTheme(saved);   // re-run so the freshly drawn swatches get the `sel` marker
+
+    const modal = document.getElementById("themeModal");
+    document.getElementById("themeBtn").onclick = () => modal.classList.remove("hidden");
+    const STAGE_BTN = { theme: "stgTheme", green: "stgGreen", blue: "stgBlue" };
+    function setStage(mode) {
+      stageMode = mode in STAGES ? mode : "theme";
+      try { localStorage.setItem(STAGE_KEY, stageMode); } catch (e) { /* private mode */ }
+      for (const m in STAGE_BTN) document.getElementById(STAGE_BTN[m]).classList.toggle("on", m === stageMode);
+      applyTheme(current);   // re-derives --stage and repaints the scene
+    }
+    for (const m in STAGE_BTN) document.getElementById(STAGE_BTN[m]).onclick = () => setStage(m);
+    setStage(stageMode);
+
+    document.getElementById("themeClose").onclick = () => modal.classList.add("hidden");
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.add("hidden"); };
+  })();
+</script>
+
+
+<script>
+// Once MHFU has swapped in, Chrome still draws each select's text too low, its bottom clipped,
+// until the select is restyled: zooming the page does it, a repaint does not. A font-family round
+// trip restyles them; the serif step is styled but never laid out. Kept out of the module so it is
+// armed before the module's first await.
+if (document.fonts) document.fonts.load('1em MHFU').then(() => {
+  const selects = document.querySelectorAll('select');
+  selects.forEach(s => { s.style.fontFamily = 'serif'; });
+  selects.forEach(s => getComputedStyle(s).fontFamily);
+  selects.forEach(s => { s.style.fontFamily = ''; });
+}, () => {});
+</script>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+// The MH4U Armor Viewer, ported from the MH3U Armor Viewer. One figure: a hunter in the game's own armour,
+// played in the game's own motions. A simple version: MH4U's shading is undecoded, so it draws under generic
+// lighting (the MHGU viewers' Lighting, Camera and Effects panels); the colours go where the game puts them --
+// each material's colour type picks which of skin, hair, pigment and feature multiplies its map
+// (armor.json _about.colors).
+//
+// The render core (render/stage.js, assets.js, skeleton.js, material.js, materials-db.js, pose.js) is
+// the MH3U viewers'; render/piece.js builds one player model the way they build a monster.
+//
+// Data (scripts/build_armor.py, build_poses.py, mh4u.py; see armor.json `_about`):
+//   armor.json      the game's five armour tables (names, the model each gender draws, who may wear
+//                   it, its default pigment), every player model, the clothing drawn under an empty
+//                   slot, per helm model the hair and face parts it leaves, the colours, the motion lists
+//   materials.json  each material's albedo map, blend state and colour type
+//   models/<g>      one glb per model           poses/<g>   one glb per motion list
+//   ui/colorscale.png the game's colour board
+//   weapons.json    the game's weapon tables, every weapon model and the Kinsects; mount.json the game's mount
+import * as THREE from 'three';
+import { createStage } from './render/stage.js';
+import { createFx } from './render/fx.js';
+import { renderCameraFor, LENS_DEFAULT, LENS_TYPES, SQUEEZES } from './render/lens.js';
+import { initAssets, loadJson, loadGlb } from './render/assets.js';
+import { allMats, setWire, setBiasUnitsPerStep } from './render/material.js';
+import { loadMaterialsDb } from './render/materials-db.js';
+import { loadPiece, applyParts, applyColours, releasePiece } from './render/piece.js';
+import { PoseDriver } from './render/pose.js';
+import { playerBone, gidBonesOf } from './render/skeleton.js';
+
+const errEl = document.getElementById('err');
+const errors = [];
+window.__errors = errors;
+function noteError(msg){ errors.push(String(msg)); errEl.textContent = String(msg); }
+addEventListener('error', e => noteError('ERROR: ' + e.message));
+
+const DATA = await loadJson('armor.json');
+const WEAPON_CLASSES = new Set((await loadJson('weapons.json')).classes.map(c => c.cls));   // for hunterOf
+await loadMaterialsDb();
+
+const MARGIN = 1.25;
+const viewport = document.getElementById('viewport');
+const stage = createStage(viewport, { margin: MARGIN });
+const { renderer, scene, camera, controls, world } = stage;
+initAssets(renderer);
+
+// post-processing (render/fx.js, the MHGU viewers'), switched in only when an effect is on: with every
+// effect off the frame is the plain renderer.render this app has always drawn. The renderer's tone
+// mapping stays NoToneMapping for it -- the grade pass is the one place that tone-maps.
+const fx = createFx(renderer, scene);
+
+// ---- camera bar -----------------------------------------------------------------------------
+const ICON = {
+  orbit: '<circle cx="12" cy="12" r="3.2"/><ellipse cx="12" cy="12" rx="9.6" ry="4.3" transform="rotate(-30 12 12)"/>',
+  pan:   '<path d="M12 3.5v17M3.5 12h17M12 3.5 9.6 6M12 3.5 14.4 6M12 20.5 9.6 18M12 20.5 14.4 18M3.5 12 6 9.6M3.5 12 6 14.4M20.5 12 18 9.6M20.5 12 18 14.4"/>',
+  eye:   '<path d="M2.5 12c2.4-4 5.6-6 9.5-6s7.1 2 9.5 6c-2.4 4-5.6 6-9.5 6s-7.1-2-9.5-6Z"/><circle cx="12" cy="12" r="3"/>'
+};
+function setIcon(btn, key){ btn.querySelector('svg').innerHTML = ICON[key]; }
+function setLabel(btn, label, tip){ btn.setAttribute('aria-label', label); btn.title = label + ': ' + tip; }
+let orbitLocked = false;
+const orbitLockBtn = document.getElementById('orbitLock');
+function paintOrbitLock(){
+  orbitLockBtn.querySelector('svg').innerHTML = ICON[orbitLocked ? 'pan' : 'orbit'];
+  setLabel(orbitLockBtn, orbitLocked ? 'Pan' : 'Orbit', 'Lock the orbit so dragging pans the view instead of rotating it; the right button always does the other one');
+  orbitLockBtn.classList.toggle('on', !orbitLocked);
+  controls.mouseButtons.LEFT = orbitLocked ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
+  controls.mouseButtons.RIGHT = orbitLocked ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN;
+  controls.touches.ONE = orbitLocked ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE;
+}
+orbitLockBtn.onclick = () => { orbitLocked = !orbitLocked; paintOrbitLock(); saveState(); };
+// Off -> ten increasing speeds -> Off, the MHGU viewers' turntable: the same ten speeds this bar had, and
+// a direction from the Camera panel. Only the top step renames, to Turbo.
+const SPIN_SPEEDS = [3, 5, 7, 11, 18, 27, 42, 66, 103, 160];
+const SPIN_STEPS = [{ label: 'Rotate', speed: 0 }].concat(
+  SPIN_SPEEDS.map((v, i) => ({ label: i === SPIN_SPEEDS.length - 1 ? 'Turbo' : 'Rotate', speed: v })));
+let spinStep = 0;
+const spinBtn = document.getElementById('spinBtn');
+let spinRev = false;
+function paintSpin(){
+  const st = SPIN_STEPS[spinStep];
+  setLabel(spinBtn, st.label, 'Cycle the turntable speed');
+  spinBtn.classList.toggle('on', st.speed > 0);
+  controls.autoRotate = camMode === 'orbit' && st.speed > 0;
+  controls.autoRotateSpeed = (st.speed || 3) * (spinRev ? -1 : 1);
+  const sl = document.getElementById('camSpin');
+  if (document.activeElement !== sl) sl.value = String(spinStep);
+  document.getElementById('camSpinVal').textContent = st.speed ? st.speed + ' deg/s' : 'off';
+  document.getElementById('camSpinRev').checked = spinRev;
+}
+spinBtn.onclick = () => { spinStep = (spinStep + 1) % SPIN_STEPS.length; paintSpin(); saveState(); };
+let wireOn = false;
+const wireBtn = document.getElementById('wireBtn');
+wireBtn.onclick = () => { wireOn = !wireOn; wireBtn.classList.toggle('on', wireOn); setWire(allMats, wireOn); };
+document.getElementById('shotBtn').onclick = () => {
+  trackLights(); stage.lights.head.position.copy(camera.position);
+  renderFrame();                             // through the lens and the effects, as the view draws
+  renderer.domElement.toBlob(b => {
+    if (!b) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'mh4u-armor.png'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, 'image/png');
+};
+
+// ---- the first-person camera -----------------------------------------------------------
+// The MHGU viewers', as the MH3U Monster Viewer brought them back on 2026-10-04, with the MHGU Armor
+// Viewer's hunter tracking: the face lock and the focus follow aim at the head, the chest or the centre.
+// W/S move where you look, A/D strafe level, Q/C down, E/Space up, Shift three times faster, the wheel
+// changes the speed. The keys act ONLY while the pointer is locked, so they can never land in the
+// sidebar's controls; Esc frees the mouse, by way of the browser's own pointerlockchange. Yaw about world
+// up and pitch about the camera's own X, roll never (YXZ with z = 0), so the horizon stays level.
+// OrbitControls is off while flying and back on when the view returns, with the target put back on the
+// hunter so orbiting resumes around it.
+let camMode = 'orbit';
+const FLY_SPEED = 1.2, FLY_FAST = 3, FLY_TAU = 0.08, FLY_SENS = 0.0025;
+const FLY_SPEED_MIN = 0.05, FLY_SPEED_MAX = 20, FLY_PITCH_MAX = THREE.MathUtils.degToRad(89);
+const FLY_KEYS = { KeyW: 'f', KeyS: 'b', KeyA: 'l', KeyD: 'r', KeyE: 'u', Space: 'u', KeyQ: 'd', KeyC: 'd',
+                   ShiftLeft: 'fast', ShiftRight: 'fast' };      // e.code: the physical WASD cluster
+const fly = { yaw: 0, pitch: 0, speed: FLY_SPEED, vel: new THREE.Vector3(), keys: new Set(), prev: 0, moved: false, skip: 0 };
+let flyAnchor = null;                 // the hunter's centre when no pose supplies one
+const _fwd = new THREE.Vector3(), _right = new THREE.Vector3(), _fc = new THREE.Vector3(),
+      _want = new THREE.Vector3(), _eul = new THREE.Euler(), _q = new THREE.Quaternion(),
+      _aim = new THREE.Vector3(), _off = new THREE.Vector3();
+const flyEl = renderer.domElement, flyBtn = document.getElementById('flyBtn');
+const flyHint = document.getElementById('flyHint');
+const FLY_TIP_OFF = 'Fly the camera: WASD moves, the mouse looks. Click the view to look around, Esc frees the mouse';
+const FLY_TIP_ON = 'On. Click the view to look around, Esc frees the mouse; press again for the orbit camera';
+const flyLocked = () => document.pointerLockElement === flyEl;
+function applyFlyLook(){ camera.quaternion.setFromEuler(_eul.set(fly.pitch, fly.yaw, 0, 'YXZ')); }
+function flyFromCamera(){
+  _eul.setFromQuaternion(camera.quaternion, 'YXZ');
+  fly.yaw = _eul.y; fly.pitch = Math.min(FLY_PITCH_MAX, Math.max(-FLY_PITCH_MAX, _eul.x));
+  applyFlyLook();
+}
+function flyTurn(dyaw, dpitch){
+  fly.yaw += dyaw; fly.pitch = Math.min(FLY_PITCH_MAX, Math.max(-FLY_PITCH_MAX, fly.pitch + dpitch));
+  applyFlyLook(); fly.moved = true;
+}
+
+// the hunter's centre: the playing pose's own, else the one seeded when fly began, else the orbit target
+function figureCenter(out){ return out.copy(pose.center || flyAnchor || controls.target); }
+// THE AIM POINT, shared by the depth of field's focus follow and the first-person face lock: the hunter's
+// head or chest bone, live, or the centre -- the MHGU Armor Viewer's choice, on this game's skeleton. gid 4
+// is the head: every helm model is skinned to it alone. gid 2 is the chest: the bone a chest piece leans on
+// most. Both are measured from the models' own skin weights (f/m helm001, body001, body060), not read from
+// the ROM. The choice lives in the effects state (dof.aim) so it saves with the rest.
+const AIM_GID = { head: 4, chest: 2 };
+// the joint is the skull's base; the face model's middle sits 0.05 m above it (the default female face,
+// bind pose: joint at y 0.509, face box centre at 0.555), so the head aim goes there
+const HEAD_AIM_LIFT = 0.05;
+function aimPoint(out){
+  const gid = AIM_GID[fxState.dof.aim];
+  const b = gid !== undefined ? playerBone(Object.values(mounted), gid) : null;
+  if (!b) return figureCenter(out);
+  b.getWorldPosition(out);
+  if (fxState.dof.aim === 'head') out.y += HEAD_AIM_LIFT;
+  return out;
+}
+// The focus goes to the SURFACE the aim point is seen through, not to the point itself, which sits
+// inside the body: a ray from the camera to the aim point finds the first visible surface. A skinned
+// mesh makes a cast cost milliseconds, so it runs every few frames (fewer when it is slow) and the
+// last answer is kept between; a shot asks for a fresh one. The MHGU Armor Viewer's, as it stands.
+const _ray = new THREE.Raycaster();
+const aimHit = { depth: 0, at: -1, every: 6, cost: 0, hit: false };
+let frameNo = 0;
+function aimSurfaceDepth(force){
+  aimPoint(_aim); camera.getWorldDirection(_fwd);
+  const jointDepth = _off.copy(_aim).sub(camera.position).dot(_fwd);
+  if (force || aimHit.at < 0 || frameNo - aimHit.at >= aimHit.every){
+    const t0 = performance.now();
+    _off.copy(_aim).sub(camera.position); const len = _off.length();
+    let depth = -1;
+    if (len > 1e-4){
+      _ray.set(camera.position, _off.multiplyScalar(1 / len)); _ray.near = 0; _ray.far = len * 1.5;
+      // the raycaster ignores a hidden PARENT, so the chain is checked
+      const shown = o => { for (let p = o; p; p = p.parent) if (p.visible === false) return false; return !(o.material && o.material.visible === false); };
+      // A SKINNED MESH'S BOUNDS ARE KEPT FROM THE POSE THEY WERE FIRST MEASURED IN (three r169: Box3.expandByObject,
+      // in frameAll, computes the mesh's box once and nothing recomputes it), and the raycaster tests the ray against
+      // that sphere and box before any triangle. Under a clip they no longer cover the body as it stands, so every
+      // cast was turned away and the focus sat at the aim point's own depth, inside the body. Found 2026-10-04 on
+      // Rathian in the MH3U Monster Viewer: no hit, then the face at 11.1 once the bounds were remade. The sphere
+      // is remade for the pose on screen and the box dropped (a null box is not tested) before each cast; the cost
+      // is counted in aimHit.cost.
+      world.traverse(o => { if (o.isSkinnedMesh && shown(o)){ o.computeBoundingSphere(); o.boundingBox = null; } });
+      for (const h of _ray.intersectObjects(world.children, true)){
+        if (!shown(h.object)) continue;
+        depth = h.point.sub(camera.position).dot(_fwd); break;
+      }
+    }
+    aimHit.hit = depth > 0;
+    aimHit.depth = aimHit.hit ? depth : jointDepth;
+    aimHit.at = frameNo; aimHit.cost = performance.now() - t0;
+    aimHit.every = aimHit.cost > 4 ? 30 : 6;
+  }
+  return aimHit.depth;
+}
+function focusDistance(force){ return Math.max(camera.near * 2, aimSurfaceDepth(force)); }
+// the face lock: in first person the camera keeps facing the aim point while the keys move it, a
+// game's lock-on; the mouse rests while it is on, and L toggles it
+let faceLock = false;
+function setFaceLock(on){
+  faceLock = !!on;
+  const cb = document.getElementById('camFace'); if (cb) cb.checked = faceLock;
+  if (faceLock && camMode === 'fly'){ camera.lookAt(aimPoint(_fc)); flyFromCamera(); }
+  if (typeof paintCamMode === 'function' && flyBtn) paintCamMode();
+}
+// what the lenses measure: the orbit target's distance, or in fly the hunter's, floored so passing
+// through it never collapses to nothing
+function viewDistance(){
+  if (camMode !== 'fly') return camera.position.distanceTo(controls.target);
+  return Math.max(0.2, camera.position.distanceTo(figureCenter(_fc)));
+}
+function flyWant(out){
+  let f = 0, r = 0, u = 0, fast = false;
+  for (const k of fly.keys){
+    const a = FLY_KEYS[k];
+    if (a === 'f') f++; else if (a === 'b') f--; else if (a === 'r') r++; else if (a === 'l') r--;
+    else if (a === 'u') u++; else if (a === 'd') u--; else if (a === 'fast') fast = true;
+  }
+  // in the camera's own frame (x right, y up, z forward), so the eased velocity turns with the
+  // camera instead of lagging it
+  out.set(r, u, f);
+  if (out.lengthSq() > 1) out.normalize();        // a diagonal is no faster
+  return out.multiplyScalar(fly.speed * (fast ? FLY_FAST : 1));
+}
+// stepped from the render loop, its own clock, and only while the mouse is captured
+function stepFly(dtArg){
+  if (camMode !== 'fly') return;
+  let dt = dtArg;
+  if (dt === undefined){
+    const now = performance.now();
+    dt = fly.prev ? Math.min((now - fly.prev) / 1000, 0.1) : 0; fly.prev = now;
+    if (!flyLocked()) dt = 0;
+  }
+  if (dt > 0) fly.vel.lerp(flyWant(_want), 1 - Math.exp(-dt / FLY_TAU));   // an 80 ms approach and glide
+  if (dt > 0 && fly.vel.lengthSq() <= 1e-8) fly.vel.set(0, 0, 0);
+  if (faceLock){                       // every frame: a playing pose moves the aim point too
+    // A lock-on moves in ORBIT terms around the aim point, as the MHGU Armor Viewer's does: A and D turn
+    // the azimuth on a level circle, E and Q (Space and C) climb and dip, W and S move closer and
+    // farther, as does the wheel, and the camera is placed from those each frame.
+    aimPoint(_aim);
+    if (dt > 0 && fly.vel.lengthSq() > 0){
+      _off.copy(camera.position).sub(_aim);
+      let d = Math.max(0.05, _off.length());
+      let theta = Math.atan2(_off.x, _off.z), phi = Math.asin(Math.min(1, Math.max(-1, _off.y / d)));
+      theta += fly.vel.x * dt / (d * Math.max(0.05, Math.cos(phi)));
+      phi = Math.min(FLY_PITCH_MAX, Math.max(-FLY_PITCH_MAX, phi + fly.vel.y * dt / d));
+      d = Math.max(0.05, d - fly.vel.z * dt);
+      camera.position.set(_aim.x + d * Math.cos(phi) * Math.sin(theta), _aim.y + d * Math.sin(phi), _aim.z + d * Math.cos(phi) * Math.cos(theta));
+      fly.moved = true;
+    }
+    _q.copy(camera.quaternion);
+    camera.lookAt(_aim); flyFromCamera();
+    if (_q.angleTo(camera.quaternion) > 1e-4) fly.moved = true;
+  } else if (dt > 0 && fly.vel.lengthSq() > 0){
+    camera.getWorldDirection(_fwd); _right.set(1, 0, 0).applyQuaternion(camera.quaternion);
+    camera.position.addScaledVector(_right, fly.vel.x * dt).addScaledVector(_fwd, fly.vel.z * dt);
+    camera.position.y += fly.vel.y * dt;
+    fly.moved = true;
+  }
+  if (fly.moved){ fly.moved = false; queueCameraSave(); }
+}
+// the camera's moves reach the session save through one debounce, whichever camera made them
+let camTimer = null;
+function queueCameraSave(){
+  clearTimeout(camTimer);
+  camTimer = setTimeout(saveState, 400);
+}
+function paintCamMode(){
+  const on = camMode === 'fly';
+  flyBtn.classList.toggle('on', on);
+  setIcon(flyBtn, 'eye'); setLabel(flyBtn, 'First person', on ? FLY_TIP_ON : FLY_TIP_OFF);
+  spinBtn.disabled = on; orbitLockBtn.disabled = on;
+  // the Camera panel's side of the mode, as the MHGU Armor Viewer paints it
+  for (const id of ['camSpin', 'camSpinRev']) document.getElementById(id).disabled = on;
+  const sel = document.getElementById('camMode'); if (document.activeElement !== sel) sel.value = camMode;
+  // The first-person controls are named in the view itself (flyHint below), so the panel does not repeat them.
+  // Raven, 2026-09-17: "Remove the tool tip for First Person, it's pretty bulky and we explain the controls in
+  // the rendering area".
+  document.getElementById('camSpeedField').hidden = !on;
+  document.getElementById('camFace').disabled = !on;          // the lock is a first-person thing
+  const oo = document.querySelector('#camLens option[value=ortho]'); if (oo) oo.disabled = on;
+  flyHint.hidden = !on;
+  flyHint.textContent = flyLocked()
+    ? (faceLock ? 'Locked on the hunter · A/D round · E/Q up and down · W/S closer and farther · L releases'
+                : 'WASD move · Q/E up and down · Shift fast · the wheel changes speed · L locks on the hunter · Esc frees the mouse')
+    : 'Click to look around · WASD move · Q/E up/down · Shift fast · Esc frees the mouse';
+  viewport.classList.toggle('fly', on);
+  paintSpin();                          // the turntable is off while flying
+}
+function flyRelease(){
+  if (flyLocked()) document.exitPointerLock();
+  fly.keys.clear(); fly.vel.set(0, 0, 0); fly.prev = 0;
+}
+function enterFly(opt){
+  opt = opt || {};
+  if (camMode === 'fly') return;
+  if (lensState.type === 'ortho') applyLens({ type: 'standard' });   // a parallel view has nothing to fly through
+  if (opt.drain !== false){          // apply any glide the orbit still owed, now, not on return
+    const d = controls.enableDamping; controls.enableDamping = false; controls.update(); controls.enableDamping = d;
+  }
+  flyFromCamera();
+  flyAnchor = figureCenter(new THREE.Vector3());
+  fly.vel.set(0, 0, 0); fly.keys.clear(); fly.prev = 0;
+  controls.enabled = false; camMode = 'fly';
+  paintCamMode();
+}
+function leaveFly(opt){
+  opt = opt || {};
+  if (camMode !== 'fly') return;
+  flyRelease();
+  camera.getWorldDirection(_fwd);
+  if (!opt.keepTarget){
+    // the orbit resumes around the hunter: its centre projected onto the line of sight
+    const d = Math.max(0.3, figureCenter(_fc).sub(camera.position).dot(_fwd));
+    controls.target.copy(camera.position).addScaledVector(_fwd, d);
+  }
+  controls.enabled = true; camMode = 'orbit';
+  paintCamMode();
+  controls.update();
+}
+function setCamMode(m){ if (m === 'fly') enterFly(); else leaveFly(); }
+// the Camera panel's speed slider is logarithmic over the same range the wheel moves through
+const speedOfSlider = v => FLY_SPEED_MIN * Math.pow(FLY_SPEED_MAX / FLY_SPEED_MIN, v / 1000);
+const sliderOfSpeed = v => 1000 * Math.log(v / FLY_SPEED_MIN) / Math.log(FLY_SPEED_MAX / FLY_SPEED_MIN);
+function setFlySpeed(v){ fly.speed = Math.min(FLY_SPEED_MAX, Math.max(FLY_SPEED_MIN, +v || FLY_SPEED)); paintFlySpeed(); }
+function paintFlySpeed(){
+  const sl = document.getElementById('camSpeed');
+  if (document.activeElement !== sl) sl.value = String(Math.round(sliderOfSpeed(fly.speed)));
+  document.getElementById('camSpeedVal').textContent = (fly.speed < 1 ? fly.speed.toFixed(2) : fly.speed.toFixed(1)) + ' / s';
+}
+// The mouse is captured on a click in the view; #bar and the overlays are siblings of
+// #viewport, so a click on the toolbar never asks for it. The request is refused when it comes
+// too soon after Esc: the mode stays on, the prompt stays up, and the next click asks again.
+viewport.addEventListener('click', e => {
+  if (camMode !== 'fly' || flyLocked() || e.button !== 0) return;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  try { const r = flyEl.requestPointerLock(); if (r && r.catch) r.catch(() => {}); } catch (_) {}
+});
+{
+  const onLock = () => { fly.keys.clear(); fly.vel.set(0, 0, 0); fly.prev = 0; fly.skip = flyLocked() ? 1 : 0; paintCamMode(); };
+  document.addEventListener('pointerlockchange', onLock);
+  document.addEventListener('pointerlockerror', onLock);
+}
+document.addEventListener('mousemove', e => {
+  if (camMode !== 'fly' || !flyLocked()) return;
+  if (fly.skip > 0){ fly.skip--; return; }         // Chrome's spurious first movement after a lock
+  if (faceLock) return;                            // the lock owns the view
+  const dx = Math.max(-300, Math.min(300, e.movementX || 0)), dy = Math.max(-300, Math.min(300, e.movementY || 0));
+  flyTurn(-dx * FLY_SENS, -dy * FLY_SENS);
+});
+document.addEventListener('keydown', e => {
+  if (camMode === 'fly' && flyLocked() && e.code === 'KeyL'){ setFaceLock(!faceLock); saveState(); e.preventDefault(); return; }
+  if (camMode !== 'fly' || !flyLocked() || !FLY_KEYS[e.code]) return;
+  fly.keys.add(e.code); e.preventDefault();
+});
+document.addEventListener('keyup', e => { fly.keys.delete(e.code); });
+addEventListener('blur', () => { fly.keys.clear(); fly.vel.set(0, 0, 0); });
+document.addEventListener('visibilitychange', () => { if (document.hidden){ fly.keys.clear(); fly.vel.set(0, 0, 0); } });
+// with the face lock on, a notch of the wheel moves a tenth closer or farther
+function flyZoom(n){
+  aimPoint(_aim); _off.copy(camera.position).sub(_aim);
+  const d = Math.max(0.05, _off.length() * Math.pow(0.9, n));
+  if (_off.lengthSq() > 1e-10) camera.position.copy(_aim).addScaledVector(_off.normalize(), d);
+  fly.moved = true;
+}
+viewport.addEventListener('wheel', e => {
+  if (camMode !== 'fly' || !flyLocked()) return;
+  e.preventDefault();
+  const n = Math.max(-1, Math.min(1, -e.deltaY / 100));   // one notch a step, whatever the device
+  if (faceLock) flyZoom(n); else setFlySpeed(fly.speed * Math.pow(1.15, n));
+  queueCameraSave();
+}, { passive: false });
+viewport.addEventListener('contextmenu', e => { if (camMode === 'fly') e.preventDefault(); });
+flyBtn.onclick = () => { setCamMode(camMode === 'fly' ? 'orbit' : 'fly'); saveState(); };
+// no pointer lock (a touch device): the first-person camera is not offered
+if (!('requestPointerLock' in document.body)) flyBtn.hidden = true;
+paintSpin();
+paintCamMode();
+
+// ---- Lighting: the MHGU viewers' panel, brought over 2026-10-04 -----------------------------------
+// GENERIC THREE.JS LIGHTING, NOT MH4U's: the game's shading is undecoded, so no preset here is the game's
+// light. The rig is the MHGU Armor Viewer's, hemisphere and ambient lights included -- the MHGU Monster
+// Viewer's own copy drops those two for a ROM ambient term this app has no counterpart for. Each preset is
+// the whole six-light rig: the hemisphere's sky and ground, the key, rim and fill (colour, intensity and
+// position), the ambient, and the headlight's intensity for when the headlight is on. A preset fills the
+// rig in and lights its button; touching a slider makes it "custom". The rim and fill keep the preset's
+// colours and positions; only the key moves. Saved with the session and in a view file.
+//   DEFAULT is this app's rig as stage.js builds it, which is all it drew before the panel came: a
+// white key (2.3 at 3,5,4), a blue rim (1.1 at -4,2,-5), a soft fill (0.55 at 0,-3,2), the hemisphere at
+// 1.4 and the ambient at 0.55, and the headlight on (0.9). The rest are the MHGU Armor Viewer's presets,
+// verbatim.
+const LIGHT_PRESETS = {
+  default: { hemi: [0xbfd4ff, 0x30281f, 1.4], key: [0xffffff, 2.3, [3, 5, 4]], rim: [0x88aaff, 1.1, [-4, 2, -5]],
+             fill: [0xffffff, 0.55, [0, -3, 2]], ambient: [0xffffff, 0.55], head: 0.9, headOn: true },
+  studio:  { hemi: [0xbfd4ff, 0x30281f, 0.8], key: [0xffffff, 3.0, [3, 5, 4]], rim: [0x88aaff, 0.9, [-4, 3, -5]],
+             fill: [0xffffff, 0.35, [0, -3, 2]], ambient: [0xffffff, 0.25], head: 0.9 },
+  warm:    { hemi: [0xffe3c2, 0x3a2a1c, 0.7], key: [0xffd9a8, 3.1, [4, 4, 3]], rim: [0xff9a5a, 0.8, [-4, 3, -5]],
+             fill: [0xffe9d0, 0.3, [0, -3, 2]], ambient: [0xffe6cc, 0.25], head: 0.8 },
+  cool:    { hemi: [0xc9dcff, 0x1e2430, 0.8], key: [0xdbe8ff, 2.9, [3, 5, 4]], rim: [0x9ec6ff, 1.2, [-5, 3, -4]],
+             fill: [0xd8e6ff, 0.3, [0, -3, 2]], ambient: [0xdde8ff, 0.25], head: 0.9 },
+  even:    { hemi: [0xffffff, 0xffffff, 1.2], key: [0xffffff, 1.2, [0, 5, 5]], rim: [0xffffff, 0.8, [0, 3, -5]],
+             fill: [0xffffff, 0.8, [0, -3, 2]], ambient: [0xffffff, 1.2], head: 0.6 },
+  rim:     { hemi: [0x8fa8d0, 0x101418, 0.4], key: [0xffffff, 0.8, [3, 5, 4]], rim: [0xbfd8ff, 2.6, [-4, 3, -5]],
+             fill: [0xffffff, 0.15, [0, -3, 2]], ambient: [0xffffff, 0.15], head: 0.3 },
+  dusk:    { hemi: [0x6f7fb0, 0x2a1a12, 0.6], key: [0xffb070, 2.6, [5, 2, 2]], rim: [0x6f8cff, 0.9, [-4, 2, -5]],
+             fill: [0xffc9a0, 0.25, [0, -3, 2]], ambient: [0xa88c78, 0.25], head: 0.6 }
+};
+const KEY_RADIUS = 7;
+// THE RIG TURNS WITH THE VIEW: the key, rim and fill live in a group whose yaw follows the camera's, so the
+// lights stay where they are around the viewer and orbiting turns the hunter through them. Seen from the
+// front (the camera looking down -Z) the yaw is zero, which is exactly where stage.js put these lights. The
+// hemisphere keeps the world's up and the headlight rides the camera (the render loop).
+const lightRigGroup = new THREE.Group(); lightRigGroup.name = 'lightRig';
+scene.add(lightRigGroup);
+lightRigGroup.add(stage.lights.key, stage.lights.rim, stage.lights.fill);
+function trackLights(){
+  // the yaw of the view itself, which holds for the first-person camera too, which has no target
+  camera.getWorldDirection(_fwd);
+  lightRigGroup.rotation.y = Math.atan2(-_fwd.x, -_fwd.z);
+}
+let lightingName = 'default';
+let lightRig = null;
+let lightSpinAt = 0;
+function rigFromPreset(P){
+  const [x, y, z] = P.key[2], len = Math.hypot(x, y, z) || 1;
+  return { preset: P, az: (THREE.MathUtils.radToDeg(Math.atan2(x, z)) + 360) % 360,
+           el: THREE.MathUtils.radToDeg(Math.asin(y / len)),
+           key: P.key[1], keyColor: '#' + P.key[0].toString(16).padStart(6, '0'),
+           rim: P.rim[1], fill: P.fill[1], ambient: P.ambient[1], head: !!P.headOn, spin: false };
+}
+function keyPosition(){
+  const az = THREE.MathUtils.degToRad(lightRig.az + lightSpinAt), el = THREE.MathUtils.degToRad(lightRig.el);
+  stage.lights.key.position.set(KEY_RADIUS * Math.cos(el) * Math.sin(az), KEY_RADIUS * Math.sin(el), KEY_RADIUS * Math.cos(el) * Math.cos(az));
+}
+function applyRig(){
+  const P = lightRig.preset, L = stage.lights;
+  L.hemi.color.setHex(P.hemi[0]); L.hemi.groundColor.setHex(P.hemi[1]); L.hemi.intensity = P.hemi[2];
+  for (const k of ['rim', 'fill']){ L[k].color.setHex(P[k][0]); L[k].position.set(P[k][2][0], P[k][2][1], P[k][2][2]); }
+  L.ambient.color.setHex(P.ambient[0]);
+  L.key.color.set(lightRig.keyColor); L.key.intensity = lightRig.key;
+  L.rim.intensity = lightRig.rim; L.fill.intensity = lightRig.fill; L.ambient.intensity = lightRig.ambient;
+  L.head.intensity = lightRig.head ? P.head : 0;
+  keyPosition();
+  document.querySelectorAll('#lightRow .btn').forEach(b => b.classList.toggle('on', b.dataset.light === lightingName));
+  const set = (id, v) => { const e = document.getElementById(id); if (e && document.activeElement !== e) e.value = v; };
+  set('lKeyAz', Math.round(lightRig.az)); set('lKeyEl', Math.round(lightRig.el)); set('lKey', lightRig.key); set('lKeyCol', lightRig.keyColor);
+  set('lRim', lightRig.rim); set('lFill', lightRig.fill); set('lAmb', lightRig.ambient);
+  document.getElementById('lHead').checked = lightRig.head; document.getElementById('lSpin').checked = lightRig.spin;
+}
+function applyLighting(name){
+  lightingName = LIGHT_PRESETS[name] ? name : 'default';
+  lightRig = rigFromPreset(LIGHT_PRESETS[lightingName]);
+  lightSpinAt = 0;
+  applyRig();
+}
+// a slider edit keeps the preset's colours and positions but the rig is now the user's
+function rigEdit(){
+  lightingName = 'custom';
+  lightRig.az = +document.getElementById('lKeyAz').value; lightRig.el = +document.getElementById('lKeyEl').value;
+  lightRig.key = +document.getElementById('lKey').value; lightRig.keyColor = document.getElementById('lKeyCol').value;
+  lightRig.rim = +document.getElementById('lRim').value; lightRig.fill = +document.getElementById('lFill').value;
+  lightRig.ambient = +document.getElementById('lAmb').value;
+  lightRig.head = document.getElementById('lHead').checked; lightRig.spin = document.getElementById('lSpin').checked;
+  applyRig();
+}
+// the orbit: a slow turn of the key light around the hunter, one lap in 12 s, on its own clock so a
+// stalled frame (a hidden tab) cannot fling it round
+let lightPrev = 0;
+function stepLighting(){
+  const now = performance.now();
+  const dt = lightPrev ? Math.min((now - lightPrev) / 1000, 0.1) : 0;
+  lightPrev = now;
+  if (!lightRig || !lightRig.spin) return;
+  lightSpinAt = (lightSpinAt + dt * 30) % 360;
+  keyPosition();
+}
+// what the save keeps, and what a restored save gives back
+function presetNameOf(P){ for (const k in LIGHT_PRESETS) if (LIGHT_PRESETS[k] === P) return k; return 'default'; }
+function lightingSaveState(){
+  if (!lightRig) return {};
+  const r = Object.assign({}, lightRig); delete r.preset;
+  return { lighting: lightingName, lightRig: Object.assign(r, { base: presetNameOf(lightRig.preset) }) };
+}
+function restoreLighting(saved){
+  if (saved && saved.lightRig && typeof saved.lightRig === 'object'){
+    const r = saved.lightRig, base = LIGHT_PRESETS[r.base] || LIGHT_PRESETS.default;
+    const b = rigFromPreset(base);
+    lightRig = Object.assign(b, {
+      az: +r.az || 0, el: Number.isFinite(+r.el) ? +r.el : 45, key: Number.isFinite(+r.key) ? +r.key : b.key,
+      keyColor: /^#[0-9a-f]{6}$/i.test(r.keyColor) ? r.keyColor : b.keyColor,
+      rim: Number.isFinite(+r.rim) ? +r.rim : b.rim, fill: Number.isFinite(+r.fill) ? +r.fill : b.fill,
+      ambient: Number.isFinite(+r.ambient) ? Math.min(2, Math.max(0, +r.ambient)) : b.ambient,
+      head: typeof r.head === 'boolean' ? r.head : b.head, spin: !!r.spin });
+    lightingName = LIGHT_PRESETS[saved.lighting] ? saved.lighting : 'custom';
+    applyRig();
+  } else applyLighting(saved && saved.lighting);
+}
+document.querySelectorAll('#lightRow .btn').forEach(b => b.onclick = () => { applyLighting(b.dataset.light); saveState(); });
+for (const id of ['lKeyAz', 'lKeyEl', 'lKey', 'lKeyCol', 'lRim', 'lFill', 'lAmb']){
+  const e = document.getElementById(id); e.oninput = rigEdit; e.onchange = () => { rigEdit(); saveState(); };
+}
+for (const id of ['lHead', 'lSpin']) document.getElementById(id).onchange = () => { rigEdit(); saveState(); };
+applyLighting('default');
+
+// ---- Effects: the MHGU viewers' panel, brought over 2026-10-04 ------------------------------------
+// Bloom, depth of field, lens character and colour grading through render/fx.js. A preset fills the
+// controls and lights its button, touching a control makes it "custom", and one readable object serves the
+// session save. Off by default, which is the plain render byte for byte. The focus range and the aim are
+// the MHGU Armor Viewer's: 0.1 to 50 metres around a hunter, on the head unless the Camera panel says
+// otherwise.
+const FX_NEUTRAL = {
+  bloom: { on: false, strength: 0.6, threshold: 0.8, radius: 0.5 },
+  dof:   { on: false, follow: true, aim: 'head', focus: 2.5, aperture: 3, maxBlur: 0.02 },
+  lens:  { vignette: 0, aberration: 0, grain: 0 },
+  grade: { exposure: 1, contrast: 1, saturation: 1, toneMap: 'none' }
+};
+const FX_PRESETS = {
+  off:       {},
+  photo:     { bloom: { on: true, strength: 0.25, threshold: 0.9, radius: 0.5 }, lens: { vignette: 0.25, grain: 0.05 }, grade: { contrast: 1.05, saturation: 1.05 } },
+  cinematic: { bloom: { on: true, strength: 0.4, threshold: 0.75, radius: 0.7 }, dof: { on: true, aperture: 4, maxBlur: 0.025 },
+               lens: { vignette: 0.45, aberration: 0.3, grain: 0.12 }, grade: { contrast: 1.1, saturation: 0.9, toneMap: 'aces' } },
+  glow:      { bloom: { on: true, strength: 1.2, threshold: 0.5, radius: 0.8 }, lens: { vignette: 0.2 }, grade: { toneMap: 'reinhard' } },
+  noir:      { bloom: { on: true, strength: 0.3, threshold: 0.8, radius: 0.6 }, lens: { vignette: 0.6, grain: 0.25 }, grade: { contrast: 1.3, saturation: 0, toneMap: 'neutral' } }
+};
+function fxMerge(base, over){ const o = {}; for (const k in base) o[k] = Object.assign({}, base[k], (over && over[k]) || {}); return o; }
+let fxName = 'off', fxState = fxMerge(FX_NEUTRAL, {});
+// dof.follow and dof.aim are the Camera panel's hunter-tracking controls; they stay in the effects state,
+// since the focus is the depth of field's
+const FX_IDS = { 'bloom.on': 'fxBloomOn', 'bloom.strength': 'fxBloomStr', 'bloom.threshold': 'fxBloomThr', 'bloom.radius': 'fxBloomRad',
+  'dof.on': 'fxDofOn', 'dof.aperture': 'fxDofAper', 'dof.maxBlur': 'fxDofBlur',
+  'lens.vignette': 'fxVig', 'lens.aberration': 'fxAber', 'lens.grain': 'fxGrain',
+  'grade.exposure': 'fxExp', 'grade.contrast': 'fxCon', 'grade.saturation': 'fxSat', 'grade.toneMap': 'fxTone' };
+const FX_FOCUS_MIN = 0.1, FX_FOCUS_MAX = 50;
+const focusOfSlider = v => FX_FOCUS_MIN * Math.pow(FX_FOCUS_MAX / FX_FOCUS_MIN, v / 1000);
+const sliderOfFocus = m => 1000 * Math.log(m / FX_FOCUS_MIN) / Math.log(FX_FOCUS_MAX / FX_FOCUS_MIN);
+let fxFocusLive = 0, fxFocusTick = 0;
+function fxApply(){ fx.setState(fxState); }
+function paintFocusLive(){
+  const m = fxState.dof.follow ? fxFocusLive : fxState.dof.focus;
+  document.getElementById('fxDofFocusVal').textContent = (m < 1 ? m.toFixed(2) : m.toFixed(1)) + ' m' + (fxState.dof.follow ? ' (following the hunter, see Camera)' : '');
+}
+function paintFx(){
+  document.querySelectorAll('#fxRow .btn').forEach(b => b.classList.toggle('on', b.dataset.fx === fxName));
+  for (const path in FX_IDS){
+    const e = document.getElementById(FX_IDS[path]); if (!e) continue;
+    const [g, k] = path.split('.'); const v = fxState[g][k];
+    if (e.type === 'checkbox') e.checked = !!v;
+    else if (document.activeElement !== e) e.value = String(v);
+  }
+  const ca = document.getElementById('camAim'); if (ca && document.activeElement !== ca) ca.value = fxState.dof.aim;
+  document.getElementById('camFollow').checked = !!fxState.dof.follow;
+  const fs = document.getElementById('fxDofFocus');
+  if (document.activeElement !== fs) fs.value = String(Math.round(sliderOfFocus(fxState.dof.focus)));
+  fs.disabled = fxState.dof.follow;
+  paintFocusLive();
+  document.getElementById('fxBloomStrVal').textContent = fxState.bloom.strength.toFixed(2);
+  document.getElementById('fxExpVal').textContent = fxState.grade.exposure.toFixed(2);
+}
+function applyFxPreset(name){
+  fxName = FX_PRESETS[name] ? name : 'off';
+  fxState = fxMerge(FX_NEUTRAL, FX_PRESETS[fxName]);
+  fxApply(); paintFx();
+}
+function fxEdit(){
+  fxName = 'custom';
+  for (const path in FX_IDS){
+    const e = document.getElementById(FX_IDS[path]); if (!e) continue;
+    const [g, k] = path.split('.');
+    fxState[g][k] = e.type === 'checkbox' ? e.checked : (e.tagName === 'SELECT' ? e.value : +e.value);
+  }
+  fxState.dof.focus = focusOfSlider(+document.getElementById('fxDofFocus').value);
+  fxApply(); paintFx();
+}
+// one readable shape for the session save and a view file
+function effectsState(){ return Object.assign({ preset: fxName }, fxMerge(fxState, {})); }
+function restoreEffects(e){
+  if (!e || typeof e !== 'object') return;
+  const num = (v, d, lo, hi) => Number.isFinite(+v) && v !== null && v !== '' ? Math.min(hi, Math.max(lo, +v)) : d;
+  const oneOf = (v, list, d) => list.includes(v) ? v : d;
+  const base = fxMerge(FX_NEUTRAL, FX_PRESETS[e.preset] || {});
+  const b = e.bloom || {}, d = e.dof || {}, l = e.lens || {}, g = e.grade || {};
+  fxState = {
+    bloom: { on: b.on === true || (b.on === undefined && base.bloom.on), strength: num(b.strength, base.bloom.strength, 0, 2),
+             threshold: num(b.threshold, base.bloom.threshold, 0, 1.5), radius: num(b.radius, base.bloom.radius, 0, 1) },
+    dof:   { on: d.on === true || (d.on === undefined && base.dof.on), follow: d.follow !== false, aim: oneOf(d.aim, ['head', 'chest', 'center'], base.dof.aim),
+             focus: num(d.focus, base.dof.focus, FX_FOCUS_MIN, FX_FOCUS_MAX), aperture: num(d.aperture, base.dof.aperture, 0, 10), maxBlur: num(d.maxBlur, base.dof.maxBlur, 0, 0.05) },
+    lens:  { vignette: num(l.vignette, base.lens.vignette, 0, 1), aberration: num(l.aberration, base.lens.aberration, 0, 1), grain: num(l.grain, base.lens.grain, 0, 1) },
+    grade: { exposure: num(g.exposure, base.grade.exposure, 0.25, 4), contrast: num(g.contrast, base.grade.contrast, 0.5, 2),
+             saturation: num(g.saturation, base.grade.saturation, 0, 2), toneMap: oneOf(g.toneMap, ['none', 'aces', 'reinhard', 'neutral'], base.grade.toneMap) }
+  };
+  fxName = FX_PRESETS[e.preset] ? e.preset : 'custom';
+  fxApply(); paintFx();
+}
+document.querySelectorAll('#fxRow .btn').forEach(b => b.onclick = () => { applyFxPreset(b.dataset.fx); saveState(); });
+for (const path in FX_IDS){
+  const e = document.getElementById(FX_IDS[path]); if (!e) continue;
+  if (e.type === 'checkbox' || e.tagName === 'SELECT') e.onchange = () => { fxEdit(); saveState(); };
+  else { e.oninput = fxEdit; e.onchange = () => { fxEdit(); saveState(); }; }
+}
+{ const fs = document.getElementById('fxDofFocus'); fs.oninput = fxEdit; fs.onchange = () => { fxEdit(); saveState(); }; }
+applyFxPreset('off');
+
+// ---- the lens: the MHGU viewers' Camera panel, brought over 2026-10-04 ----------------------------
+// A 35 mm-equivalent focal length: the stage's vertical field of view, 38 degrees, is a 35 mm lens on
+// a 24 mm-high frame (f = 12 / tan(fov / 2)), so the default reads as the lens it is. A change keeps the
+// FRAMING in BOTH modes -- the camera steps along the line to what it is framing, so the hunter keeps
+// its size and only the depth of the perspective changes. 5 mm to 300 mm on a logarithmic slider. Saved
+// with the look (lookState), so a reload keeps it.
+const FOV_DEFAULT = 38;
+const FOCAL_MIN = 5, FOCAL_MAX = 300;
+const fovOfFocal = mm => THREE.MathUtils.radToDeg(2 * Math.atan(12 / mm));
+const focalOfFov = fov => 12 / Math.tan(THREE.MathUtils.degToRad(fov) / 2);
+const focalOfSlider = v => FOCAL_MIN * Math.pow(FOCAL_MAX / FOCAL_MIN, v / 1000);
+const sliderOfFocal = mm => 1000 * Math.log(mm / FOCAL_MIN) / Math.log(FOCAL_MAX / FOCAL_MIN);
+function paintFocal(){
+  const sl = document.getElementById('camFocal'), mmExact = focalOfFov(camera.fov);
+  const mm = mmExact < 10 ? +mmExact.toFixed(1) : Math.round(mmExact);
+  if (document.activeElement !== sl) sl.value = String(Math.round(sliderOfFocal(Math.min(FOCAL_MAX, Math.max(FOCAL_MIN, mmExact)))));
+  document.getElementById('camFocalVal').textContent = mm + ' mm · ' + (camera.fov < 10 ? camera.fov.toFixed(1) : camera.fov.toFixed(0)) + '°';
+}
+// THE LENS HOLDS WHAT IT FRAMES, IN BOTH MODES (Raven, 2026-09-18: "First Person Camera has
+// some issues since it doesn't maintain framing", reworking the MHGU Monster Viewer's quick fix).
+// A field of view change on its own is only a crop: the picture scales and the perspective
+// never moves, which is what first person did here, camera fixed. So the camera steps along
+// the line to a pivot by the factor the field of view changed by. That holds the pivot EXACTLY
+// -- the same spot on screen and the same size -- and changes only the depth of the
+// perspective, the reason to reach for a focal length at all. Orbit pivots on its target, as
+// it always has.
+//
+// The question first person raises is WHICH point to hold. The MHGU Monster Viewer's quick fix
+// holds the figure's centre, and its math is right; but up close in first person you are
+// usually framing something else -- a face, a weapon -- and pinning the waist lets the thing
+// you aimed at slide and resize. So the pivot is what the view is actually on:
+//   face lock on  the locked aim point, since the camera is held on it (the head or chest here,
+//                 not the centre, so the centre would disagree with the lock);
+//   otherwise     the surface at the centre of the view, by the same visible-only raycast the
+//                 focus follow uses;
+//   nothing there the figure's centre -- the quick fix exactly, so looking away still holds it.
+function framingPivot(out){
+  if (camMode !== 'fly') return out.copy(controls.target);
+  if (faceLock) return aimPoint(out);
+  camera.getWorldDirection(_fwd);
+  _ray.set(camera.position, _fwd); _ray.near = 0; _ray.far = 1000;
+  const shown = o => { for (let p = o; p; p = p.parent) if (p.visible === false) return false; return !(o.material && o.material.visible === false); };
+  for (const h of _ray.intersectObjects(world.children, true)){
+    if (shown(h.object)) return out.copy(h.point);
+  }
+  return figureCenter(out);
+}
+function setFov(fov, keepFraming){
+  fov = Math.min(150, Math.max(1, fov));
+  if (keepFraming){
+    const k = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) / Math.tan(THREE.MathUtils.degToRad(fov) / 2);
+    if (camMode === 'fly'){
+      // stops a fifth of a metre short of the pivot on the way in, so it never flies through
+      const q = framingPivot(new THREE.Vector3());
+      const off = camera.position.clone().sub(q), len = off.length();
+      if (len > 1e-4){
+        camera.position.copy(q).addScaledVector(off.divideScalar(len), Math.max(0.2, len * k));
+        fly.moved = true;                         // rides the first-person save, as flying does
+      }
+    } else {
+      const dir = camera.position.clone().sub(controls.target);
+      camera.position.copy(controls.target).add(dir.multiplyScalar(k));
+    }
+  }
+  camera.fov = fov; camera.updateProjectionMatrix();
+  updateDepthBias();                            // the clip planes follow the new distance
+  paintFocal();
+}
+function setFocal(mm, keepFraming){ setFov(fovOfFocal(Math.min(FOCAL_MAX, Math.max(FOCAL_MIN, +mm || 35))), keepFraming !== false); }
+// Lens types through render/lens.js (the camera a frame renders through) and render/fx.js (the
+// passes a lens needs). Saved with the look (lookState); a save without one
+// is Standard. Orthographic is orbit-only.
+let lensState = Object.assign({}, LENS_DEFAULT);
+function lensFileState(){
+  const l = { type: lensState.type };
+  if (l.type === 'fisheye') l.view = lensState.view;
+  if (l.type === 'anamorphic') l.squeeze = lensState.squeeze;
+  if (l.type === 'tiltshift'){ l.band = lensState.band; l.bandY = lensState.bandY; }
+  return l;
+}
+function applyLens(spec){
+  spec = spec || {};
+  const num = (v, d, lo, hi) => Number.isFinite(+v) && v !== null && v !== '' ? Math.min(hi, Math.max(lo, +v)) : d;
+  let type = LENS_TYPES.includes(spec.type) ? spec.type : 'standard';
+  if (type === 'ortho' && camMode === 'fly') type = 'standard';
+  const sq = num(spec.squeeze, lensState.squeeze, 1, 3);
+  lensState = { type, view: num(spec.view, lensState.view, 90, 160),
+                squeeze: SQUEEZES.reduce((a, b) => Math.abs(b - sq) < Math.abs(a - sq) ? b : a, SQUEEZES[0]),
+                band: num(spec.band, lensState.band, 0.05, 0.9), bandY: num(spec.bandY, lensState.bandY, 0, 1) };
+  fx.setLens(lensState);
+  fitRenderer();
+  paintLens();
+}
+function lensCamera(){ return renderCameraFor(camera, lensState, viewDistance(), camera.aspect); }
+const LENS_P = {
+  fisheye:    [{ key: 'view', label: 'View angle', min: 90, max: 160, fmt: v => Math.round(v) + '°' }],
+  anamorphic: [{ key: 'squeeze', label: 'Squeeze', min: 1.33, max: 2, fmt: v => v.toFixed(2) + 'x' }],
+  tiltshift:  [{ key: 'band', label: 'Sharp band', min: 0.05, max: 0.9, fmt: v => Math.round(v * 100) + '%' },
+               { key: 'bandY', label: 'Band position', min: 0, max: 1, fmt: v => Math.round(v * 100) + '% up' }]
+};
+function paintLens(){
+  const sel = document.getElementById('camLens'); if (document.activeElement !== sel) sel.value = lensState.type;
+  const ps = LENS_P[lensState.type] || [];
+  for (let i = 0; i < 2; i++){
+    const f = document.getElementById('lensP' + (i + 1) + 'Field'), p = ps[i];
+    f.hidden = !p; if (!p) continue;
+    document.getElementById('lensP' + (i + 1) + 'Label').textContent = p.label;
+    const sl = document.getElementById('lensP' + (i + 1));
+    if (document.activeElement !== sl) sl.value = String(Math.round(1000 * (lensState[p.key] - p.min) / (p.max - p.min)));
+    document.getElementById('lensP' + (i + 1) + 'Val').textContent = p.fmt(lensState[p.key]);
+  }
+}
+function lensEdit(){
+  const ps = LENS_P[lensState.type] || []; const spec = { type: lensState.type };
+  ps.forEach((p, i) => { spec[p.key] = p.min + (p.max - p.min) * (+document.getElementById('lensP' + (i + 1)).value / 1000); });
+  applyLens(spec);
+}
+// the canvas and the composer are sized together: the lens decides the composer's own size
+function fitRenderer(){
+  stage.fit();
+  const sz = renderer.getSize(new THREE.Vector2());
+  fx.setSize(sz.x, sz.y, renderer.getPixelRatio(), lensState);
+}
+// THE ONE RENDER ENTRY for the loop, the Screenshot button and __view.shot: the composer when an
+// effect is on, the plain render through the lens's camera otherwise. The MHGU Armor Viewer's, with the MH3U
+// Monster Viewer's one change: the focus ray is cast only while a depth of field is actually drawing and
+// following -- nothing else reads it, and a cast over skinned meshes costs milliseconds.
+const _aniso = new THREE.Vector2(1, 1);
+function renderFrame(t){
+  frameNo++;
+  const cam = lensCamera();
+  const following = fx.active && fxState.dof.on && fxState.dof.follow;
+  const focus = following ? focusDistance(t !== undefined) : fxState.dof.focus;
+  fxFocusLive = focus;
+  _aniso.set(lensState.type === 'anamorphic' ? 1 / lensState.squeeze : 1, 1);
+  fx.feed({ time: t === undefined ? performance.now() / 1000 : t,
+            mask: document.documentElement.classList.contains('chroma'), aspect: camera.aspect,
+            focus, near: cam.near, far: cam.far, ortho: !!cam.isOrthographicCamera, aniso: _aniso });
+  if (following && ((++fxFocusTick) % 15) === 0) paintFocusLive();
+  if (fx.active) fx.render(cam); else renderer.render(scene, cam);
+}
+
+// the Camera panel's controls: the lens, the turntable (the bar's steps, with a direction), the mode,
+// the fly speed, the tracking and two orbit behaviours of the controls themselves
+{
+  const focal = document.getElementById('camFocal');
+  focal.oninput = () => setFocal(focalOfSlider(+focal.value));
+  focal.onchange = () => { setFocal(focalOfSlider(+focal.value)); saveState(); };
+  const spin = document.getElementById('camSpin');
+  spin.oninput = () => { spinStep = Math.min(SPIN_STEPS.length - 1, Math.max(0, +spin.value)); paintSpin(); };
+  spin.onchange = () => { spin.oninput(); saveState(); };
+  document.getElementById('camSpinRev').onchange = e => { spinRev = e.target.checked; paintSpin(); saveState(); };
+  const damp = document.getElementById('camDamp'), zoomCur = document.getElementById('camZoomCursor');
+  damp.checked = controls.enableDamping; zoomCur.checked = !!controls.zoomToCursor;
+  damp.onchange = () => { controls.enableDamping = damp.checked; saveState(); };
+  zoomCur.onchange = () => { controls.zoomToCursor = zoomCur.checked; saveState(); };
+  const mode = document.getElementById('camMode');
+  mode.onchange = () => { setCamMode(mode.value); saveState(); };
+  if (flyBtn.hidden) mode.querySelector('option[value=fly]').disabled = true;   // no pointer lock here
+  const speed = document.getElementById('camSpeed');
+  speed.oninput = () => setFlySpeed(speedOfSlider(+speed.value));
+  speed.onchange = () => { speed.oninput(); saveState(); };
+  const face = document.getElementById('camFace');
+  face.onchange = () => { setFaceLock(face.checked); saveState(); };
+  const aim = document.getElementById('camAim');
+  aim.onchange = () => { fxState.dof.aim = aim.value; paintFx(); saveState(); };
+  const follow = document.getElementById('camFollow');
+  follow.onchange = () => { fxState.dof.follow = follow.checked; fxApply(); paintFx(); saveState(); };
+  // every setting in the panel back to its default; the view is left alone, Fit to View is for that
+  document.getElementById('camReset').onclick = () => {
+    setCamMode('orbit'); setFaceLock(false);
+    fxState.dof.aim = 'head'; fxState.dof.follow = true; fxApply(); paintFx();
+    applyLens({ type: 'standard' });
+    setFocal(35);
+    spinStep = 0; spinRev = false; paintSpin();
+    controls.enableDamping = true; damp.checked = true;
+    controls.zoomToCursor = false; zoomCur.checked = false;
+    setFlySpeed(FLY_SPEED);
+    paintCamMode(); saveState();
+  };
+  const lensSel = document.getElementById('camLens');
+  lensSel.onchange = () => { applyLens({ type: lensSel.value }); saveState(); };
+  for (const id of ['lensP1', 'lensP2']){ const e = document.getElementById(id); e.oninput = lensEdit; e.onchange = () => { lensEdit(); saveState(); }; }
+}
+paintFocal(); paintLens(); paintFlySpeed();
+
+// ---- the look: lighting, effects and the Camera panel's settings, saved beside the set --------------
+// One object under `look` in the session save. The view itself is not kept: the app frames the hunter on
+// every load (frameAll), so it opens in orbit with the focal length and lens it was left with.
+function lookState(){
+  return Object.assign(lightingSaveState(), {
+    postfx: effectsState(),
+    camera: { fov: +camera.fov.toFixed(2), lens: lensFileState(), orbitLocked, spinStep, spinRev,
+              damp: controls.enableDamping, zoomCursor: !!controls.zoomToCursor, face: faceLock, flySpeed: +fly.speed.toFixed(3) } });
+}
+// every field type-guarded: a save is whatever the last version of the app wrote
+function restoreLook(o){
+  if (!o || typeof o !== 'object') return;
+  if ((o.lightRig && typeof o.lightRig === 'object') || typeof o.lighting === 'string') restoreLighting(o);
+  if (o.postfx && typeof o.postfx === 'object') restoreEffects(o.postfx);
+  const c = o.camera;
+  if (!c || typeof c !== 'object') return;
+  if (Number.isFinite(c.fov)) setFov(c.fov);
+  if (c.lens && typeof c.lens === 'object') applyLens(c.lens);
+  if (typeof c.orbitLocked === 'boolean') orbitLocked = c.orbitLocked;
+  if (typeof c.spinStep === 'number') spinStep = Math.max(0, c.spinStep | 0) % SPIN_STEPS.length;
+  if (typeof c.spinRev === 'boolean') spinRev = c.spinRev;
+  if (typeof c.damp === 'boolean') controls.enableDamping = c.damp;
+  if (typeof c.zoomCursor === 'boolean') controls.zoomToCursor = c.zoomCursor;
+  document.getElementById('camDamp').checked = controls.enableDamping;
+  document.getElementById('camZoomCursor').checked = !!controls.zoomToCursor;
+  if (typeof c.face === 'boolean') setFaceLock(c.face);
+  if (Number.isFinite(c.flySpeed)) setFlySpeed(c.flySpeed);
+  paintOrbitLock(); paintSpin();
+}
+
+// ---- what is worn -----------------------------------------------------------------------------
+const SLOTS = DATA.slots;                 // helm, body, arm, wst, leg
+const C = DATA.colors;
+const LS_KEY = 'mh4u-armor-viewer';
+// A slot holds an ARMOUR RECORD id (0 = nothing), not a model: pieces sharing a model can carry
+// different default pigments, and the record is what the game colours by.
+// A COLOUR is { d: 1 } (the row's starting colour) or { x, y } (a pixel of the game's colour board). The
+// game's starting colours and presets for these menus are not read: skin and clothing start untinted (the
+// maps as they are), hair and the feature on a board pixel the viewer picked.
+const DEFAULTS = { g: 'f', type: 'all', helm: 0, body: 0, arm: 0, wst: 0, leg: 0, face: 0, hair: 0, cloth: 0, feat: 0,
+                   skinC: { d: 1 }, hairC: { d: 1 }, clothC: { d: 1 }, featC: { d: 1 },
+                   pig: { helm: null, body: null, arm: null, wst: null, leg: null },
+                   pose: { list: 'co_0', clip: 'Motion[1]_loop' },
+                   // the weapon: class -1 = none; model and pigment pick one of the class's weapons; kinsect is a
+                   // Kinsect model, for an Insect Glaive
+                   weapon: { cls: -1, model: 0, pig: 0, kinsect: 1, drawn: false, mode: 0 } };
+const clone = o => JSON.parse(JSON.stringify(o));
+// A hunter, every field type-guarded onto the defaults: what a save, a slot or an older version of this app
+// wrote is never trusted as it stands.
+const isXY = v => !!v && typeof v === 'object' && Number.isInteger(v.x) && Number.isInteger(v.y);
+const isColourSpec = v => isXY(v) || (!!v && typeof v === 'object' && v.d === 1);
+// a piece's own colour: a board pixel { x, y } (the game's way) or any RGB { c: '#rrggbb' } (the hex field and swatch)
+const isPigSpec = v => isXY(v) || (!!v && typeof v === 'object' && typeof v.c === 'string' && /^#[0-9a-f]{6}$/.test(v.c));
+function hunterOf(h){
+  const o = clone(DEFAULTS);
+  if (!h || typeof h !== 'object') return o;
+  if (h.g === 'f' || h.g === 'm') o.g = h.g;
+  if (['all', 'b', 'g'].includes(h.type)) o.type = h.type;
+  for (const k of DATA.slots.concat(['face', 'hair', 'cloth', 'feat'])) if (Number.isInteger(h[k]) && h[k] >= 0) o[k] = h[k];
+  for (const k of ['skinC', 'hairC', 'clothC', 'featC']) if (isColourSpec(h[k])) o[k] = isXY(h[k]) ? { x: h[k].x, y: h[k].y } : { d: 1 };
+  if (h.pig && typeof h.pig === 'object')
+    for (const s of DATA.slots){ const v = h.pig[s]; o.pig[s] = isXY(v) ? { x: v.x, y: v.y } : isPigSpec(v) ? { c: v.c } : null; }
+  if (h.pose && typeof h.pose === 'object' && typeof h.pose.list === 'string' && typeof h.pose.clip === 'string')
+    o.pose = { list: h.pose.list, clip: h.pose.clip };
+  const w = h.weapon;
+  if (w && typeof w === 'object' && Number.isInteger(w.cls) && (w.cls === -1 || WEAPON_CLASSES.has(w.cls)))
+    o.weapon = { cls: w.cls, model: Number.isInteger(w.model) ? w.model : 0, pig: Number.isInteger(w.pig) ? w.pig : 0,
+                 kinsect: Number.isInteger(w.kinsect) ? w.kinsect : 1, drawn: w.drawn === true, mode: w.mode === 1 ? 1 : 0 };
+  return o;
+}
+const state = clone(DEFAULTS);
+// the look (lighting, effects, the Camera panel) rides beside the hunter as `look`, put back at boot
+// (restoreLook), and the hunter slots as `hunters` / `hunter` (the hunter slots, below)
+let savedLook = null, savedHunters = null, savedHunter = 0, savedAny = false;
+try {
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+  if (saved && typeof saved === 'object') savedAny = true;
+  if (saved && saved.v === 1){
+    savedLook = saved.look || null; savedHunters = saved.hunters || null; savedHunter = saved.hunter;
+    Object.assign(state, hunterOf(saved));
+  }
+} catch (_) {}
+state.v = 1;
+function saveState(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(Object.assign({}, state, { look: lookState() }, hunterSaveState()))); } catch (_) {}
+}
+
+const pad3 = n => String(n).padStart(3, '0');
+const pieceRec = (g, slot, model) => DATA.pieces[g + '/' + g + '_' + slot + pad3(model)] || null;
+const recById = Object.fromEntries(SLOTS.map(s => [s, new Map(DATA.armor[s].map(r => [r.id, r]))]));
+const worn = slot => recById[slot].get(state[slot]) || null;
+
+// The model a slot draws: the worn record's model for this gender; with nothing worn, the game's own
+// fallback (0x2f4108) -- chest, arms and legs draw the clothing (inner wear) by the Clothing choice, six
+// each (models 60-63, 70, 71); head and waist draw model 0, which has no file, so nothing.
+function modelFor(slot){
+  const r = worn(slot);
+  if (r) return r[state.g];
+  const inner = DATA.inner[slot];
+  return inner ? inner[Math.min(state.cloth, inner.length - 1)] : 0;
+}
+
+// A slot's list: one item per (model, default pigment) this gender can wear, in the game's own table
+// order, named by every piece in it (a Blademaster and a Gunner piece usually share one). Type and the
+// name filter narrow which pieces count; the worn piece always stays listed.
+function optionsFor(slot){
+  const g = state.g, f = (filterEl.value || '').trim().toLowerCase();
+  const groups = new Map();
+  for (const r of DATA.armor[slot]){
+    if (r.wear.indexOf(g) < 0) continue;
+    if (state.type !== 'all' && r.wear.indexOf(state.type) < 0) continue;
+    const k = r[g] + ':' + r.pig;
+    if (!groups.has(k)) groups.set(k, { id: r.id, model: r[g], ids: [], names: [] });
+    const e = groups.get(k);
+    e.ids.push(r.id);
+    if (e.names.indexOf(r.name) < 0) e.names.push(r.name);
+  }
+  const out = [];
+  for (const e of groups.values()){
+    const label = e.names.join(' / ');
+    const mine = e.ids.indexOf(state[slot]) >= 0;
+    if (f && label.toLowerCase().indexOf(f) < 0 && !mine) continue;
+    if (!pieceRec(g, slot, e.model)) continue;
+    out.push([mine ? state[slot] : e.id, label]);
+  }
+  return out;
+}
+const filterEl = document.getElementById('filter');
+const typeSel = document.getElementById('htype');
+const genderSel = document.getElementById('genderSel');
+const faceSel = document.getElementById('faceStyle'), hairSel = document.getElementById('hairStyle');
+const clothSel = document.getElementById('clothing'), featSel = document.getElementById('features');
+const slotSel = Object.fromEntries(SLOTS.map(s => [s, document.getElementById('s_' + s)]));
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+function buildLists(){
+  for (const slot of SLOTS){
+    const opts = optionsFor(slot);
+    // a worn piece the current type or gender does not list falls back to nothing
+    if (state[slot] && !opts.some(o => o[0] === state[slot])) state[slot] = 0;
+    slotSel[slot].innerHTML = '<option value="0">(None)</option>' +
+      opts.map(([id, label]) => '<option value="' + id + '">' + esc(label) + '</option>').join('');
+    slotSel[slot].value = String(state[slot]);
+  }
+  const chars = DATA.chars[state.g];
+  faceSel.innerHTML = chars.face.map((e, i) => '<option value="' + i + '">Type ' + (i + 1) + '</option>').join('');
+  hairSel.innerHTML = chars.hair.map((e, i) => '<option value="' + i + '">Type ' + (i + 1) + '</option>').join('');
+  const nCloth = Math.max(...Object.values(DATA.inner).map(a => a.length));
+  clothSel.innerHTML = Array.from({ length: nCloth }, (_, i) => '<option value="' + i + '">Type ' + (i + 1) + '</option>').join('');
+  // Features: (None), then Type 1-12 = face parts 200-211 (0xb08778)
+  featSel.innerHTML = '<option value="0">(None)</option>' +
+    DATA.features.map((p, i) => '<option value="' + (i + 1) + '">Type ' + (i + 1) + '</option>').join('');
+  state.face = Math.min(state.face, chars.face.length - 1);
+  state.hair = Math.min(state.hair, chars.hair.length - 1);
+  state.cloth = Math.min(state.cloth, nCloth - 1);
+  state.feat = Math.min(state.feat, DATA.features.length);
+  faceSel.value = String(state.face); hairSel.value = String(state.hair); clothSel.value = String(state.cloth);
+  featSel.value = String(state.feat);
+  genderSel.value = state.g; typeSel.value = state.type;
+  buildColourLists(); buildPigmentLists(); buildPoseLists(); buildWeaponLists();
+}
+
+// ---- colours ----------------------------------------------------------------------------------
+// The game's colour board (lyt\lobby\texture\lby_colorscale), inside its black frame; Custom picks any
+// pixel of it. Sampled from the decoded image, RGB exact.
+const boardImg = new Image();
+await new Promise((ok, bad) => { boardImg.onload = ok; boardImg.onerror = bad; boardImg.src = C.board.png; });
+const boardData = (() => {
+  const cv = document.createElement('canvas'); cv.width = C.board.w; cv.height = C.board.h;
+  const cx = cv.getContext('2d'); cx.drawImage(boardImg, 0, 0);
+  return cx.getImageData(0, 0, C.board.w, C.board.h).data;
+})();
+const boardRGB = (x, y) => { const i = (y * C.board.w + x) * 4; return [boardData[i], boardData[i + 1], boardData[i + 2]]; };
+const css = c => c ? 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')' : 'transparent';
+const WHITE = [255, 255, 255];
+
+// each row's starting colour: null = untinted (the map as it is), or a board pixel the viewer picked
+const COLOR_ROWS = [
+  { key: 'skinC', sel: 'skinColor', chip: 'skinChip', name: 'Skin Tone', def: null, defName: 'Untinted' },
+  { key: 'hairC', sel: 'hairColor', chip: 'hairChip', name: 'Hair Color', def: { x: 14, y: 22 }, defName: 'Default' },
+  { key: 'clothC', sel: 'clothColor', chip: 'clothChip', name: 'Clothing Color', def: null, defName: 'Untinted' },
+  { key: 'featC', sel: 'featColor', chip: 'featChip', name: 'Feature Color', def: { x: 170, y: 20 }, defName: 'Default' },
+];
+const rowOf = key => COLOR_ROWS.find(r => r.key === key);
+// a colour choice -> [R, G, B], or WHITE for an untinted row
+function rgbOf(key){
+  const s = state[key], r = rowOf(key);
+  if (isXY(s)) return boardRGB(s.x, s.y);
+  return r.def ? boardRGB(r.def.x, r.def.y) : WHITE;
+}
+function buildColourLists(){
+  for (const r of COLOR_ROWS){
+    const sel = document.getElementById(r.sel);
+    sel.innerHTML = '<option value="d">' + r.defName + '</option><option value="custom">Custom</option>';
+    sel.value = isXY(state[r.key]) ? 'custom' : 'd';
+  }
+  paintChips();
+}
+function paintChips(){
+  for (const r of COLOR_ROWS)
+    document.getElementById(r.chip).style.background = !isXY(state[r.key]) && !r.def ? 'transparent' : css(rgbOf(r.key));
+}
+
+// PIGMENT (type 3): the worn piece's own colour, armour record +0x13 into the game's 70-colour table
+// (0x2f854c), or the board pixel the item box gave it. An empty chest, arms or legs shows the clothing,
+// whose pigment region takes the Clothing Color (the inner wear's materials are type 3, not a type of
+// their own -- read from the files, armor.json _about.colors).
+// A colour given to a slot stays with the slot when the armour changes (as the MHGU viewer's rows do),
+// and is drawn while a piece is worn there.
+const hexRGB = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const rgbHex = c => '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+const specRGB = s => isXY(s) ? boardRGB(s.x, s.y) : hexRGB(s.c);
+// every worn piece can take a colour of its own (the item box); an empty slot shows the clothing
+const dyeable = slot => !!worn(slot);
+function pigmentOf(slot){
+  const r = worn(slot);
+  if (!r) return rgbOf('clothC');
+  if (state.pig[slot]) return specRGB(state.pig[slot]);
+  return C.pigments[r.pig] || WHITE;
+}
+
+// THE ROWS, the MHGU Armor Viewer's: a tick (on = the piece's own colour, off = Default), a hex field
+// that can be typed into and copied, an RGB swatch, and the palette button. All writes through to the
+// dyeable pieces worn, so the five rows always show the truth.
+const SLOT_LABEL = { helm: 'Head', body: 'Chest', arm: 'Arms', wst: 'Waist', leg: 'Legs' };
+function pigRow(id, label){
+  return '<div class="field" id="pgRow_' + id + '"><label for="pg_' + id + '">' + label + '</label>' +
+    '<div class="row gap">' +
+    '<input type="checkbox" id="pgOn_' + id + '" aria-label="Dye ' + label + '">' +
+    '<input type="text" class="hexbtn" id="pgHex_' + id + '" maxlength="7" spellcheck="false" ' +
+    'autocomplete="off" title="Type or paste a hex value; click to select and copy">' +
+    '<input type="color" id="pg_' + id + '" class="rgb-input" title="Pigment for ' + label + '">' +
+    '<button type="button" class="palbtn" id="pgPal_' + id + '" title="In-game pigments" ' +
+    'aria-label="In-game pigments for ' + label + '">&#9638;</button></div></div>';
+}
+document.getElementById('slotPig').innerHTML =
+  pigRow('all', 'All') +
+  '<hr style="border:0;border-top:1px solid var(--line);margin:8px 0">' +
+  SLOTS.map(sl => pigRow(sl, SLOT_LABEL[sl])).join('');
+const PIG_ROWS = ['all'].concat(SLOTS);
+const pgEl = (kind, id) => document.getElementById(kind + id);
+// the slots a row speaks for: All = every dyeable piece worn
+const pigSlotsOf = id => id === 'all' ? SLOTS.filter(dyeable) : [id];
+// All is ticked while every dyeable piece worn carries one and the same colour of its own
+function allPigment(){
+  const sl = SLOTS.filter(dyeable);
+  if (!sl.length || !sl.every(s => state.pig[s])) return null;
+  const h = rgbHex(specRGB(state.pig[sl[0]]));
+  return sl.every(s => rgbHex(specRGB(state.pig[s])) === h) ? h : null;
+}
+function buildPigmentLists(){
+  for (const slot of SLOTS){
+    const r = worn(slot), can = dyeable(slot), s = can ? state.pig[slot] : null;
+    const on = pgEl('pgOn_', slot), hex = pgEl('pgHex_', slot), col = pgEl('pg_', slot);
+    on.checked = !!s;
+    for (const e of [on, hex, col, pgEl('pgPal_', slot)]) e.disabled = !can;
+    col.value = rgbHex(pigmentOf(slot));
+    if (document.activeElement !== hex) hex.value = s ? col.value : r ? 'Default' : DATA.inner[slot] ? 'Clothing Color' : 'Nothing worn';
+    pgEl('pgRow_', slot).title = r ? '' : DATA.inner[slot]
+      ? 'Nothing is worn: the clothing shows, in the Clothing Color (Colors panel)' : 'Nothing is worn in this slot';
+  }
+  const all = allPigment(), anyDye = SLOTS.some(dyeable), anyOwn = SLOTS.some(s => dyeable(s) && state.pig[s]);
+  const on = pgEl('pgOn_', 'all'), hex = pgEl('pgHex_', 'all'), col = pgEl('pg_', 'all');
+  on.checked = !!all;
+  for (const e of [on, hex, col, pgEl('pgPal_', 'all')]) e.disabled = !anyDye;
+  // not uniform: All's swatch shows the first dyeable piece's colour, so ticking it changes that piece not at all
+  const first = SLOTS.find(dyeable);
+  col.value = all || (first ? rgbHex(pigmentOf(first)) : '#c0c0c0');
+  if (document.activeElement !== hex) hex.value = all || (anyOwn ? 'Mixed' : 'Default');
+  pgEl('pgRow_', 'all').title = anyDye ? '' : 'None of the pieces worn can be dyed';
+}
+// one colour into a row's slots: a spec, or null for Default
+function setPig(id, spec){
+  for (const sl of pigSlotsOf(id)) state.pig[sl] = spec ? Object.assign({}, spec) : null;
+  applyAllColours();
+}
+for (const id of PIG_ROWS){
+  const on = pgEl('pgOn_', id), hex = pgEl('pgHex_', id), col = pgEl('pg_', id);
+  // ticking starts from the colour the row shows, so the piece does not change until the colour does
+  on.onchange = () => { setPig(id, on.checked ? { c: col.value } : null); saveState(); };
+  col.oninput = () => setPig(id, { c: col.value });
+  col.onchange = saveState;
+  // one click selects the whole value, ready to copy; on a row on Default it shows the hex to copy
+  hex.onfocus = () => { if (!/^#/.test(hex.value)) hex.value = col.value; hex.select(); };
+  hex.onclick = () => { if (hex.selectionStart === hex.selectionEnd) hex.select(); };
+  hex.onblur = () => buildPigmentLists();
+  // the hex field takes nothing but a hex triple: anything else snaps back
+  hex.onchange = () => {
+    let v = hex.value.trim();
+    if (v[0] !== '#') v = '#' + v;
+    if (/^#[0-9a-f]{3}$/i.test(v)) v = '#' + v.slice(1).split('').map(c => c + c).join('');
+    if (!/^#[0-9a-f]{6}$/i.test(v)) { buildPigmentLists(); return; }
+    v = v.toLowerCase();
+    if (v !== col.value || !on.checked) { setPig(id, { c: v }); saveState(); }
+  };
+  hex.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); hex.onchange(); hex.blur(); } };
+  pgEl('pgPal_', id).onclick = () => openPig(id);
+}
+
+// THE DYE MASK: the pigment region (colour type 3) in magenta, every other material dimmed -- exact here,
+// since the game marks the region per material. The region also glows magenta, so a dark map still shows
+// it; each material's own emissive is kept and put back when the mask goes off.
+const maskCb = document.getElementById('maskdbg');
+const MASK_ON = [255, 0, 255], MASK_OFF = [70, 70, 70];
+maskCb.onchange = () => applyAllColours();
+function dyeMask(root, on){
+  if (on) applyColours(root, { 1: MASK_OFF, 2: MASK_OFF, 3: MASK_ON, 4: MASK_OFF, 5: MASK_OFF, 6: MASK_OFF });
+  root.traverse(o => {
+    const m = (o.isMesh || o.isSkinnedMesh) && o.material;
+    if (!m) return;
+    if (on && m.color && !m.userData.ct) m.color.setRGB(MASK_OFF[0] / 255, MASK_OFF[1] / 255, MASK_OFF[2] / 255, THREE.SRGBColorSpace);
+    if (!m.emissive) return;
+    if (on){
+      if (!m.userData.maskEmissive) m.userData.maskEmissive = m.emissive.clone();
+      if (m.userData.ct === 3) m.emissive.setRGB(0.45, 0, 0.45); else m.emissive.setRGB(0, 0, 0);
+    } else if (m.userData.maskEmissive){ m.emissive.copy(m.userData.maskEmissive); delete m.userData.maskEmissive; }
+  });
+}
+
+// WHICH UNIT TAKES WHICH COLOUR: the hair takes the hair colour (1); every other unit takes the skin
+// tone (2); the face takes the feature colour (4); an armour or clothing slot takes its pigment (3). Type 5,
+// a layer on the female faces, is not identified and is drawn untinted. 4U's own colour loop is not read --
+// these are the MH3U Armor Viewer's rules on 4U's types (armor.json _about.colors).
+function applyAllColours(){
+  const skin = rgbOf('skinC'), hair = rgbOf('hairC'), feat = rgbOf('featC');
+  if (mounted.hair) applyColours(mounted.hair, { 1: hair });
+  if (mounted.face) applyColours(mounted.face, { 2: skin, 4: feat });
+  for (const slot of SLOTS) if (mounted[slot]) applyColours(mounted[slot], { 2: skin, 3: pigmentOf(slot) });
+  for (const k of SLOTS.concat(['hair', 'face'])) if (mounted[k]) dyeMask(mounted[k], maskCb.checked);
+  paintChips(); buildPigmentLists();
+}
+
+// One board per panel. The row that chose Custom owns it until another row does.
+function makeBoard(canvasId, wrapId, labelId, onPick){
+  const cv = document.getElementById(canvasId), wrap = document.getElementById(wrapId);
+  const [x0, y0, x1, y1] = C.board.region;
+  const w = x1 - x0 + 1, h = y1 - y0 + 1;
+  const Z = 3;                               // 176 x 51 texels: three screen pixels each
+  cv.width = w * Z; cv.height = h * Z;
+  const cx = cv.getContext('2d');
+  let target = null, mark = null;
+  function draw(){
+    cx.imageSmoothingEnabled = false;
+    cx.clearRect(0, 0, cv.width, cv.height);
+    cx.drawImage(boardImg, x0, y0, w, h, 0, 0, cv.width, cv.height);
+    if (mark){
+      cx.strokeStyle = '#fff'; cx.lineWidth = 2;
+      cx.strokeRect((mark.x - x0) * Z - 3, (mark.y - y0) * Z - 3, Z + 6, Z + 6);
+      cx.strokeStyle = '#000'; cx.lineWidth = 1;
+      cx.strokeRect((mark.x - x0) * Z - 5, (mark.y - y0) * Z - 5, Z + 10, Z + 10);
+    }
+  }
+  function pick(e){
+    if (!target) return;
+    const rc = cv.getBoundingClientRect();
+    const x = Math.min(x1, Math.max(x0, x0 + Math.floor((e.clientX - rc.left) / rc.width * w)));
+    const y = Math.min(y1, Math.max(y0, y0 + Math.floor((e.clientY - rc.top) / rc.height * h)));
+    if (boardData[(y * C.board.w + x) * 4 + 3] === 0) return;      // off the board
+    mark = { x, y }; draw(); onPick(target, mark);
+  }
+  let down = false;
+  cv.addEventListener('pointerdown', e => { down = true; cv.setPointerCapture(e.pointerId); pick(e); });
+  cv.addEventListener('pointermove', e => { if (down) pick(e); });
+  cv.addEventListener('pointerup', () => { down = false; });
+  return {
+    open(t, label, at){ target = t; mark = at || null; document.getElementById(labelId).textContent = label; wrap.hidden = false; draw(); },
+    close(t){ if (t === undefined || t === target){ target = null; wrap.hidden = true; } },
+    target: () => target };
+}
+const colourBoard = makeBoard('board', 'boardWrap', 'boardLabel', (key, at) => {
+  state[key] = { x: at.x, y: at.y }; applyAllColours(); saveState();
+});
+// the palette's board writes the pixel picked into the row the palette was opened for
+const pigBoard = makeBoard('pigBoard', 'pigBoardWrap', 'pigBoardLabel', (id, at) => {
+  setPig(id, { x: at.x, y: at.y }); markPigGrid(); saveState();
+});
+// the board pixel nearest a colour: where Custom starts from a colour that is not one of its pixels
+function nearestOnBoard(c){
+  let best = null, bd = 1e9;
+  const [x0, y0, x1, y1] = C.board.region;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++){
+    if (boardData[(y * C.board.w + x) * 4 + 3] === 0) continue;
+    const b = boardRGB(x, y), d = (b[0] - c[0]) ** 2 + (b[1] - c[1]) ** 2 + (b[2] - c[2]) ** 2;
+    if (d < bd){ bd = d; best = { x, y }; }
+  }
+  return best;
+}
+for (const r of COLOR_ROWS){
+  const sel = document.getElementById(r.sel);
+  sel.onchange = () => {
+    if (sel.value === 'custom'){
+      // Custom starts where the colour is now
+      const at = isXY(state[r.key]) ? state[r.key] : (r.def ? { x: r.def.x, y: r.def.y } : nearestOnBoard(WHITE));
+      state[r.key] = { x: at.x, y: at.y };
+      colourBoard.open(r.key, r.name + ': pick a color', at);
+    } else { state[r.key] = { d: 1 }; colourBoard.close(r.key); }
+    applyAllColours(); saveState();
+  };
+  // re-opening a Custom row's board
+  sel.onfocus = () => { if (sel.value === 'custom') colourBoard.open(r.key, r.name + ': pick a color', state[r.key]); };
+}
+// ---- the pigment palette ------------------------------------------------------------------------
+// The MHGU Armor Viewer's modal, opened per row. Default puts the row back on the piece's own colour;
+// the grid is the game's 70 armour pigments (0x2f854c), deduped by colour; the board is the game's colour
+// board, where a picked pixel is kept as the pixel. A swatch closes the palette, the board does not (it
+// is dragged across).
+const pigModal = document.getElementById('pigModal'), pigGrid = document.getElementById('pigGrid');
+let pigTarget = null;
+{
+  const seen = new Set(), tiles = [];
+  C.pigments.forEach((c, i) => {
+    const h = rgbHex(c);
+    if (seen.has(h)) return;
+    seen.add(h);
+    tiles.push('<button type="button" data-hex="' + h + '" title="Pigment ' + i + ' — ' + h.toUpperCase() + '" style="background:' + h + '"></button>');
+  });
+  pigGrid.className = 'pig-grid';
+  pigGrid.innerHTML = tiles.join('');
+  document.getElementById('pigGameCount').textContent = tiles.length + ' colors';
+}
+// the swatch matching the row's colour, while the row carries one of its own
+function markPigGrid(){
+  const on = pgEl('pgOn_', pigTarget).checked, cur = pgEl('pg_', pigTarget).value.toLowerCase();
+  for (const b of pigGrid.querySelectorAll('button[data-hex]')) b.classList.toggle('sel', on && b.dataset.hex === cur);
+}
+function openPig(id){
+  pigTarget = id;
+  document.getElementById('pigTitle').textContent = 'Pigment: ' + (id === 'all' ? 'All' : SLOT_LABEL[id]);
+  markPigGrid();
+  const s = id === 'all' ? null : state.pig[id];
+  pigBoard.open(id, 'Color board', isXY(s) ? s : null);
+  pigModal.classList.remove('hidden');
+}
+function closePig(){ pigModal.classList.add('hidden'); pigBoard.close(); pigTarget = null; }
+pigGrid.onclick = e => {
+  const b = e.target.closest('button[data-hex]');
+  if (!b || !pigTarget) return;
+  setPig(pigTarget, { c: b.dataset.hex }); saveState(); closePig();
+};
+document.getElementById('pigDefault').onclick = () => { setPig(pigTarget, null); saveState(); closePig(); };
+document.getElementById('pigClose').onclick = closePig;
+pigModal.onclick = e => { if (e.target === pigModal) closePig(); };
+
+// ---- mounting ---------------------------------------------------------------------------------
+// Each slot loads on its own ticket: a fast scroll through a list fires faster than models load,
+// and a load that comes back stale drops its result instead of mounting it.
+const mounted = {};                       // helm/body/arm/wst/leg/face/hair -> root
+const shown = {};                         // the record each slot is showing
+const ticket = {};
+function unmount(k){
+  if (mounted[k]){ world.remove(mounted[k]); releasePiece(mounted[k]); delete mounted[k]; delete shown[k]; }
+}
+async function mountOne(k, rec){
+  const t = ticket[k] = (ticket[k] || 0) + 1;
+  if (shown[k] === rec && mounted[k]) return;
+  if (!rec){ unmount(k); return; }
+  const root = await loadPiece(rec, { wire: wireOn });
+  if (t !== ticket[k]){ releasePiece(root); return; }
+  unmount(k);
+  root.userData.slot = k;
+  world.add(root); mounted[k] = root; shown[k] = rec;
+}
+
+// THE HAIR AND FACE UNDER A HELM (0xb0ad80). The helm's MODEL picks a u32 per gender, or a row of 28 --
+// one per hairstyle; its low half is the hair parts left drawn (0-9), its high half the face parts (0-6).
+// Face bit 5 also gates the Features (0xb08778): with it set, face part 200 + Features - 1 is drawn and the
+// other eleven are not; without it, or with Features (None), none is. Hair parts above 9 (male hair 13's
+// part 13) keep the all-on they start with.
+const ALL_ON = 0x7f03ff;                  // what helm 0 holds: every hair part, every face part
+function applyHelmMasks(){
+  const e = DATA.hairFace[state.g][modelFor('helm')];
+  const m = e === undefined ? ALL_ON : Array.isArray(e) ? (e[state.hair] !== undefined ? e[state.hair] : ALL_ON) : e;
+  if (mounted.hair) applyParts(mounted.hair, m & 0xffff, 10);
+  if (mounted.face){
+    const fm = (m >>> 16) & 0x7f;
+    const feat = (fm & 0x20) && state.feat ? DATA.features[state.feat - 1] : -1;
+    applyParts(mounted.face, fm, 7, { from: DATA.features[0], to: DATA.features[DATA.features.length - 1], show: feat });
+  }
+}
+
+let loads = 0;
+function setLoading(on){
+  loads = Math.max(0, loads + (on ? 1 : -1));
+  document.getElementById('loading').hidden = loads === 0;
+}
+let framed = false;
+async function refresh(){
+  setLoading(true);
+  try {
+    const g = state.g, chars = DATA.chars[g];
+    const jobs = SLOTS.map(slot => mountOne(slot, pieceRec(g, slot, modelFor(slot))));
+    jobs.push(mountOne('face', chars.face[state.face] || null));
+    jobs.push(mountOne('hair', chars.hair[state.hair] || null));
+    jobs.push(refreshWeapon());
+    await Promise.all(jobs);
+    applyHelmMasks();
+    applyAllColours();
+    if (!framed){ frameAll(); framed = true; }
+  } catch (e) { noteError(e && e.message || e); }
+  finally { setLoading(false); }
+  saveState();
+}
+
+// ---- pose ---------------------------------------------------------------------------------------
+// The game's own motions, played on an off-screen proxy -- the gender's inner-wear body, which carries
+// every bone the motions drive bar the accessory bones -- and copied to every piece by bone id each frame
+// (render/pose.js). An accessory bone, placed differently by each helm and hair, follows its animated
+// parent. "Bind Pose" stops the clip and puts every piece back at rest.
+const pose = new PoseDriver({ frame: world, onError: msg => noteError(msg) });
+const poseListSel = document.getElementById('poseList'), poseClipSel = document.getElementById('poseClip');
+// the lists by the game's own groups; the weapon lists by the class whose folder they are in (the
+// weapon\<dir>\mot\wgNN strings at 0xea0cad pair each wNN with its class's folder)
+const POSE_GROUPS = { co: 'Common', lco: 'Lobby', etc: 'Other', weapon: 'Weapon Classes' };
+const POSE_NAMES = { co_0: 'Common 0', co_1: 'Common 1', co_2: 'Common 2', co_4: 'Common 4',
+  lco_0: 'Lobby 0', lco_1: 'Lobby 1', lco_2: 'Lobby 2', lco_3: 'Lobby 3', lco_0p: 'Lobby 0p', lco_2p: 'Lobby 2p', lco_3p: 'Lobby 3p',
+  pl_make: 'Character Creation', pl_gc: 'Guild Card', pl_arena: 'Arena',
+  w00: 'Great Sword', w01: 'Sword & Shield', w02: 'Hammer', w03: 'Lance', w04: 'Heavy Bowgun', w06: 'Light Bowgun',
+  w07: 'Long Sword', w08: 'Switch Axe', w09: 'Gunlance', w10: 'Bow', w11: 'Dual Blades', w12: 'Hunting Horn',
+  w13: 'Insect Glaive', w14: 'Charge Blade' };
+function poseSet(){ return DATA.poses && DATA.poses[state.g]; }
+function buildPoseLists(){
+  const P = poseSet();
+  const lists = (P && P.lists) || [];
+  let html = '', group = null;
+  for (const l of lists){
+    if (l.group !== group){
+      if (group !== null) html += '</optgroup>';
+      group = l.group; html += '<optgroup label="' + esc(POSE_GROUPS[group] || group) + '">';
+    }
+    html += '<option value="' + esc(l.id) + '">' + esc(POSE_NAMES[l.id] || l.id) + ' &mdash; ' + l.clips.length + ' clips</option>';
+  }
+  poseListSel.innerHTML = html + (group !== null ? '</optgroup>' : '');
+  if (!lists.some(l => l.id === state.pose.list)) state.pose.list = lists.length ? lists[0].id : '';
+  poseListSel.value = state.pose.list;
+  const l = lists.find(x => x.id === state.pose.list);
+  const clips = (l && l.clips) || [];
+  poseClipSel.innerHTML = '<option value="">Bind Pose</option>' +
+    clips.map(c => '<option value="' + esc(c.clip) + '">' + esc(c.clip) + ' &mdash; ' + c.dur.toFixed(2) + ' s</option>').join('');
+  if (state.pose.clip && !clips.some(c => c.clip === state.pose.clip)) state.pose.clip = '';
+  poseClipSel.value = state.pose.clip;
+}
+function restoreBind(){
+  for (const root of Object.values(mounted))
+    for (const [node, p, q, s] of (root.userData.bind || [])){ node.position.copy(p); node.quaternion.copy(q); node.scale.copy(s); }
+}
+let poseTicket = 0;
+async function playPose(){
+  const t = ++poseTicket;
+  const P = poseSet();
+  const l = P && P.lists.find(x => x.id === state.pose.list);
+  if (!P || !l || !state.pose.clip){ pose.stop(); restoreBind(); return; }
+  await pose.play({ file: l.file, clip: state.pose.clip, model: P.model }, { joints: P.joints });
+  if (t !== poseTicket) return;
+}
+poseListSel.onchange = async () => {
+  state.pose.list = poseListSel.value;
+  const l = poseSet().lists.find(x => x.id === state.pose.list);
+  state.pose.clip = (l && l.clips.length) ? l.clips[0].clip : '';
+  buildPoseLists(); await playPose(); saveState();
+};
+poseClipSel.onchange = async () => { state.pose.clip = poseClipSel.value; await playPose(); saveState(); };
+
+// ---- weapon -------------------------------------------------------------------------------------
+// THE GAME'S OWN WEAPON MOUNT (scripts/build_weapons.py; mount.json). Each part of a weapon is its own model
+// with its own little skeleton (joint ids 0-4, not the hunter's). The game's weapon callback places one joint
+// of it -- the part's `mountJoint`, 0 for every part but the Long Sword's scabbard (4) -- at the world matrix
+// of a hunter BONE times T(pos) R(rot) S, position in centimetres in the bone's own space, rotation in degrees
+// composed Rz Ry Rx (three.js 'ZYX'), scale last. Which bone and which record follow the part's carry state:
+// drawn is the hand (bone 8, or 12 for the Dual Blades' second blade), sheathed the back or the waist at the
+// class's rest scale; shields and the Kinsect stay on the forearm (bone 11), the arrows and the scabbard rest.
+// Only the skeleton moves: the meshes stay where the glb has them and the skinning carries them.
+//   The pigment (colour type 3) is the game's: record +0x12 into the melee table, +0x1b into the gunner one
+// (0x2f854c; weapons.json pigments).
+//   NOT HERE YET: the motion-specific placements (a weapon follows the hand through every clip of its class's
+// list while drawn, but the game moves some parts per motion -- the Bow unfolding, the Switch Axe and Charge
+// Blade morphing), and the weapons' own joint animation and part masks (mount.json _about.notRead).
+const WEAPONS = await loadJson('weapons.json');      // the game's weapon tables and every weapon model
+const MOUNT = await loadJson('mount.json');          // how the game hangs each part on the hunter
+const weaponClassSel = document.getElementById('weaponClass'), weaponModelSel = document.getElementById('weaponModel'),
+      weaponDrawnSel = document.getElementById('weaponDrawn'), kinsectSel = document.getElementById('kinsect');
+const W_CLASSES = WEAPONS.classes;
+// THE CLASS'S STATES that carry from action to action (the stances' `modes`, weapon_state.MODE_STATE): the Switch Axe's and
+// Charge Blade's form (player data +0x6f9) and the Gunlance's Wyvern's Fire cooldown (its vent stands open)
+const WEAPON_MODES = { 8: ['Axe Mode', 'Sword Mode'], 9: ['Ready', "Wyvern's Fire Cooling"], 14: ['Sword Mode', 'Axe Mode'] };
+const weaponModeSel = document.getElementById('weaponMode');
+const wClass = cls => W_CLASSES.find(c => c.cls === cls) || null;
+const isGlaive = c => !!c && c.parts.indexOf('mus') >= 0;
+// a class's list: one item per (model, pigment), named by every weapon that draws it -- as the armour lists
+function weaponOptions(cls){
+  const c = wClass(cls);
+  if (!c) return [];
+  const groups = new Map();
+  for (const r of WEAPONS.weapons[c.key] || []){
+    const k = r.model + ':' + r.pig;
+    if (!groups.has(k)) groups.set(k, { model: r.model, pig: r.pig, names: [], kinsect: r.kinsect || 0 });
+    const e = groups.get(k);
+    if (e.names.indexOf(r.name) < 0) e.names.push(r.name);
+  }
+  return [...groups.values()];
+}
+// the Kinsects, one item per model, named by every Kinsect that draws it
+function kinsectOptions(){
+  const groups = new Map();
+  for (const k of WEAPONS.kinsects){
+    if (!WEAPONS.models['mus/mus' + pad3(k.model)]) continue;
+    if (!groups.has(k.model)) groups.set(k.model, { model: k.model, names: [] });
+    groups.get(k.model).names.push(k.name);
+  }
+  return [...groups.values()];
+}
+function buildWeaponLists(){
+  const w = state.weapon, c = wClass(w.cls);
+  weaponClassSel.innerHTML = '<option value="-1">(None)</option>' +
+    W_CLASSES.map(x => '<option value="' + x.cls + '">' + esc(x.name) + '</option>').join('');
+  weaponClassSel.value = String(w.cls);
+  const opts = weaponOptions(w.cls);
+  if (c && !opts.some(o => o.model === w.model && o.pig === w.pig) && opts.length){ w.model = opts[0].model; w.pig = opts[0].pig; }
+  weaponModelSel.innerHTML = opts.map(o => '<option value="' + o.model + ':' + o.pig + '">' + esc(o.names.join(' / ')) + '</option>').join('');
+  weaponModelSel.value = w.model + ':' + w.pig;
+  const ks = kinsectOptions();
+  if (!ks.some(k => k.model === w.kinsect)) w.kinsect = ks.length ? ks[0].model : 0;
+  kinsectSel.innerHTML = ks.map(k => '<option value="' + k.model + '">' + esc(k.names.join(' / ')) + '</option>').join('');
+  kinsectSel.value = String(w.kinsect);
+  // a glaive that brings its own Kinsect (0x2f52a8) shows it, whatever the list says
+  const forced = (opts.find(o => o.model === w.model && o.pig === w.pig) || {}).kinsect || 0;
+  kinsectSel.disabled = !!forced;
+  weaponDrawnSel.value = w.drawn ? '1' : '0';
+  document.getElementById('weaponModelField').hidden = !c;
+  document.getElementById('weaponDrawnField').hidden = !c;
+  document.getElementById('kinsectField').hidden = !isGlaive(c);
+  // THE MODE (player data +0x6f9): the Switch Axe's sword and the Charge Blade's axe are flag 1. The game carries the
+  // mode from the last morph, so the viewer asks; the morph clips show their own change whatever it says
+  const names = WEAPON_MODES[w.cls];
+  document.getElementById('weaponModeField').hidden = !names;
+  if (names){
+    weaponModeSel.innerHTML = names.map((n, i) => '<option value="' + i + '">' + n + '</option>').join('');
+    weaponModeSel.value = String(w.mode || 0);
+  }
+}
+// the Kinsect model the glaive on screen carries
+function kinsectModel(){
+  const w = state.weapon;
+  const o = weaponOptions(w.cls).find(x => x.model === w.model && x.pig === w.pig);
+  return (o && o.kinsect) || w.kinsect;
+}
+// the mounted parts: { root, node (the mount joint), part (mount.json's), k }
+const weaponParts = [];
+let weaponShown = '', weaponTicket = 0;
+function unmountWeapon(){
+  for (const p of weaponParts){ world.remove(p.root); releasePiece(p.root); }
+  weaponParts.length = 0; weaponShown = '';
+}
+async function refreshWeapon(){
+  const w = state.weapon, c = wClass(w.cls);
+  const key = c ? c.cls + ':' + w.model + ':' + (isGlaive(c) ? kinsectModel() : '') : '';
+  if (key === weaponShown && (key || !weaponParts.length)){ applyWeaponLook(); return; }
+  const t = ++weaponTicket;
+  if (!c){ unmountWeapon(); return; }
+  if (stanceNow.key !== c.key){
+    stanceNow.key = c.key; stanceNow.data = null;
+    loadStance(c.key).then(T => { if (stanceNow.key === c.key) stanceNow.data = T; });
+  }
+  const M = MOUNT.classes[String(c.cls)];
+  // a part the cart has no model for (a Long Sword without a scabbard) is not drawn: the game asks for the
+  // file by the weapon's own model number and there is none
+  const loaded = await Promise.all(c.parts.map(async (name, k) => {
+    const file = name === 'mus' ? 'mus/mus' + pad3(kinsectModel()) : c.dir + '/' + name + pad3(w.model);
+    const rec = WEAPONS.models[file];
+    if (!rec || !M || !M.parts[k]) return null;
+    const root = await loadPiece(rec, { wire: wireOn });
+    return { root, k, part: M.parts[k], kinsect: name === 'mus' };
+  }));
+  if (t !== weaponTicket){ for (const p of loaded) if (p) releasePiece(p.root); return; }
+  unmountWeapon();
+  for (const p of loaded){
+    if (!p) continue;
+    const node = (gidBonesOf(p.root).find(b => b.gid === p.part.mountJoint) || {}).node || null;
+    if (!node) continue;
+    node.matrixAutoUpdate = false;
+    p.node = node;
+    world.add(p.root); weaponParts.push(p);
+  }
+  weaponShown = key;
+  applyWeaponLook();
+}
+// the pigment: the class's own table (melee or gunner); the Kinsect takes none
+function applyWeaponLook(){
+  const c = wClass(state.weapon.cls);
+  const table = c && c.gunner ? WEAPONS.pigments.gunner : WEAPONS.pigments.melee;
+  const rgb = table[state.weapon.pig] || table[0];
+  for (const p of weaponParts) applyColours(p.root, p.kinsect ? {} : { 3: rgb });
+}
+// ---- stances --------------------------------------------------------------------------------------
+// WHERE THE GAME PUTS THE WEAPON ON EVERY FRAME, and which of the weapon's own motions it plays
+// (scripts/build_stances.py -> stances/wNN.json, from running the game's own per-part update in an emulator,
+// scripts/weapon_state.py). For each clip of the class's list (the Pose panel's wNN), each part has a timeline of
+// segments {f, state, bone, pos, rot, scale, wmot?} from clip frame f (60 a second): the hunter bone and record for
+// the carry state the motion's events and the game's own rules give -- a draw takes the weapon off the back and
+// into the hand mid-clip -- and `wmot`, the weapon motions the joint code samples, in order, each
+// [motion, slot, frame at f, rate]: their tracks (stances' weapon glb, the class's weapon\<dir>\mot\wgNN list)
+// set the weapon's own joints by joint id, a later one over an earlier one -- the Bow unfolding, the Switch
+// Axe and Charge Blade morphing. Joint 0's tracks compose on the mount while the part is held (placeWeapon). The class's models
+// are grouped by what the game does with them (`variants`); a weapon shown sheathed takes `rest`.
+const STANCES = new Map();                // class key -> Promise<{ S, clips: Map name -> Map gid -> tracks }>
+function loadStance(key){
+  if (!STANCES.has(key))
+    STANCES.set(key, (async () => {
+      const S = await loadJson('stances/' + key + '.json');
+      const gltf = await loadGlb(S.weapon.file, S.weapon.file);
+      // a track names its node by the loader's sanitized name; the glb's own names carry the joint id ("1:1")
+      const gidOf = new Map();
+      for (const nd of gltf.parser.json.nodes || []){
+        const m = /^\d+:(\d+)$/.exec(nd.name || '');
+        if (m) gidOf.set(THREE.PropertyBinding.sanitizeNodeName(nd.name), +m[1]);
+      }
+      const clips = new Map();
+      for (const a of gltf.animations){
+        const byGid = new Map();
+        for (const tr of a.tracks){
+          const dot = tr.name.lastIndexOf('.');
+          const gid = gidOf.get(tr.name.slice(0, dot));
+          if (gid === undefined) continue;
+          if (!byGid.has(gid)) byGid.set(gid, {});
+          byGid.get(gid)[tr.name.slice(dot + 1)] = tr.createInterpolant();
+        }
+        clips.set(a.name, byGid);
+      }
+      return { S, clips };
+    })().catch(e => { STANCES.delete(key); noteError('stances/' + key + '.json: ' + (e && e.message || e)); return null; }));
+  return STANCES.get(key);
+}
+const stanceNow = { key: null, data: null };
+// the weapon motion M at its own frame F -> the converter's clip and time: a motion with a loop point is split into
+// Motion[M]_start (frames 0 .. loop) and Motion[M]_loop (loop .. end, repeating); others are Motion[M]
+function weaponClipAt(T, M, F){
+  const mo = T.S.weapon.motions[String(M)];
+  if (!mo) return null;
+  const end = Math.max(0, mo.frames - 1);
+  if (mo.loop > 0){
+    if (F < mo.loop) return { clip: T.clips.get('Motion[' + M + ']_start'), t: Math.max(0, F) / 60 };
+    const span = Math.max(1, end - mo.loop);
+    return { clip: T.clips.get('Motion[' + M + ']_loop'), t: ((F - mo.loop) % span) / 60 };
+  }
+  return { clip: T.clips.get('Motion[' + M + ']'), t: Math.min(Math.max(0, F), mo.frames) / 60 };
+}
+const segmentAt = (tl, f) => { let s = tl[0]; for (const x of tl){ if (x.f > f) break; s = x; } return s; };
+// what plays now for the weapon on screen: the stance timelines of the clip the Pose panel plays (drawn, on the
+// class's own list), else the sheathed look; null while the class's stances load
+function stanceState(){
+  const w = state.weapon, c = wClass(w.cls);
+  if (!c || stanceNow.key !== c.key || !stanceNow.data) return null;
+  const T = stanceNow.data, S = T.S;
+  let v = Object.keys(S.variants)[0];
+  for (const k in S.variants) if (S.variants[k].models.indexOf(w.model) >= 0){ v = k; break; }
+  const mode = (S.modes || [0]).indexOf(w.mode) >= 0 ? w.mode : 0;
+  const idle = S.idle && S.idle[String(mode)] && S.idle[String(mode)][v] || null;
+  const cl = S.clips[state.pose.clip];
+  if (w.drawn && state.pose.list === c.key && cl && pose.action){
+    const frame = pose.action.time * S.fps;
+    const set = (mode && cl['m' + mode]) || cl.v;
+    return { T, parts: set[v], frame, idle };
+  }
+  return w.drawn ? null : { T, parts: S.rest[v], frame: 0 };
+}
+// the weapon motions for a part onto its own joints: every joint back to its bind, then each motion's tracks in
+// order (joint 0 kept aside in p.root0 for the mount). `layers` are the requests whose SLOT is this part --
+// 0x351798's slot picks the part whose joints a motion drives (the Dual Blades' main code drives both blades, the
+// Charge Blade's shield its own), so they are gathered from every part's segment
+function poseWeaponJoints(p, T, layers, frame){
+  if (!p.joints){
+    const bind = new Map((p.root.userData.bind || []).map(([o, ps, q, sc]) => [o, [ps, q, sc]]));
+    p.joints = gidBonesOf(p.root).filter(b => bind.has(b.node)).map(b => ({ gid: b.gid, node: b.node, bind: bind.get(b.node) }));
+  }
+  for (const j of p.joints) if (j.node !== p.node){ j.node.position.copy(j.bind[0]); j.node.quaternion.copy(j.bind[1]); j.node.scale.copy(j.bind[2]); }
+  if (!layers || !layers.length || p.kinsect) return;
+  for (const [M, f0, rate, segF] of layers){
+    const at = weaponClipAt(T, M, f0 + rate * (frame - segF));
+    if (!at || !at.clip) continue;
+    for (const [gid, tr] of at.clip){
+      const j = p.joints.find(x => x.gid === gid);
+      if (!j) continue;
+      if (j.node === p.node){             // joint 0: kept aside for the mount (placeWeapon)
+        p.root0 = p.root0 || {};
+        if (tr.position) p.root0.p = new THREE.Vector3().fromArray(tr.position.evaluate(at.t));
+        if (tr.quaternion) p.root0.q = new THREE.Quaternion().fromArray(tr.quaternion.evaluate(at.t)).normalize();
+        if (tr.scale) p.root0.s = new THREE.Vector3().fromArray(tr.scale.evaluate(at.t));
+        continue;
+      }
+      if (tr.position) j.node.position.fromArray(tr.position.evaluate(at.t));
+      if (tr.quaternion) j.node.quaternion.fromArray(tr.quaternion.evaluate(at.t)).normalize();
+      if (tr.scale) j.node.scale.fromArray(tr.scale.evaluate(at.t));
+    }
+  }
+}
+// a part's mesh visibility: every part but the hidden ones (the stand-in layer, parts 100+, stays off)
+function maskWeapon(p, hidden){
+  const key = hidden && hidden.size ? [...hidden].sort((a, b) => a - b).join() : '';
+  if (key === p.mask) return;
+  p.mask = key;
+  p.root.traverse(o => {
+    if (!(o.isMesh || o.isSkinnedMesh) || o.userData.proxy) return;
+    o.visible = !(hidden && hidden.has(o.userData.part));
+  });
+}
+const _wm = new THREE.Matrix4(), _wl = new THREE.Matrix4(), _wi = new THREE.Matrix4(), _wr = new THREE.Matrix4();
+const _v0 = new THREE.Vector3(), _q0 = new THREE.Quaternion(), _s1 = new THREE.Vector3(1, 1, 1);
+const _we = new THREE.Euler(), _wq = new THREE.Quaternion(), _wp = new THREE.Vector3(), _ws = new THREE.Vector3();
+const DEG = Math.PI / 180;
+// every frame, after the pose: each part's mount joint = the bone's world * T R S, written as the joint's
+// local matrix under its own parent
+function placeWeapon(){
+  if (!weaponParts.length) return;
+  const roots = Object.values(mounted);
+  const st = stanceState();
+  // every part's segment for this frame, and the weapon-motion requests by the part (slot) they drive
+  const segs = st && st.parts ? st.parts.map(tl => tl && tl.length ? segmentAt(tl, st.frame) : null) : [];
+  // the mode's idle first (held at its frame), then the clip's own, each over what came before (MHGU's layering)
+  const layersFor = k => ((st && st.idle && st.idle[k]) || []).map(w => [w[0], w[1], 0, 0])
+    .concat(segs.flatMap(sg => (sg && sg.wmot || []).filter(w => w[1] === k).map(w => [w[0], w[2], w[3], sg.f])));
+  // THE PART MASK: the mesh parts the game's code leaves off on the slot's weapon model (player data +0x5bf8 +
+  // 0x10f8 * slot, +0x108 -- the Charge Blade in sword mode hides its axe blade 2 and housing 4, which share the
+  // sword's one bone), gathered from every part's segment like the motions
+  const hiddenFor = k => { const h = new Set(); for (const sg of segs) for (const x of (sg && sg.hide && sg.hide[k]) || []) h.add(x); return h; };
+  for (const p of weaponParts){
+    // the stance's segment for this frame where there is one, else mount.json's carry placement
+    const seg = segs[p.k] || null;
+    const pl = seg ? { joint: seg.bone, pos: seg.pos, rot: seg.rot, scale: seg.scale }
+                   : (state.weapon.drawn ? p.part.drawn : p.part.sheathed);
+    p.root0 = null;
+    poseWeaponJoints(p, st && st.T, st ? layersFor(p.k) : null, st ? st.frame : 0);
+    maskWeapon(p, st ? hiddenFor(p.k) : null);
+    const bone = playerBone(roots, pl.joint);
+    p.root.visible = !!bone;
+    if (!bone) continue;
+    bone.updateWorldMatrix(true, false);
+    _we.set(pl.rot[0] * DEG, pl.rot[1] * DEG, pl.rot[2] * DEG, MOUNT.order);
+    _wq.setFromEuler(_we);
+    _wp.set(pl.pos[0] / 100, pl.pos[1] / 100, pl.pos[2] / 100);     // cm -> the models' metres
+    _ws.setScalar(pl.scale);
+    _wl.compose(_wp, _wq, _ws);
+    _wm.multiplyMatrices(bone.matrixWorld, _wl);
+    // JOINT 0's TRACKS ride on the mount while the part is HELD (the MHGU viewer's rule: the Charge Blade's shield
+    // slides along the sword into the axe head, 4U's Motion[21]); AT REST (states 2 and 3) they do not -- the game
+    // asks the sheathed Charge Blade sword for its thrown-sword motion 4 at frame 0, whose joint 0 is metres away,
+    // and the sheathed sword sits in its shield only without it (judged by eye: 4U's own rule is not read)
+    if (p.root0 && seg && seg.state !== 2 && seg.state !== 3){
+      const r = p.root0;
+      _wm.multiply(_wr.compose(r.p || _v0, r.q || _q0, r.s || _s1));
+    }
+    const parent = p.node.parent;
+    parent.updateWorldMatrix(true, false);
+    p.node.matrix.multiplyMatrices(_wi.copy(parent.matrixWorld).invert(), _wm);
+    p.node.matrixWorldNeedsUpdate = true;
+    p.root.updateMatrixWorld(true);
+  }
+}
+// DRAWN PLAYS THE CLASS'S OWN LIST: drawing a weapon puts the Pose panel on its class's motion list (wNN) and
+// that list's first clip; sheathing leaves the pose as it is.
+async function drawForPose(){
+  const c = wClass(state.weapon.cls), P = poseSet();
+  if (!c || !state.weapon.drawn || !P) return;
+  const l = P.lists.find(x => x.id === c.key);
+  if (!l || !l.clips.length) return;
+  if (state.pose.list === l.id && l.clips.some(x => x.clip === state.pose.clip)) return;
+  state.pose.list = l.id; state.pose.clip = l.clips[0].clip;
+  buildPoseLists(); await playPose();
+}
+weaponClassSel.onchange = async () => {
+  const cls = +weaponClassSel.value;
+  state.weapon.cls = cls; state.weapon.mode = 0;       // a new class starts in its first mode
+  const opts = weaponOptions(cls);
+  if (opts.length){ state.weapon.model = opts[0].model; state.weapon.pig = opts[0].pig; }
+  buildWeaponLists(); await refreshWeapon(); await drawForPose(); saveState();
+};
+weaponModelSel.onchange = () => {
+  const [m, g] = weaponModelSel.value.split(':').map(Number);
+  state.weapon.model = m; state.weapon.pig = g;
+  buildWeaponLists(); refreshWeapon().then(saveState);
+};
+kinsectSel.onchange = () => { state.weapon.kinsect = +kinsectSel.value; refreshWeapon().then(saveState); };
+weaponModeSel.onchange = () => { state.weapon.mode = +weaponModeSel.value; saveState(); };
+weaponDrawnSel.onchange = async () => { state.weapon.drawn = weaponDrawnSel.value === '1'; await drawForPose(); saveState(); };
+
+// ---- framing ----------------------------------------------------------------------------------
+// Under a clip a skinned mesh keeps its rest bounds, so the pose driver's own bounds -- the union of
+// the whole loop -- and its body centre win where it has them.
+function frameAll(){
+  if (camMode === 'fly') leaveFly({ keepTarget: true });   // Fit to View is an orbit view
+  const box = new THREE.Box3();
+  let c = null;
+  if (pose.bounds && !pose.bounds.isEmpty()){ box.copy(pose.bounds); c = pose.center ? pose.center.clone() : null; }
+  else for (const o of Object.values(mounted)) box.expandByObject(o);
+  if (box.isEmpty()) return;
+  const size = box.getSize(new THREE.Vector3());
+  if (!c) c = box.getCenter(new THREE.Vector3());
+  const vFov = THREE.MathUtils.degToRad(camera.fov);
+  const reachY = Math.max(box.max.y - c.y, c.y - box.min.y) * 2;
+  const reachX = Math.max(box.max.x - c.x, c.x - box.min.x) * 2;
+  const dist = Math.max((Math.max(size.y, reachY) * 0.5) / Math.tan(vFov / 2),
+                        (Math.max(size.x, reachX) * 0.5) / Math.tan(vFov / 2) / camera.aspect) * MARGIN + size.z * 0.5;
+  controls.target.copy(c);
+  camera.position.copy(c).add(new THREE.Vector3(0, 0, dist));
+  camera.near = Math.max(dist / 1000, 1e-4); camera.far = dist * 20;
+  camera.updateProjectionMatrix(); controls.update();
+}
+document.getElementById('fitBtn').onclick = () => frameAll();
+const BIAS_STEP_M = 0.0005;
+function updateDepthBias(){
+  const dist = camera.position.distanceTo(controls.target);
+  // orbit only: in fly the target distance means nothing
+  if (camMode !== 'fly' && dist > 0){
+    const near = Math.max(dist / 200, 1e-4), far = Math.max(dist * 20, 5000);
+    if (Math.abs(camera.near - near) > near * 0.02 || camera.far !== far){
+      camera.near = near; camera.far = far; camera.updateProjectionMatrix();
+    }
+  }
+  let lsb = dist * dist / camera.near / 16777216;
+  // an orthographic lens has a LINEAR depth buffer over its own planes
+  if (lensState.type === 'ortho'){ const rc = lensCamera(); lsb = (rc.far - rc.near) / 16777216; }
+  if (lsb > 0) setBiasUnitsPerStep(BIAS_STEP_M / lsb);
+}
+
+// ---- controls ---------------------------------------------------------------------------------
+for (const slot of SLOTS) slotSel[slot].onchange = () => {
+  // a colour given to the slot stays, as the MHGU viewer's rows do
+  state[slot] = +slotSel[slot].value; refresh();
+};
+filterEl.oninput = () => buildLists();
+typeSel.onchange = () => { state.type = typeSel.value; buildLists(); refresh(); };
+genderSel.onchange = async () => { state.g = genderSel.value; buildLists(); await refresh(); await playPose(); };
+faceSel.onchange = () => { state.face = +faceSel.value; refresh(); };
+hairSel.onchange = () => { state.hair = +hairSel.value; refresh(); };
+clothSel.onchange = () => { state.cloth = +clothSel.value; refresh(); };
+featSel.onchange = () => { state.feat = +featSel.value; applyHelmMasks(); saveState(); };
+// Reset: the defaults for the hunter on screen, as the MHGU Armor Viewer's does -- its gender kept, no armour,
+// the first face, hair and clothing, the starting colours and motion, the Default lighting, no effects and a
+// fresh framing. It replaces a slot's look, so it asks first.
+document.getElementById('resetBtn').onclick = async () => {
+  if (hunterBusy) return;
+  const h = HUNTERS[hunterIndex];
+  if (!confirm('Reset ' + (h ? h.name : 'the hunter') + ' (' + (state.g === 'm' ? 'male' : 'female') + ') to the defaults? The current look is replaced.')) return;
+  filterEl.value = '';
+  hunterBusy = true; setLoading(true);
+  try {
+    await applySet({ hunter: Object.assign(clone(DEFAULTS), { g: state.g }), lighting: 'default', effects: { preset: 'off' } }, { view: false });
+  } finally { hunterBusy = false; setLoading(false); }
+  saveState();
+};
+
+// THE WHEEL STEPS A DROPDOWN, CLOSED. The MHGU Monster Viewer's control (its index.html, commit f10d041), brought
+// over as it is, as the MHGU Armor Viewer did (7b10af24). Raven there, 2026-09-23: "Is it possible to have scrollable
+// dropdown menus?", "what the user wants is to be able to somehow scroll through the items", "Without needing to go
+// into the drop down". This engine does nothing with the wheel over a closed <select>, so one notch moves the selection
+// by one option here -- disabled entries and the group headings skipped, and clamped at both ends rather than
+// wrapping, so a flick cannot jump from the last piece to the first. The panel does not scroll under the pointer while
+// it happens, which is what makes the gesture readable: the wheel is either moving the list or moving the panel.
+//   THE CHANGE FIRES WHEN THE WHEEL SETTLES (STEP_HOLD). Each of these dropdowns does real work -- a piece mounts a
+// model, a clip loads a pose -- so a flick through ten of them would otherwise start ten loads and keep only the last.
+// The control shows every step as it goes; the work runs once, on the one the wheel stopped at.
+//   ONE STEP PER NOTCH. A mouse notch arrives as a single event of 100 px or so -- the size differs by mouse and by
+// system -- so any event that big is one item, whatever the number says: three notches move three, never seven. A
+// trackpad and a high-resolution wheel instead send a stream of small ones, which would race through the list an item
+// per event, so those are added up and take a step every STEP_PX of travel. The tally is dropped when the pointer moves
+// to another dropdown or the wheel rests (STEP_REST).
+{
+  const STEP_HOLD = 140, STEP_PX = 50, NOTCH = 50, STEP_REST = 400;
+  const LINE = 16, PAGE = 400;                 // deltaMode 1 is lines, 2 is pages
+  let stepTimer = null, stepping = null, acc = 0, accSel = null, accAt = 0;
+  const fire = () => {
+    stepTimer = null;
+    const sel = stepping; stepping = null;
+    if (sel && sel.isConnected) sel.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  addEventListener('wheel', e => {
+    const sel = e.target && e.target.closest && e.target.closest('select');
+    // a list box (size > 1) or a multiple select scrolls as a list of its own: leave those alone
+    if (!sel || sel.disabled || sel.multiple || sel.size > 1 || !sel.options.length) return;
+    e.preventDefault();                        // the panel stays where it is, whether or not this moves the list
+    const now = performance.now();
+    if (accSel !== sel || now - accAt > STEP_REST) acc = 0;
+    accSel = sel; accAt = now;
+    const d = (e.deltaY || 0) * (e.deltaMode === 1 ? LINE : e.deltaMode === 2 ? PAGE : 1);
+    let steps;
+    // a notch: an event counted in lines or pages is one by definition, and in pixels one that carries a notch's travel
+    if (e.deltaMode !== 0 || Math.abs(d) >= NOTCH){ steps = Math.sign(d); acc = 0; }
+    else { acc += d; steps = Math.trunc(acc / STEP_PX); acc -= steps * STEP_PX; }
+    if (!steps) return;
+    const dir = Math.sign(steps);
+    let i = sel.selectedIndex;
+    for (let n = Math.abs(steps); n > 0; n--){
+      let next = i;
+      for (let k = i + dir; k >= 0 && k < sel.options.length; k += dir){
+        const o = sel.options[k];
+        if (o.disabled || (o.parentElement && o.parentElement.disabled)) continue;
+        next = k; break;
+      }
+      if (next === i) break;                   // that end of the list
+      i = next;
+    }
+    if (i === sel.selectedIndex) return;
+    sel.selectedIndex = i;
+    if (stepping && stepping !== sel) fire();   // the pointer moved to another dropdown mid-flick
+    stepping = sel;
+    clearTimeout(stepTimer);
+    stepTimer = setTimeout(fire, STEP_HOLD);
+  }, { passive: false, capture: true });
+}
+
+// panels: one open at a time (Raven, 2026-10-09: "I would like to have one panel open at a time"); opening
+// one closes the rest, and clicking the open one closes it
+document.querySelectorAll('.panel > .panel-head').forEach(h => {
+  h.onclick = () => {
+    const p = h.parentElement, wasOpen = p.dataset.open === 'true';
+    document.querySelectorAll('.panel').forEach(o => o.dataset.open = 'false');
+    p.dataset.open = wasOpen ? 'false' : 'true';
+  };
+});
+
+// ---- hunter slots -----------------------------------------------------------------------------
+// The MHGU Armor Viewer's hunter slots (its index.html, "hunter slots"), brought over 2026-10-04. Raven:
+// "Also, add the Hunter slots of the GU Armor Viewer". A slot is a named hunter, { name, set }. The set is
+// what the page shows of that hunter: what it wears, its face, hair, clothing, colours, pigment and motion
+// (`hunter`, the shape of `state`), its lighting and effects (as the session saves them), and its view --
+// the camera's place, focal length and lens, and first person. Switching banks the hunter on screen into its
+// slot and applies the other; a slot without lighting, effects or a view keeps what is on screen and frames
+// the hunter. The Camera panel's behaviour (turntable, smooth orbit, zoom to the pointer, fly speed) belongs
+// to the viewer, not to a slot, as in the MHGU Armor Viewer. A first visit starts with two slots: the default
+// female hunter and the default male one.
+const HUNTERS = [];
+let hunterIndex = 0, hunterBusy = false, hunterRenaming = false, hunterBoot = true;
+const hunterList = document.getElementById('hunterList');
+const escHtml = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// the view, as the MHGU Armor Viewer's cameraState writes it: in first person the target is a point a metre
+// ahead and the mode rides along; the lens only when it is not Standard
+function viewState(){
+  try {
+    const t = camMode === 'fly' ? camera.getWorldDirection(new THREE.Vector3()).add(camera.position) : controls.target;
+    const v = { p: camera.position.toArray().map(n => +n.toFixed(4)), t: t.toArray().map(n => +n.toFixed(4)),
+                fov: +camera.fov.toFixed(2) };
+    if (camMode === 'fly') v.mode = 'fly';
+    if (lensState.type !== 'standard') v.lens = lensFileState();
+    return v;
+  } catch (_) { return null; }
+}
+function applyView(c){
+  if (!c || !Array.isArray(c.p) || !Array.isArray(c.t) || c.p.length !== 3 || c.t.length !== 3) return false;
+  if (!c.p.every(Number.isFinite) || !c.t.every(Number.isFinite)) return false;
+  const wantFly = c.mode === 'fly';              // absent or anything else: the orbit camera
+  if (!wantFly && camMode === 'fly') leaveFly({ keepTarget: true });
+  camera.position.fromArray(c.p); controls.target.fromArray(c.t);
+  setFov(Number.isFinite(c.fov) ? c.fov : FOV_DEFAULT);
+  camera.lookAt(controls.target);
+  if (wantFly){ if (camMode === 'fly') flyFromCamera(); else enterFly({ drain: false }); }
+  else controls.update();
+  applyLens(c.lens && typeof c.lens === 'object' ? c.lens : { type: 'standard' });   // a view without one is Standard
+  updateDepthBias();
+  return true;
+}
+function currentSet(){
+  return Object.assign({ app: 'MH4U Armor Viewer', version: 1, hunter: hunterOf(state) },
+                       lightingSaveState(), { effects: effectsState(), view: viewState() });
+}
+// A set onto the page: the hunter, then its lighting and effects where it has them, then its view -- or, with
+// none or { view: false }, a fresh framing of the hunter.
+async function applySet(d, opt){
+  opt = opt || {};
+  if (!d || typeof d !== 'object') d = {};
+  Object.assign(state, hunterOf(d.hunter)); state.v = 1;
+  colourBoard.close(); closePig();
+  buildLists();
+  await refresh();
+  await playPose();
+  if ((d.lightRig && typeof d.lightRig === 'object') || typeof d.lighting === 'string') restoreLighting(d);
+  if (d.effects && typeof d.effects === 'object') restoreEffects(d.effects);
+  if (!(opt.view !== false && applyView(d.view))) frameAll();
+}
+function freeHunterName(){
+  for (let n = 1; ; n++){ const nm = 'Hunter ' + n; if (!HUNTERS.some(h => h.name === nm)) return nm; }
+}
+{
+  const valid = h => h && typeof h === 'object' && typeof h.name === 'string' && h.name.trim() &&
+                     (h.set === null || (h.set && typeof h.set === 'object'));
+  if (Array.isArray(savedHunters) && savedHunters.some(h => valid(h) && h.set)){
+    for (const h of savedHunters) if (valid(h)) HUNTERS.push({ name: h.name.trim().slice(0, 40), set: h.set, fresh: !!h.fresh });
+    hunterIndex = Number.isInteger(savedHunter) && HUNTERS[savedHunter] ? savedHunter : 0;
+  } else {
+    HUNTERS.push({ name: 'Hunter 1', set: null });          // banked from the page once it is dressed
+    if (!savedAny)                                          // a first visit: the other body, untouched
+      HUNTERS.push({ name: 'Hunter 2', set: { hunter: Object.assign(clone(DEFAULTS), { g: state.g === 'f' ? 'm' : 'f' }) }, fresh: true });
+  }
+}
+// the view the slot on screen was left with, taken before anything banks over it; the boot puts it back
+const bootView = HUNTERS[hunterIndex] && HUNTERS[hunterIndex].set ? HUNTERS[hunterIndex].set.view : null;
+function bankHunter(){ if (!hunterBusy && !hunterBoot && HUNTERS[hunterIndex]) HUNTERS[hunterIndex].set = currentSet(); }
+// what saveState writes: the slots with the one on screen freshly banked. A hoisted function, so saveState
+// can name it from higher up
+function hunterSaveState(){
+  try {
+    bankHunter();
+    if (!hunterRenaming) paintHunters();
+    return { hunters: HUNTERS.map(h => ({ name: h.name, set: h.set, fresh: h.fresh || undefined })), hunter: hunterIndex };
+  } catch (_) { return {}; }
+}
+function paintHunters(){
+  hunterList.innerHTML = HUNTERS.map((h, i) => {
+    const g = i === hunterIndex ? state.g : (h.set && h.set.hunter && h.set.hunter.g) || 'f';
+    return '<li class="' + (i === hunterIndex ? 'on' : '') + '" data-k="' + i + '" title="' + (i === hunterIndex ? 'The hunter on screen' : 'Switch to this hunter') + '">' +
+           '<span class="n">' + (i + 1) + '.</span><span class="lab">' + escHtml(h.name) + '</span>' +
+           '<span class="tag">' + (g === 'm' ? 'Male' : 'Female') + '</span></li>';
+  }).join('');
+  document.getElementById('hunterDelete').disabled = HUNTERS.length < 2;
+}
+async function switchHunter(k, opt){
+  opt = opt || {};
+  if (!HUNTERS[k] || (k === hunterIndex && !opt.force) || hunterBusy) return;
+  if (!opt.noBank) bankHunter();     // before the busy flag goes up: the bank skips while busy
+  hunterBusy = true;
+  setLoading(true);
+  try {
+    const to = HUNTERS[k];
+    hunterIndex = k; paintHunters();
+    await applySet(to.set);
+    delete to.fresh;
+  } finally { hunterBusy = false; setLoading(false); }
+  saveState();
+}
+hunterList.onclick = e => {
+  const li = e.target && e.target.closest ? e.target.closest('li') : null;
+  if (!li || hunterRenaming) return;
+  switchHunter(+li.dataset.k);
+};
+document.getElementById('hunterNew').onclick = () => {
+  if (hunterBusy) return;
+  bankHunter();
+  HUNTERS.push({ name: freeHunterName(), set: currentSet() });   // a copy of the hunter on screen
+  hunterIndex = HUNTERS.length - 1;
+  paintHunters(); saveState();
+};
+document.getElementById('hunterRename').onclick = () => {
+  const li = hunterList.querySelector('li.on'); if (!li || hunterRenaming) return;
+  const lab = li.querySelector('.lab'), h = HUNTERS[hunterIndex];
+  const inp = document.createElement('input'); inp.type = 'text'; inp.maxLength = 40; inp.value = h.name;
+  hunterRenaming = true;
+  lab.replaceWith(inp); inp.focus(); inp.select();
+  let done = false;
+  const finish = keep => {
+    if (done) return; done = true; hunterRenaming = false;
+    const v = inp.value.trim();
+    if (keep && v) h.name = v.slice(0, 40);
+    paintHunters(); saveState();
+  };
+  inp.onkeydown = ev => { if (ev.key === 'Enter') finish(true); else if (ev.key === 'Escape') finish(false); };
+  inp.onblur = () => finish(true);
+};
+document.getElementById('hunterDelete').onclick = async () => {
+  if (HUNTERS.length < 2 || hunterBusy) return;
+  const h = HUNTERS[hunterIndex];
+  if (!confirm('Delete ' + h.name + '? Its look is lost.')) return;
+  HUNTERS.splice(hunterIndex, 1);
+  const next = Math.min(hunterIndex, HUNTERS.length - 1);
+  hunterIndex = -1;
+  await switchHunter(next, { noBank: true, force: true });
+};
+paintHunters();
+
+// ---- the loop ---------------------------------------------------------------------------------
+// the canvas and the effects composer resize together (fitRenderer)
+addEventListener('resize', fitRenderer);
+new ResizeObserver(fitRenderer).observe(viewport);
+fitRenderer();
+renderer.setAnimationLoop(() => {
+  if (pose.mixer) pose.step(Object.values(mounted));
+  placeWeapon();                           // the weapon follows the bones the pose just set
+  // update() would look at the target, which fly does not have
+  if (camMode === 'fly') stepFly(); else controls.update();
+  stepLighting();                          // the key light's orbit
+  stage.lights.head.position.copy(camera.position);
+  trackLights();
+  updateDepthBias();
+  renderFrame();
+});
+
+restoreLook(savedLook);
+paintOrbitLock(); paintSpin();
+buildLists();
+await refresh();
+await playPose();
+frameAll();
+// the slot on screen comes back with the view it was left with, as the MHGU Armor Viewer's does
+if (bootView) applyView(bootView);
+hunterBoot = false;
+bankHunter(); paintHunters(); saveState();   // the hunter on screen into its slot, now that it is dressed
+window.__view = { DATA, state, mounted, scene, camera, controls, world, pose, refresh, frameAll, buildLists, playPose,
+                  applyAllColours, applyHelmMasks,
+                  weapon: { parts: () => weaponParts, place: placeWeapon, refresh: refreshWeapon, MOUNT, WEAPONS,
+                            stance: () => stanceNow, stanceState: () => stanceState() } };
+// the Camera, Lighting and Effects panels' hooks, in the MHGU viewers' shape, so a test drives them the same way
+Object.assign(window.__view, {
+  renderer, setFocal, setFov, lookState, restoreLook, currentSet, applySet,
+  hunters: { list: () => HUNTERS.map((h, i) => ({ name: h.name, g: i === hunterIndex ? state.g : (h.set && h.set.hunter && h.set.hunter.g) || null,
+                                                   banked: !!h.set, fresh: !!h.fresh })),
+             index: () => hunterIndex, switchTo: k => switchHunter(k) },
+  light: { preset: applyLighting, state: () => lightingSaveState() },
+  face: { set: on => setFaceLock(on), get: () => faceLock }, aimPoint: () => aimPoint(new THREE.Vector3()).toArray(),
+  aimSurface: () => ({ depth: aimSurfaceDepth(true), hit: aimHit.hit, cost: +aimHit.cost.toFixed(2), every: aimHit.every }),
+  lens: {
+    set: (type, p1, p2) => { const sp = { type }; const ps = LENS_P[type] || []; if (ps[0] && p1 !== undefined) sp[ps[0].key] = p1; if (ps[1] && p2 !== undefined) sp[ps[1].key] = p2; applyLens(sp); },
+    state: () => { const rc = lensCamera(), st = fx.stats(); return { type: lensState.type, params: lensFileState(), composer: { w: st.w, h: st.h }, canvas: st.canvas,
+      ortho: rc.isOrthographicCamera ? { halfHeight: rc.top, near: rc.near, far: rc.far } : null, active: fx.active, passes: st.passes }; }
+  },
+  fx: {
+    preset: applyFxPreset,
+    set: (path, v) => { const [g, k] = path.split('.'); fxState[g][k] = v; fxName = 'custom'; fxApply(); paintFx(); },
+    state: () => Object.assign({ name: fxName, active: fx.active, focusLive: fxFocusLive }, effectsState()),
+    render: () => { if (camMode !== 'fly') controls.update(); trackLights(); stage.lights.head.position.copy(camera.position); updateDepthBias(); renderFrame(0.5); },
+    force: on => fx.force(on),
+    stats: () => fx.stats()
+  },
+  fly: {
+    enter: () => setCamMode('fly'), leave: () => setCamMode('orbit'), mode: () => camMode,
+    keys: list => { fly.keys.clear(); for (const k of list || []) if (FLY_KEYS[k]) fly.keys.add(k); },
+    step: dt => stepFly(Math.min(Math.max(0, +dt || 0), 0.1)),
+    setSpeed: v => setFlySpeed(v), zoom: n => flyZoom(n),
+    state: () => ({ mode: camMode, locked: flyLocked(), yaw: fly.yaw, pitch: fly.pitch, speed: fly.speed, face: faceLock,
+                    p: camera.position.toArray(), center: figureCenter(new THREE.Vector3()).toArray(), target: controls.target.toArray() })
+  }
+});
+</script>
+</body>
+</html>
