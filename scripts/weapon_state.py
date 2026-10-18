@@ -114,9 +114,25 @@ class Harness:
 
     def setup(self, cls, part, wid, motion, frame, sheathed, hold=None, gender=1, model=0, fresh=True):
         uc = self.uc
-        mode = getattr(self, 'mode', 0)
-        ms = MODE_STATE.get(cls, {}).get(mode, {})
-        flag = ms.get('flag', 0)
+        # THE DRAWN FLAG, player data +0x6f9 (0xb07e58 tests it == 1): 1 while the weapon is out -- every class's draw
+        # actions set it through the player's virtual +0xc8 (0xb29f20). The joint code then unfolds the weapon once the
+        # hold state is not 2 (the Gunlance 0x34d6d0, the Lance 0x34b414, the Hunting Horn 0x34fb2c: +0x267)
+        flag = 0 if sheathed else 1
+        # AT REST IN THE FIELD the weapon is not on the sheathed path (0x35243c, player data +0x30 -- the town's, with
+        # the lobby lists wgNN_LB): the drawn joint code runs with the flag at 0 and the hold state on the back (the
+        # field idle's id 2) -- the Gunlance folded (its motion 0), as the draw starts and the sheathe ends.
+        # `field_rest` asks for that
+        if getattr(self, 'field_rest', False):
+            flag = 0
+        # THE FORM (the Switch Axe and Charge Blade): [player +0xa29c] +0, 1 = sword -- every action start writes it
+        # (scripts/action_modes.py) and the class's "is sword mode" query, the player's virtual +0xac (0xcab958 /
+        # 0xcc249c), reads it back. `form` None = the class's resting form (FORM_REST)
+        form = getattr(self, 'form', None)
+        if form is None:
+            form = FORM_REST.get(cls)
+        # THE GUNLANCE'S COOLDOWN: Wyvern's Fire writes it on frame 2 of Motion[108] (0xcb1a70 -> 0xcb1b98); from
+        # there the heat vent opens on its own clock (0x34d690)
+        cool = cls in COOLDOWN_FROM and motion == COOLDOWN_FROM[cls][0] and frame >= COOLDOWN_FROM[cls][1]             and getattr(self, 'cooldown', True)
         t = TYPES[cls][part]
         uc.mem_write(PLAYER, bytes(0x10000))
         uc.mem_write(PLAYER, struct.pack('<I', VT))
@@ -152,15 +168,19 @@ class Harness:
         # +0x84 the motion id; +0xa0 the HOLD STATE (0x350438 returns it on its default path): what the motion's
         # group-0 events set (hold_state) -- 1, the main grip, with none
         h = (0 if sheathed else 1) if hold is None else hold
-        # THE CHARGE BLADE IN AXE MODE holds in state 9, not 1 (the main grip): the MHGU viewer's rule for its CB
-        # (index17Rule: axe -> index 14, which 4U's state 9 is -- both the hand and both kept by the shield's rule,
-        # GU typeIndexRule '22' / 4U 0x34c6e8), and 4U's CB records for state 9 put the shield 56 cm along the sword
-        if cls == 14 and flag == 1 and h == 1:
+        # THE CHARGE BLADE IN AXE FORM holds in state 9, not 1, when no id says otherwise: 4U's reader (0xb3e55c, the
+        # MHGU viewer's index 14 rule); 4U's CB records for state 9 put the shield 56 cm along the sword
+        if cls == 14 and form == 0 and flag == 1 and h == 1:
             h = 9
         self.answers = {0x84: motion, 0xa0: h}
+        if form is not None:
+            self.answers[0xac] = form
+            uc.mem_write(PMOT, bytes([form]))
+        if cool:
+            uc.mem_write(PMOT + 0x5c, WF_COOLDOWN)
         # POKES: extra state for a class's own code, {(object, offset): bytes} -- object 'pmot' (the player's +0xa29c
         # object: the Gunlance's shells +0x514 / capacity +0x515 and the float +0x5c), 'pdata', 'player'
-        for (obj, off), val in dict(ms.get('pokes', {}), **getattr(self, 'pokes', {})).items():
+        for (obj, off), val in getattr(self, 'pokes', {}).items():
             uc.mem_write({'pmot': PMOT, 'pdata': PDATA, 'player': PLAYER}[obj] + off, val)
         self.calls = []
         self.requests = []
@@ -224,23 +244,19 @@ class Harness:
         return out
 
 FPS = 60
-# A CLASS'S STATES that carry over from action to action, which no clip declares: {class: {mode: {flag, pokes}}}, the
-# viewer's per-class select (mode 0 = none of these). `flag` is player data +0x6f9 (0xb07e58 tests it == 1): the
-# class's other form, set by actions in every class's code through the player's virtual +0xc8 (0xb29f20; on 0 the
-# Switch Axe's 0xcab934 and the Charge Blade's 0xcc2478 reset their [+0xa29c] +0 byte) -- the Switch Axe's sword, the
-# Charge Blade's axe. `pokes` as Harness.pokes: the Gunlance's Wyvern's Fire cooldown ([+0xa29c] +0x5c, 7200 frames)
+# THE FORM AT REST: what sheathing leaves -- the Switch Axe's 0xcab934 writes 0 (axe), the Charge Blade's 0xcc2478 1 (sword)
+FORM_REST = {8: 0, 14: 1}
+# the Gunlance's Wyvern's Fire cooldown ([+0xa29c] +0x5c; 7200 frames, 5400 / 4800 with Artillery, 0xcb1b98), written
+# on frame 2 of Motion[108] (the blast); a clip that follows it is not given the cooldown (no state carries over)
 WF_COOLDOWN = struct.pack('<f', 7200.0)
-MODE_STATE = {8: {1: {'flag': 1}}, 14: {1: {'flag': 1}},
-              9: {1: {'pokes': {('pmot', 0x5c): WF_COOLDOWN}}}}
-# (the Hunting Horn reads the flag too -- with it, and the hold state not 2, its block's first motion instead of its
-# sixth outside the recital (0x34fae0) -- but which of its actions set it is not read, so it is left at 0)
+COOLDOWN_FROM = {9: (0x56c, 2)}
 WARMUP = 30
-# GROUP-0 EVENT ID -> HOLD STATE: the MHGU Armor Viewer's priority list (its mount-rom.js indexByState, read from
-# MHGU's 0x00288008), whose "index" is 4U's state number -- the two agree on every bone (GU jointForIndex = 4U's
-# 0x34c7b0) and on the Dual Blades rule (GU: id 3 -> index 0 for the second blade; 4U: 0x350438 type 14).
-# 4U's own reader of these ids (the player's virtual +0xa0) is not traced: INFERRED. Ids not listed (10, and the
-# Charge Blade's 8) leave the state as it is.
-HOLD_BY_ID = [(7, 8), (6, 7), (5, 6), (4, 5), (1, 0), (2, 2), (3, 1)]     # in priority order
+# GROUP-0 EVENT ID -> HOLD STATE: 4U's own reader, the player's virtual +0xa0 (0xb3e4a4; the Charge Blade's
+# 0xb3e4a0): the ids active in two u16 slots, [player +0xa29c] +0x97c / +0x97e, checked in this order -- 1 -> 0,
+# 2 -> 2 (the back), 3 -> 1, 4..7 -> 5..8, 8 -> 10; with none, the drawn flag decides: drawn -> 1 (the Charge Blade in
+# axe form, virtual +0xac == 0, -> 9), sheathed -> 2. The same states as the MHGU viewer's table (its "index" is 4U's
+# state), in 4U's order. The slots are taken to be the clip's group-0 ids (their writer is not traced)
+HOLD_BY_ID = [(1, 0), (2, 2), (3, 1), (4, 5), (5, 6), (6, 7), (7, 8), (8, 10)]     # in priority order
 
 
 def hold_state(events, t):

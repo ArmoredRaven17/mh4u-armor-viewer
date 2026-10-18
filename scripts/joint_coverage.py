@@ -38,8 +38,8 @@ for c in W['classes']:
                     for w in sg.get('wmot', []):
                         req[w[1]].add(w[0])
         for cl in S['clips'].values():
-            for setk in [k for k in cl if k == 'v' or re.match(r'm\d+$', k)]:
-                take(cl[setk][v])
+            for tl in ([cl['v']] if 'v' in cl else list(cl['vf'].values())):
+                take(tl[v])
         take(S['rest'][v])
         for mode in (S.get('idle') or {}).values():
             for slot, ws in mode.get(v, {}).items():

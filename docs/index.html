@@ -259,6 +259,12 @@ dl.info dd{margin:0;color:var(--text);font-variant-numeric:tabular-nums;
 .chain li .lab{flex:1 1 auto}
 .chain li .x{cursor:pointer;color:var(--text-hint);padding:0 4px}
 .chain li .x:hover{color:var(--text)}
+.chain li .grip{cursor:grab;color:var(--text-hint);user-select:none;touch-action:none;padding:0 2px;font-size:13px;line-height:1}
+.chain li .grip:hover{color:var(--text)}
+.chain.dragging,.chain.dragging li,.chain.dragging li .grip{cursor:grabbing}
+.chain li.drag{opacity:.35}
+.chain li.ins-before{box-shadow:0 -3px 0 var(--accent-hover)}
+.chain li.ins-after{box-shadow:0 3px 0 var(--accent-hover)}
 .chain-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
 /* Toggled off, the toolbar MOVES into the header rather than disappearing, so the
    controls stay reachable while the render area is left clear. It is the same element,
@@ -560,21 +566,22 @@ input[type=range]{width:100%;accent-color:var(--accent)}
           <div class="field"><label for="hairStyle">Hair</label><select id="hairStyle"></select></div>
           <div class="field"><label for="clothing">Clothing</label><select id="clothing"></select></div>
           <div class="field"><label for="features">Features</label><select id="features"></select></div>
+          <div class="field"><label for="huntPose">Pose</label><select id="huntPose"></select></div>
         </div>
       </section>
 
       <!-- WEAPON: the game's own weapon tables (weapons.json) hung on the hunter by the game's own mount
            (mount.json, scripts/build_weapons.py): each part sits on a hunter bone with the placement the game
-           uses for its carry state, sheathed or drawn. Drawn puts the Pose panel on the class's own motion
-           list. -->
+           uses for its carry state, sheathed or drawn. Drawn plays the Stance (the class's own motions), sheathed
+           the Hunter panel's Pose. -->
       <section class="panel" id="weaponPanel" data-open="false">
         <button class="panel-head">Weapon <span class="chev">&#9662;</span></button>
         <div class="panel-body">
           <div class="field"><label for="weaponClass">Class</label><select id="weaponClass"></select></div>
           <div class="field" id="weaponModelField"><label for="weaponModel">Weapon</label><select id="weaponModel"></select></div>
-          <div class="field" id="kinsectField"><label for="kinsect">Kinsect</label><select id="kinsect"></select></div>
-          <div class="field" id="weaponModeField"><label for="weaponMode">Mode</label><select id="weaponMode"></select></div>
           <div class="field" id="weaponDrawnField"><label for="weaponDrawn">Carry</label><select id="weaponDrawn"><option value="1">Drawn</option><option value="0">Sheathed</option></select></div>
+          <div class="field" id="weaponStanceField"><label for="weaponStance">Stance</label><select id="weaponStance"></select></div>
+          <div class="field" id="kinsectField"><label for="kinsect">Kinsect</label><select id="kinsect"></select></div>
         </div>
       </section>
 
@@ -617,11 +624,34 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <!-- THE GAME'S OWN MOTIONS: the hunter's motion lists (player\mot\co\co_*, lco_*, pl_make, pl_gc,
            pl_arena, and player\mot\wNN per weapon class). The clips carry no names in the game data, so they
            are listed as the game stores them. -->
-      <section class="panel" data-open="false">
-        <button class="panel-head">Pose <span class="chev">&#9662;</span></button>
+      <section class="panel" id="animPanel" data-open="false">
+        <button class="panel-head">Animation <span class="chev">&#9662;</span></button>
         <div class="panel-body">
-          <div class="field"><label for="poseList">Motion List</label><select id="poseList"></select></div>
-          <div class="field"><label for="poseClip">Clip</label><select id="poseClip"></select></div>
+          <div id="anim" class="idle">
+            <div class="transport">
+              <input id="animScrub" type="range" min="0" max="1" step="1" value="0" title="Scrub through the frames">
+              <div id="animFrame" class="hint">no animation playing</div>
+              <div class="row">
+                <button id="animFirst" class="btn tiny" title="First frame">|&lt;</button>
+                <button id="animPrev" class="btn tiny" title="Previous frame">&lt;</button>
+                <button id="animPlay" class="btn tiny" title="Play or pause">Pause</button>
+                <button id="animNext" class="btn tiny" title="Next frame">&gt;</button>
+                <button id="animLast" class="btn tiny" title="Last frame">&gt;|</button>
+              </div>
+              <div class="row">
+                <button id="animLoop" class="btn tiny" title="Repeat the animation instead of holding its last frame">Loop</button>
+              </div>
+            </div>
+            <div class="chain-head">Chain</div>
+            <div class="row pick"><select id="chainPoseSel" title="A hunter pose to add"></select><button id="chainPrevPose" class="btn tiny" title="Play this pose now (sheathed)">Preview</button><button id="chainAddPose" class="btn tiny" title="Add this pose to the chain">Add</button></div>
+            <div class="row pick"><select id="chainStanceSel" title="A weapon stance to add"></select><button id="chainPrevStance" class="btn tiny" title="Play this stance now (drawn)">Preview</button><button id="chainAddStance" class="btn tiny" title="Add this stance to the chain">Add</button></div>
+            <div class="row">
+              <button id="chainPlay" class="btn tiny" title="Play the chain back to back">Play chain</button>
+              <button id="chainLoop" class="btn tiny" title="Repeat the chain when it ends">Loop</button>
+              <button id="chainClear" class="btn tiny" title="Empty the chain">Clear</button>
+            </div>
+            <ol id="chainList" class="chain"></ol>
+          </div>
         </div>
       </section>
 
@@ -775,13 +805,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <a href="https://armoredraven17.github.io/mh4u-quest-randomizer/" target="_blank" rel="noopener">Quest Randomizer</a>
         <span class="app-desc">Rolls a random MH4U quest and weapon when you can't decide what to hunt.</span>
       </li>
-      <li>
-        <a href="https://armoredraven17.github.io/mh4u-monster-viewer/" target="_blank" rel="noopener">Monster Viewer</a>
-        <span class="app-desc">Renders every MH4U monster in 3D with its own motion lists, so you can watch what they actually do.</span>
-      </li>
       <li class="current">
         <span class="app-name">Armor Viewer <span class="app-here">you are here</span></span>
         <span class="app-desc">Renders a hunter in 3D with every MH4U armor piece swappable, so you can mix and match a set.</span>
+      </li>
+      <li>
+        <a href="https://armoredraven17.github.io/mh4u-monster-viewer/" target="_blank" rel="noopener">Monster Viewer</a>
+        <span class="app-desc">Renders every MH4U monster in 3D with its own motion lists, so you can watch what they actually do.</span>
       </li>
     </ul>
     <div class="row end gap">
@@ -1950,7 +1980,7 @@ const DEFAULTS = { g: 'f', type: 'all', helm: 0, body: 0, arm: 0, wst: 0, leg: 0
                    pose: { list: 'co_0', clip: 'Motion[1]_loop' },
                    // the weapon: class -1 = none; model and pigment pick one of the class's weapons; kinsect is a
                    // Kinsect model, for an Insect Glaive
-                   weapon: { cls: -1, model: 0, pig: 0, kinsect: 1, drawn: false, mode: 0 } };
+                   weapon: { cls: -1, model: 0, pig: 0, kinsect: 1, drawn: false, stance: '' } };
 const clone = o => JSON.parse(JSON.stringify(o));
 // A hunter, every field type-guarded onto the defaults: what a save, a slot or an older version of this app
 // wrote is never trusted as it stands.
@@ -1967,12 +1997,17 @@ function hunterOf(h){
   for (const k of ['skinC', 'hairC', 'clothC', 'featC']) if (isColourSpec(h[k])) o[k] = isXY(h[k]) ? { x: h[k].x, y: h[k].y } : { d: 1 };
   if (h.pig && typeof h.pig === 'object')
     for (const s of DATA.slots){ const v = h.pig[s]; o.pig[s] = isXY(v) ? { x: v.x, y: v.y } : isPigSpec(v) ? { c: v.c } : null; }
-  if (h.pose && typeof h.pose === 'object' && typeof h.pose.list === 'string' && typeof h.pose.clip === 'string')
-    o.pose = { list: h.pose.list, clip: h.pose.clip };
+  // the Hunter panel's Pose holds the hunter's own pose; a weapon list there (an older save) becomes the weapon's stance
+  let oldStance = '';
+  if (h.pose && typeof h.pose === 'object' && typeof h.pose.list === 'string' && typeof h.pose.clip === 'string'){
+    if (/^w\d\d$/.test(h.pose.list)) oldStance = h.pose.clip;
+    else o.pose = { list: h.pose.list, clip: h.pose.clip };
+  }
   const w = h.weapon;
   if (w && typeof w === 'object' && Number.isInteger(w.cls) && (w.cls === -1 || WEAPON_CLASSES.has(w.cls)))
     o.weapon = { cls: w.cls, model: Number.isInteger(w.model) ? w.model : 0, pig: Number.isInteger(w.pig) ? w.pig : 0,
-                 kinsect: Number.isInteger(w.kinsect) ? w.kinsect : 1, drawn: w.drawn === true, mode: w.mode === 1 ? 1 : 0 };
+                 kinsect: Number.isInteger(w.kinsect) ? w.kinsect : 1, drawn: w.drawn === true,
+                 stance: typeof w.stance === 'string' ? w.stance : oldStance };
   return o;
 }
 const state = clone(DEFAULTS);
@@ -2414,7 +2449,7 @@ async function refresh(){
 // (render/pose.js). An accessory bone, placed differently by each helm and hair, follows its animated
 // parent. "Bind Pose" stops the clip and puts every piece back at rest.
 const pose = new PoseDriver({ frame: world, onError: msg => noteError(msg) });
-const poseListSel = document.getElementById('poseList'), poseClipSel = document.getElementById('poseClip');
+const huntPoseSel = document.getElementById('huntPose');
 // the lists by the game's own groups; the weapon lists by the class whose folder they are in (the
 // weapon\<dir>\mot\wgNN strings at 0xea0cad pair each wNN with its class's folder)
 const POSE_GROUPS = { co: 'Common', lco: 'Lobby', etc: 'Other', weapon: 'Weapon Classes' };
@@ -2425,47 +2460,131 @@ const POSE_NAMES = { co_0: 'Common 0', co_1: 'Common 1', co_2: 'Common 2', co_4:
   w07: 'Long Sword', w08: 'Switch Axe', w09: 'Gunlance', w10: 'Bow', w11: 'Dual Blades', w12: 'Hunting Horn',
   w13: 'Insect Glaive', w14: 'Charge Blade' };
 function poseSet(){ return DATA.poses && DATA.poses[state.g]; }
+// the hunter's own lists only: a weapon class's list (wNN) is the Weapon panel's Stance
+const isWeaponList = id => /^w\d\d$/.test(id || '');
+// THE HUNTER'S POSE (the Hunter panel; the MHGU viewer's Pose select): one select, a group per motion list of the
+// hunter's own (field, lobby, character creation, Guild Card, Arena), its clips the options; "Bind Pose" stops
 function buildPoseLists(){
   const P = poseSet();
-  const lists = (P && P.lists) || [];
-  let html = '', group = null;
-  for (const l of lists){
-    if (l.group !== group){
-      if (group !== null) html += '</optgroup>';
-      group = l.group; html += '<optgroup label="' + esc(POSE_GROUPS[group] || group) + '">';
-    }
-    html += '<option value="' + esc(l.id) + '">' + esc(POSE_NAMES[l.id] || l.id) + ' &mdash; ' + l.clips.length + ' clips</option>';
-  }
-  poseListSel.innerHTML = html + (group !== null ? '</optgroup>' : '');
-  if (!lists.some(l => l.id === state.pose.list)) state.pose.list = lists.length ? lists[0].id : '';
-  poseListSel.value = state.pose.list;
+  const lists = ((P && P.lists) || []).filter(l => !isWeaponList(l.id));
+  if (!lists.some(l => l.id === state.pose.list)){ state.pose.list = lists.length ? lists[0].id : ''; state.pose.clip = ''; }
   const l = lists.find(x => x.id === state.pose.list);
-  const clips = (l && l.clips) || [];
-  poseClipSel.innerHTML = '<option value="">Bind Pose</option>' +
-    clips.map(c => '<option value="' + esc(c.clip) + '">' + esc(c.clip) + ' &mdash; ' + c.dur.toFixed(2) + ' s</option>').join('');
-  if (state.pose.clip && !clips.some(c => c.clip === state.pose.clip)) state.pose.clip = '';
-  poseClipSel.value = state.pose.clip;
+  if (state.pose.clip && !(l && l.clips.some(c => c.clip === state.pose.clip))) state.pose.clip = '';
+  let html = '<option value="">Bind Pose</option>';
+  for (const x of lists){
+    html += '<optgroup label="' + esc(POSE_NAMES[x.id] || x.id) + '">' + x.clips.map(c =>
+      '<option value="' + esc(x.id + '|' + c.clip) + '" title="' + esc(x.id + ' ' + c.clip + ', ' + c.dur.toFixed(2) + ' s') + '">' + esc(c.clip) + '</option>').join('') + '</optgroup>';
+  }
+  huntPoseSel.innerHTML = html;
+  huntPoseSel.value = state.pose.clip ? state.pose.list + '|' + state.pose.clip : '';
 }
 function restoreBind(){
   for (const root of Object.values(mounted))
     for (const [node, p, q, s] of (root.userData.bind || [])){ node.position.copy(p); node.quaternion.copy(q); node.scale.copy(s); }
 }
 let poseTicket = 0;
+// WHAT PLAYS (the MHGU viewer's applyWeaponState): a drawn weapon plays its Stance -- a clip of the class's own list
+// (wNN) -- and a sheathed one, or none, the hunter's Pose; the Pose keeps its choice while a stance plays
+function playing(){
+  const w = state.weapon, c = wClass(w.cls);
+  if (c && w.drawn && w.stance) return { list: c.key, clip: w.stance };
+  return { list: state.pose.list, clip: state.pose.clip };
+}
 async function playPose(){
   const t = ++poseTicket;
-  const P = poseSet();
-  const l = P && P.lists.find(x => x.id === state.pose.list);
-  if (!P || !l || !state.pose.clip){ pose.stop(); restoreBind(); return; }
-  await pose.play({ file: l.file, clip: state.pose.clip, model: P.model }, { joints: P.joints });
+  const P = poseSet(), now = playing();
+  const l = P && P.lists.find(x => x.id === now.list);
+  if (!P || !l || !now.clip){ pose.stop(); restoreBind(); return; }
+  await pose.play({ file: l.file, clip: now.clip, model: P.model }, { joints: P.joints });
   if (t !== poseTicket) return;
 }
-poseListSel.onchange = async () => {
-  state.pose.list = poseListSel.value;
-  const l = poseSet().lists.find(x => x.id === state.pose.list);
-  state.pose.clip = (l && l.clips.length) ? l.clips[0].clip : '';
-  buildPoseLists(); await playPose(); saveState();
+// picking a pose sheathes the weapon and plays it, as the MHGU viewer's Pose select does
+huntPoseSel.onchange = async () => {
+  chainStop();
+  const v = huntPoseSel.value, i = v.indexOf('|');
+  if (i >= 0){ state.pose.list = v.slice(0, i); state.pose.clip = v.slice(i + 1); } else state.pose.clip = '';
+  if (state.weapon.drawn){ state.weapon.drawn = false; weaponDrawnSel.value = '0'; buildStanceList(); }
+  await playPose(); saveState();
 };
-poseClipSel.onchange = async () => { state.pose.clip = poseClipSel.value; await playPose(); saveState(); };
+
+// THE ANIMATION PANEL (the MHGU viewer's transport, its block as it stands): scrub, step, play / pause and Loop over
+// whatever plays -- the hunter's pose, or the weapon's stance while drawn; the weapon follows the frame (stanceState
+// reads pose.action). The LMT motions run at 60 frames a second, so a frame step is 1/60 s.
+const FRAME = 1 / 60;
+let chainTick = 0, chainPaintSig = '';
+function paintChainIfStale(){
+  const sig = chainSelSig + '|' + state.weapon.cls + '|' + chain.length + '|' + chainPos;
+  syncChainSelects();
+  if (sig !== chainPaintSig){ chainPaintSig = sig; paintChain(); }
+}
+const animBar = document.getElementById('anim'), animScrub = document.getElementById('animScrub'),
+      animFrameEl = document.getElementById('animFrame'), animPlayBtn = document.getElementById('animPlay'),
+      animLoopBtn = document.getElementById('animLoop');
+// null = each animation's own default (stances hold their last frame unless the game loops them, the hunter's poses
+// loop); true or false once Loop has been pressed, and it then applies to every animation
+let animLoopPref = null;
+const ownLoop = entry => !chainIsStance(entry) || /_loop$/.test((entry && entry.clip) || '');
+pose.loopMode = entry => chainRunning
+  ? (chainHolds(entry) ? 'repeat' : 'once')
+  : ((animLoopPref === null ? ownLoop(entry) : animLoopPref) ? 'repeat' : 'once');
+const clipDur = act => Math.max(0, act.getClip().duration - 1e-3);
+function setLoop(on){
+  animLoopPref = on;
+  const act = pose.action;
+  if (!act) return;
+  act.loop = on ? THREE.LoopRepeat : THREE.LoopOnce;
+  act.clampWhenFinished = !on; act.repetitions = Infinity;
+  if (on && (act.paused || !act.isRunning())){
+    if (act.time >= clipDur(act)) act.time = 0;
+    act.paused = false; act.enabled = true; act.play();
+  }
+}
+animLoopBtn.onclick = () => setLoop(!(pose.action ? pose.action.loop === THREE.LoopRepeat : !!animLoopPref));
+function seek(t){
+  const act = pose.action; if (!act) return;
+  act.paused = true; act.enabled = true;
+  act.time = Math.min(Math.max(0, t), clipDur(act));
+}
+document.getElementById('animFirst').onclick = () => seek(0);
+document.getElementById('animLast').onclick  = () => { if (pose.action) seek(clipDur(pose.action)); };
+document.getElementById('animPrev').onclick  = () => { if (pose.action) seek((Math.round(pose.action.time / FRAME) - 1) * FRAME); };
+document.getElementById('animNext').onclick  = () => { if (pose.action) seek((Math.round(pose.action.time / FRAME) + 1) * FRAME); };
+animPlayBtn.onclick = () => {
+  const act = pose.action; if (!act) return;
+  if (act.paused || !act.isRunning()){
+    if (act.loop === THREE.LoopOnce && act.time >= clipDur(act)) act.reset();
+    act.paused = false; act.enabled = true; act.play();
+  } else act.paused = true;
+};
+animScrub.oninput = () => seek(+animScrub.value * FRAME);
+// the Play button keeps the width of its wider label, so the row never shifts as it toggles
+{
+  const keep = animPlayBtn.textContent; animPlayBtn.textContent = 'Pause';
+  const w = Math.ceil(animPlayBtn.getBoundingClientRect().width);
+  if (w) animPlayBtn.style.setProperty('--play-w', w + 'px');
+  animPlayBtn.textContent = keep;
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+    const t = animPlayBtn.textContent; animPlayBtn.textContent = 'Pause';
+    const w2 = Math.ceil(animPlayBtn.getBoundingClientRect().width);
+    if (w2) animPlayBtn.style.setProperty('--play-w', w2 + 'px');
+    animPlayBtn.textContent = t;
+  });
+}
+let animLast = '';
+function updateTransport(){
+  const act = pose.action;
+  animBar.classList.toggle('idle', !act);
+  if (!act) { if (animLast !== ''){ animLast = ''; animFrameEl.textContent = 'no animation playing'; } return; }
+  const dur = clipDur(act), total = Math.round(dur / FRAME), cur = Math.min(total, Math.round(act.time / FRAME));
+  const playing = !act.paused && act.isRunning();
+  const key = cur + '/' + total + (playing ? 'p' : 's') + (act.loop === THREE.LoopRepeat ? 'L' : '');
+  if (key === animLast) return;
+  animLast = key;
+  animFrameEl.textContent = 'frame ' + cur + ' of ' + total + '  (' + (cur / 60).toFixed(2) + ' s)';
+  animScrub.max = String(total); animScrub.value = String(cur);
+  animPlayBtn.textContent = playing ? 'Pause' : 'Play';
+  animLoopBtn.classList.toggle('on', act.loop === THREE.LoopRepeat);
+}
 
 // ---- weapon -------------------------------------------------------------------------------------
 // THE GAME'S OWN WEAPON MOUNT (scripts/build_weapons.py; mount.json). Each part of a weapon is its own model
@@ -2486,10 +2605,6 @@ const MOUNT = await loadJson('mount.json');          // how the game hangs each 
 const weaponClassSel = document.getElementById('weaponClass'), weaponModelSel = document.getElementById('weaponModel'),
       weaponDrawnSel = document.getElementById('weaponDrawn'), kinsectSel = document.getElementById('kinsect');
 const W_CLASSES = WEAPONS.classes;
-// THE CLASS'S STATES that carry from action to action (the stances' `modes`, weapon_state.MODE_STATE): the Switch Axe's and
-// Charge Blade's form (player data +0x6f9) and the Gunlance's Wyvern's Fire cooldown (its vent stands open)
-const WEAPON_MODES = { 8: ['Axe Mode', 'Sword Mode'], 9: ['Ready', "Wyvern's Fire Cooling"], 14: ['Sword Mode', 'Axe Mode'] };
-const weaponModeSel = document.getElementById('weaponMode');
 const wClass = cls => W_CLASSES.find(c => c.cls === cls) || null;
 const isGlaive = c => !!c && c.parts.indexOf('mus') >= 0;
 // a class's list: one item per (model, pigment), named by every weapon that draws it -- as the armour lists
@@ -2535,14 +2650,7 @@ function buildWeaponLists(){
   document.getElementById('weaponModelField').hidden = !c;
   document.getElementById('weaponDrawnField').hidden = !c;
   document.getElementById('kinsectField').hidden = !isGlaive(c);
-  // THE MODE (player data +0x6f9): the Switch Axe's sword and the Charge Blade's axe are flag 1. The game carries the
-  // mode from the last morph, so the viewer asks; the morph clips show their own change whatever it says
-  const names = WEAPON_MODES[w.cls];
-  document.getElementById('weaponModeField').hidden = !names;
-  if (names){
-    weaponModeSel.innerHTML = names.map((n, i) => '<option value="' + i + '">' + n + '</option>').join('');
-    weaponModeSel.value = String(w.mode || 0);
-  }
+  buildStanceList();
 }
 // the Kinsect model the glaive on screen carries
 function kinsectModel(){
@@ -2600,7 +2708,7 @@ function applyWeaponLook(){
 // ---- stances --------------------------------------------------------------------------------------
 // WHERE THE GAME PUTS THE WEAPON ON EVERY FRAME, and which of the weapon's own motions it plays
 // (scripts/build_stances.py -> stances/wNN.json, from running the game's own per-part update in an emulator,
-// scripts/weapon_state.py). For each clip of the class's list (the Pose panel's wNN), each part has a timeline of
+// scripts/weapon_state.py). For each clip of the class's list (the Weapon panel's Stance, wNN), each part has a timeline of
 // segments {f, state, bone, pos, rot, scale, wmot?} from clip frame f (60 a second): the hunter bone and record for
 // the carry state the motion's events and the game's own rules give -- a draw takes the weapon off the back and
 // into the hand mid-clip -- and `wmot`, the weapon motions the joint code samples, in order, each
@@ -2637,6 +2745,7 @@ function loadStance(key){
   return STANCES.get(key);
 }
 const stanceNow = { key: null, data: null };
+const formWord = new Map();               // class key -> the form the last declared clip left (not saved)
 // the weapon motion M at its own frame F -> the converter's clip and time: a motion with a loop point is split into
 // Motion[M]_start (frames 0 .. loop) and Motion[M]_loop (loop .. end, repeating); others are Motion[M]
 function weaponClipAt(T, M, F){
@@ -2651,7 +2760,7 @@ function weaponClipAt(T, M, F){
   return { clip: T.clips.get('Motion[' + M + ']'), t: Math.min(Math.max(0, F), mo.frames) / 60 };
 }
 const segmentAt = (tl, f) => { let s = tl[0]; for (const x of tl){ if (x.f > f) break; s = x; } return s; };
-// what plays now for the weapon on screen: the stance timelines of the clip the Pose panel plays (drawn, on the
+// what plays now for the weapon on screen: the stance timelines of the Stance playing (drawn, on the
 // class's own list), else the sheathed look; null while the class's stances load
 function stanceState(){
   const w = state.weapon, c = wClass(w.cls);
@@ -2659,12 +2768,17 @@ function stanceState(){
   const T = stanceNow.data, S = T.S;
   let v = Object.keys(S.variants)[0];
   for (const k in S.variants) if (S.variants[k].models.indexOf(w.model) >= 0){ v = k; break; }
-  const mode = (S.modes || [0]).indexOf(w.mode) >= 0 ? w.mode : 0;
-  const idle = S.idle && S.idle[String(mode)] && S.idle[String(mode)][v] || null;
-  const cl = S.clips[state.pose.clip];
-  if (w.drawn && state.pose.list === c.key && cl && pose.action){
+  // THE CLIP'S FORM (the Switch Axe and Charge Blade, 1 = sword): what its action declares (scripts/action_modes.py),
+  // no viewer control. A clip no action declares (`vf`, built in both) plays in the form the last declared clip
+  // left, as the game carries it and the MHGU viewer's setStance keeps its mode word; the sheathe form before any
+  const now = playing();
+  const cl = now.list === c.key ? S.clips[now.clip] : null;
+  if (cl && cl.form !== undefined && w.drawn) formWord.set(c.key, cl.form);
+  const form = cl && cl.form !== undefined ? cl.form : (formWord.has(c.key) ? formWord.get(c.key) : (S.formRest || 0));
+  const idle = S.idle && S.idle[String(form)] && S.idle[String(form)][v] || (S.idle && S.idle['0'] && S.idle['0'][v]) || null;
+  if (w.drawn && cl && pose.action){
     const frame = pose.action.time * S.fps;
-    const set = (mode && cl['m' + mode]) || cl.v;
+    const set = cl.v || (cl.vf && cl.vf[String(form)]);
     return { T, parts: set[v], frame, idle };
   }
   return w.drawn ? null : { T, parts: S.rest[v], frame: 0 };
@@ -2761,23 +2875,33 @@ function placeWeapon(){
     p.root.updateMatrixWorld(true);
   }
 }
-// DRAWN PLAYS THE CLASS'S OWN LIST: drawing a weapon puts the Pose panel on its class's motion list (wNN) and
-// that list's first clip; sheathing leaves the pose as it is.
-async function drawForPose(){
+// THE STANCE (the MHGU viewer's Weapon panel): the class's own clips, enabled while drawn; drawing with none picked
+// takes the first, as GU's does. Sheathing plays the hunter's Pose again (Raven: "we need both Poses for the Hunter
+// and Stances for the Weapon animations")
+const weaponStanceSel = document.getElementById('weaponStance');
+function stanceClips(){
   const c = wClass(state.weapon.cls), P = poseSet();
-  if (!c || !state.weapon.drawn || !P) return;
-  const l = P.lists.find(x => x.id === c.key);
-  if (!l || !l.clips.length) return;
-  if (state.pose.list === l.id && l.clips.some(x => x.clip === state.pose.clip)) return;
-  state.pose.list = l.id; state.pose.clip = l.clips[0].clip;
-  buildPoseLists(); await playPose();
+  const l = c && P && P.lists.find(x => x.id === c.key);
+  return (l && l.clips) || [];
 }
+function buildStanceList(){
+  const w = state.weapon, clips = stanceClips();
+  if (w.stance && !clips.some(x => x.clip === w.stance)) w.stance = '';
+  if (w.drawn && !w.stance && clips.length) w.stance = clips[0].clip;
+  weaponStanceSel.innerHTML = '<option value="">(None)</option>' +
+    clips.map(x => '<option value="' + esc(x.clip) + '" title="' + esc(x.clip + ', ' + x.dur.toFixed(2) + ' s') + '">' + esc(x.clip) + '</option>').join('');
+  weaponStanceSel.value = w.stance;
+  weaponStanceSel.disabled = !w.drawn || !clips.length;
+  document.getElementById('weaponStanceField').hidden = !wClass(w.cls);
+}
+async function drawForPose(){ buildStanceList(); await playPose(); }
+weaponStanceSel.onchange = async () => { chainStop(); state.weapon.stance = weaponStanceSel.value; await playPose(); saveState(); };
 weaponClassSel.onchange = async () => {
   const cls = +weaponClassSel.value;
-  state.weapon.cls = cls; state.weapon.mode = 0;       // a new class starts in its first mode
+  state.weapon.cls = cls; state.weapon.stance = '';      // a new class starts on its first stance
   const opts = weaponOptions(cls);
   if (opts.length){ state.weapon.model = opts[0].model; state.weapon.pig = opts[0].pig; }
-  buildWeaponLists(); await refreshWeapon(); await drawForPose(); saveState();
+  buildWeaponLists(); await refreshWeapon(); await drawForPose(); paintChain(); saveState();
 };
 weaponModelSel.onchange = () => {
   const [m, g] = weaponModelSel.value.split(':').map(Number);
@@ -2785,8 +2909,180 @@ weaponModelSel.onchange = () => {
   buildWeaponLists(); refreshWeapon().then(saveState);
 };
 kinsectSel.onchange = () => { state.weapon.kinsect = +kinsectSel.value; refreshWeapon().then(saveState); };
-weaponModeSel.onchange = () => { state.weapon.mode = +weaponModeSel.value; saveState(); };
-weaponDrawnSel.onchange = async () => { state.weapon.drawn = weaponDrawnSel.value === '1'; await drawForPose(); saveState(); };
+weaponDrawnSel.onchange = async () => { chainStop(); state.weapon.drawn = weaponDrawnSel.value === '1'; await drawForPose(); saveState(); };
+
+// THE CHAIN (the MHGU viewer's Animation panel): hunter poses and weapon stances played back to back. A link is
+// { kind: 'pose', list, clip, label } -- it sheathes the weapon -- or { kind: 'stance', cls, clsName, clip, label } --
+// it draws it. A one-shot plays once and the chain moves on as it ends; a pose or a _loop stance holds CHAIN_HOLD
+// seconds of PLAYING time (pausing pauses the chain), and as the last link of a chain that does not repeat keeps
+// looping. A stance of another class than the one equipped shows muted and is skipped. Only Clear empties it; it is
+// kept per browser across reloads. Rows reorder by dragging their grip.
+const CHAIN_HOLD = 3, CHAIN_KEY = 'mh4u-armor-viewer-chain';
+const chain = [];
+let chainPos = -1, chainRunning = false, chainLoopOn = false;
+// a link holds unless it is a one-shot stance: entry is a link ({ list }) or what the pose driver plays ({ file })
+const chainIsStance = entry => !!entry && (isWeaponList(entry.list) || /\/w\d\d\.glb$/.test(entry.file || ''));
+const chainHolds = entry => /_loop$/.test((entry && entry.clip) || '') || !chainIsStance(entry);
+const chainPlayable = el => el.kind === 'pose' ||
+  (el.cls === state.weapon.cls && stanceClips().some(x => x.clip === el.clip));
+const chainList = document.getElementById('chainList');
+const chainPoseSel = document.getElementById('chainPoseSel'), chainStanceSel = document.getElementById('chainStanceSel');
+let chainSelSig = '';
+function syncChainSelects(){
+  const sig = huntPoseSel.options.length + ':' + weaponStanceSel.options.length + ':' + state.weapon.cls + ':' + state.g;
+  if (sig === chainSelSig) return;
+  chainSelSig = sig;
+  chainPoseSel.innerHTML = huntPoseSel.innerHTML.replace(/<option value="">[^<]*<\/option>/, '');
+  chainStanceSel.innerHTML = [...weaponStanceSel.options].filter(o => o.value !== '')
+    .map(o => '<option value="' + esc(o.value) + '" title="' + esc(o.title) + '">' + esc(o.text) + '</option>').join('');
+  const none = !chainStanceSel.options.length;
+  chainStanceSel.disabled = none; document.getElementById('chainAddStance').disabled = none;
+}
+function chainLabel(el){
+  if (el.kind === 'pose') return (POSE_NAMES[el.list] || el.list) + ' ' + el.clip;
+  return chainPlayable(el) ? el.label : el.label + ' (' + el.clsName + ')';
+}
+function paintChain(){
+  syncChainSelects();
+  chainList.innerHTML = chain.map((el, k) => {
+    const off = !chainPlayable(el);
+    return '<li class="' + (k === chainPos ? 'on' : '') + (off ? ' off' : '') + '" data-i="' + k + '"' +
+      (off ? ' title="A stance of another weapon class: it plays when that class is equipped"' : '') + '>' +
+      '<span class="grip" title="Drag to reorder">&#8942;&#8942;</span>' +
+      '<span class="n">' + (k + 1) + '.</span><span class="lab">' + esc(chainLabel(el)) + '</span>' +
+      '<span class="x" data-k="' + k + '" title="Remove from the chain">&times;</span></li>';
+  }).join('');
+  document.getElementById('chainLoop').classList.toggle('on', chainLoopOn);
+}
+function chainSave(){ try { localStorage.setItem(CHAIN_KEY, JSON.stringify({ chain, loop: chainLoopOn })); } catch (e) {} }
+// the hold counts on the animation's clock: stepped from the render loop, it waits while the animation is paused
+let chainHold = 0, chainHoldK = -1, chainHoldPrev = 0;
+function chainClearHold(){ chainHold = 0; chainHoldK = -1; }
+function stepChainHold(){
+  const now = performance.now();
+  const dt = chainHoldPrev ? Math.min((now - chainHoldPrev) / 1000, 0.1) : 0;
+  chainHoldPrev = now;
+  if (!chainRunning || chainHold <= 0 || chainHoldK !== chainPos) return;
+  const a = pose.action;
+  if (a && (a.paused || !a.isRunning())) return;
+  chainHold -= dt;
+  if (chainHold <= 0){ chainClearHold(); chainPlayFrom(chainPos + 1); }
+}
+function chainStop(){ chainClearHold(); if (!chainRunning && chainPos < 0) return; chainRunning = false; chainPos = -1; paintChain(); }
+// play a link as picking it in the Hunter or Weapon panel would
+async function chainApply(el){
+  if (el.kind === 'pose'){
+    state.weapon.drawn = false; state.pose.list = el.list; state.pose.clip = el.clip;
+    buildPoseLists();
+  } else {
+    state.weapon.drawn = true; state.weapon.stance = el.clip;
+  }
+  weaponDrawnSel.value = state.weapon.drawn ? '1' : '0';
+  buildStanceList(); await playPose(); saveState();
+}
+async function chainPlayFrom(k){
+  chainClearHold();
+  if (!chain.some(chainPlayable)){ chainStop(); return; }
+  if (k >= chain.length){ if (chainLoopOn && chain.length) k = 0; else { chainStop(); return; } }
+  const el = chain[k];
+  if (!chainPlayable(el)){ chainPos = k; chainRunning = true; return chainPlayFrom(k + 1); }
+  chainPos = k; chainRunning = true; paintChain();
+  await chainApply(el);
+  const holds = el.kind === 'pose' || /_loop$/.test(el.clip);
+  const last = k === chain.length - 1;
+  if (chainRunning && chainPos === k && holds && !(last && !chainLoopOn)){ chainHold = CHAIN_HOLD; chainHoldK = k; }
+}
+pose.onFinished = () => { if (chainRunning) chainPlayFrom(chainPos + 1); };
+document.getElementById('chainAddPose').onclick = () => {
+  const v = chainPoseSel.value, i = v.indexOf('|');
+  if (i < 0) return;
+  chain.push({ kind: 'pose', list: v.slice(0, i), clip: v.slice(i + 1), label: v.slice(i + 1) });
+  paintChain(); chainSave();
+};
+document.getElementById('chainAddStance').onclick = () => {
+  const c = wClass(state.weapon.cls);
+  if (!c || !chainStanceSel.value) return;
+  chain.push({ kind: 'stance', cls: c.cls, clsName: c.name, clip: chainStanceSel.value, label: chainStanceSel.value });
+  paintChain(); chainSave();
+};
+// Preview plays the pick now; picking in either list previews it at once (as the MHGU viewer's)
+document.getElementById('chainPrevPose').onclick = async () => {
+  const v = chainPoseSel.value, i = v.indexOf('|');
+  if (i < 0) return;
+  chainStop(); await chainApply({ kind: 'pose', list: v.slice(0, i), clip: v.slice(i + 1) });
+};
+document.getElementById('chainPrevStance').onclick = async () => {
+  if (!chainStanceSel.value) return;
+  chainStop(); await chainApply({ kind: 'stance', clip: chainStanceSel.value });
+};
+chainPoseSel.onchange = () => document.getElementById('chainPrevPose').onclick();
+chainStanceSel.onchange = () => document.getElementById('chainPrevStance').onclick();
+document.getElementById('chainClear').onclick = () => { chainClearHold(); chain.length = 0; chainPos = -1; chainRunning = false; paintChain(); chainSave(); };
+document.getElementById('chainLoop').onclick = () => { chainLoopOn = !chainLoopOn; paintChain(); chainSave(); };
+document.getElementById('chainPlay').onclick = () => { if (chain.length) chainPlayFrom(0); };
+chainList.onclick = e => {
+  const k = e.target && e.target.dataset ? e.target.dataset.k : undefined;
+  if (k === undefined) return;
+  chain.splice(+k, 1); if (chainPos >= chain.length) chainPos = -1; paintChain(); chainSave();
+};
+// reordering by dragging a row's grip (pointer events: mouse and touch); the running link keeps its identity
+function chainMove(from, ins){
+  if (from === ins || from + 1 === ins) return;
+  const cur = chainPos >= 0 ? chain[chainPos] : null;
+  const [el] = chain.splice(from, 1);
+  chain.splice(ins > from ? ins - 1 : ins, 0, el);
+  if (cur){ chainPos = chain.indexOf(cur); if (chainHoldK >= 0) chainHoldK = chainPos; }
+  paintChain(); chainSave();
+}
+{
+  let from = -1, ins = -1, grip = null;
+  const rows = () => [...chainList.querySelectorAll('li')];
+  const clear = () => { rows().forEach(li => li.classList.remove('drag', 'ins-before', 'ins-after')); chainList.classList.remove('dragging'); };
+  const place = (x, y) => {
+    const list = rows(); if (!list.length) return -1;
+    const under = document.elementFromPoint(x, y), li = under && under.closest ? under.closest('#chainList li') : null;
+    if (li){ const r = li.getBoundingClientRect(), i = +li.dataset.i; return y < r.top + r.height / 2 ? i : i + 1; }
+    const first = list[0].getBoundingClientRect(), last = list[list.length - 1].getBoundingClientRect();
+    return y < first.top ? 0 : (y > last.bottom ? list.length : -1);
+  };
+  const paintIns = () => {
+    const list = rows(); list.forEach(li => li.classList.remove('ins-before', 'ins-after'));
+    if (ins < 0 || ins === from || ins === from + 1) return;
+    if (ins < list.length) list[ins].classList.add('ins-before'); else list[list.length - 1].classList.add('ins-after');
+  };
+  chainList.addEventListener('pointerdown', e => {
+    const g = e.target && e.target.closest ? e.target.closest('.grip') : null;
+    if (!g || e.button) return;
+    const li = g.closest('li'); from = +li.dataset.i; ins = -1; grip = g;
+    li.classList.add('drag'); chainList.classList.add('dragging');
+    try { g.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  chainList.addEventListener('pointermove', e => { if (from < 0) return; ins = place(e.clientX, e.clientY); paintIns(); });
+  const end = e => {
+    if (from < 0) return;
+    const f = from, i = e.type === 'pointerup' ? place(e.clientX, e.clientY) : -1;
+    try { if (grip && grip.hasPointerCapture && grip.hasPointerCapture(e.pointerId)) grip.releasePointerCapture(e.pointerId); } catch (_) {}
+    from = -1; ins = -1; grip = null; clear();
+    if (i >= 0) chainMove(f, i);
+  };
+  chainList.addEventListener('pointerup', end);
+  chainList.addEventListener('pointercancel', end);
+}
+// the saved chain comes back checked link by link: listed, not started
+try {
+  const saved = JSON.parse(localStorage.getItem(CHAIN_KEY) || 'null');
+  if (saved && Array.isArray(saved.chain)){
+    for (const el of saved.chain){
+      if (!el || typeof el !== 'object' || typeof el.clip !== 'string') continue;
+      if (el.kind === 'pose' && typeof el.list === 'string') chain.push({ kind: 'pose', list: el.list, clip: el.clip, label: el.clip });
+      else if (el.kind === 'stance' && Number.isInteger(el.cls))
+        chain.push({ kind: 'stance', cls: el.cls, clsName: typeof el.clsName === 'string' ? el.clsName : String(el.cls), clip: el.clip, label: el.clip });
+    }
+    chainLoopOn = !!saved.loop;
+  }
+} catch (e) {}
+paintChain();
 
 // ---- framing ----------------------------------------------------------------------------------
 // Under a clip a skinned mesh keeps its rest bounds, so the pose driver's own bounds -- the union of
@@ -3078,6 +3374,9 @@ fitRenderer();
 renderer.setAnimationLoop(() => {
   if (pose.mixer) pose.step(Object.values(mounted));
   placeWeapon();                           // the weapon follows the bones the pose just set
+  updateTransport();
+  stepChainHold();
+  if ((++chainTick % 30) === 0) paintChainIfStale();
   // update() would look at the target, which fly does not have
   if (camMode === 'fly') stepFly(); else controls.update();
   stepLighting();                          // the key light's orbit
