@@ -1,0 +1,5043 @@
+{
+"version": 1,
+"src": "romfs eng/data/core_lobby.arc eng\\msg\\lobby\\GuildCard_eng (LMD), message ids 743-1668 (words) and 1670-1769 (connectors); scripts/build_guild_titles.py",
+"order": "the title menu's order (u32 title ids at 0xeda8d0; title id = message - 742)",
+"pages": "the title menu shows 8 to a page (0xa52d0c)",
+"note": null,
+"noneReq": "Available from the start.",
+"req": "each word's unlock text is the one the Guild Card shows for it (0xa53204 run per title id = the word's position, message 742 + id)",
+"words": [
+{
+"w": "Noob",
+"req": "Available from the start.",
+"id": "msg_743"
+},
+{
+"w": "Greenhorn",
+"req": "Available from the start.",
+"id": "msg_744"
+},
+{
+"w": "Beginner",
+"req": "Available from the start.",
+"id": "msg_745"
+},
+{
+"w": "Fledgling",
+"req": "Available from the start.",
+"id": "msg_746"
+},
+{
+"w": "Rookie",
+"req": "Available from the start.",
+"id": "msg_747"
+},
+{
+"w": "Hunter",
+"req": "Available from the start.",
+"id": "msg_748"
+},
+{
+"w": "Fisher",
+"req": "Available from the start.",
+"id": "msg_749"
+},
+{
+"w": "Fighter",
+"req": "Available from the start.",
+"id": "msg_750"
+},
+{
+"w": "Sniper",
+"req": "Available from the start.",
+"id": "msg_751"
+},
+{
+"w": "Weapon",
+"req": "Available from the start.",
+"id": "msg_752"
+},
+{
+"w": "Sword & Shield",
+"req": "Available from the start.",
+"id": "msg_753"
+},
+{
+"w": "Blade",
+"req": "Available from the start.",
+"id": "msg_754"
+},
+{
+"w": "Great Sword",
+"req": "Available from the start.",
+"id": "msg_755"
+},
+{
+"w": "Lance",
+"req": "Available from the start.",
+"id": "msg_756"
+},
+{
+"w": "Spear",
+"req": "Available from the start.",
+"id": "msg_757"
+},
+{
+"w": "Hammer",
+"req": "Available from the start.",
+"id": "msg_758"
+},
+{
+"w": "Cudgel",
+"req": "Available from the start.",
+"id": "msg_759"
+},
+{
+"w": "Knife",
+"req": "Available from the start.",
+"id": "msg_760"
+},
+{
+"w": "Dual Blades",
+"req": "Available from the start.",
+"id": "msg_761"
+},
+{
+"w": "Light Bowgun",
+"req": "Available from the start.",
+"id": "msg_762"
+},
+{
+"w": "Crossbow",
+"req": "Available from the start.",
+"id": "msg_763"
+},
+{
+"w": "Heavy Bowgun",
+"req": "Available from the start.",
+"id": "msg_764"
+},
+{
+"w": "Launcher",
+"req": "Available from the start.",
+"id": "msg_765"
+},
+{
+"w": "Katana",
+"req": "Available from the start.",
+"id": "msg_766"
+},
+{
+"w": "Long Sword",
+"req": "Available from the start.",
+"id": "msg_767"
+},
+{
+"w": "Arrow",
+"req": "Available from the start.",
+"id": "msg_768"
+},
+{
+"w": "Bow",
+"req": "Available from the start.",
+"id": "msg_769"
+},
+{
+"w": "Gunlance",
+"req": "Available from the start.",
+"id": "msg_770"
+},
+{
+"w": "Artillery",
+"req": "Available from the start.",
+"id": "msg_771"
+},
+{
+"w": "Music",
+"req": "Available from the start.",
+"id": "msg_772"
+},
+{
+"w": "Hunting Horn",
+"req": "Available from the start.",
+"id": "msg_773"
+},
+{
+"w": "Axe",
+"req": "Available from the start.",
+"id": "msg_774"
+},
+{
+"w": "Switch Axe",
+"req": "Available from the start.",
+"id": "msg_775"
+},
+{
+"w": "Glaive",
+"req": "Available from the start.",
+"id": "msg_776"
+},
+{
+"w": "Mallet",
+"req": "Available from the start.",
+"id": "msg_777"
+},
+{
+"w": "Halberd",
+"req": "Available from the start.",
+"id": "msg_778"
+},
+{
+"w": "Charge Blade",
+"req": "Available from the start.",
+"id": "msg_779"
+},
+{
+"w": "Seeking",
+"req": "Available from the start.",
+"id": "msg_780"
+},
+{
+"w": "Recruiting",
+"req": "Available from the start.",
+"id": "msg_781"
+},
+{
+"w": "Helper",
+"req": "Available from the start.",
+"id": "msg_782"
+},
+{
+"w": "Courageous",
+"req": "Available from the start.",
+"id": "msg_783"
+},
+{
+"w": "Gentleman",
+"req": "Available from the start.",
+"id": "msg_784"
+},
+{
+"w": "Lady",
+"req": "Available from the start.",
+"id": "msg_785"
+},
+{
+"w": "Shepherd",
+"req": "Available from the start.",
+"id": "msg_786"
+},
+{
+"w": "Soldier",
+"req": "Available from the start.",
+"id": "msg_787"
+},
+{
+"w": "Man",
+"req": "Available from the start.",
+"id": "msg_788"
+},
+{
+"w": "Woman",
+"req": "Available from the start.",
+"id": "msg_789"
+},
+{
+"w": "Son",
+"req": "Available from the start.",
+"id": "msg_790"
+},
+{
+"w": "Daughter",
+"req": "Available from the start.",
+"id": "msg_791"
+},
+{
+"w": "Loner",
+"req": "Available from the start.",
+"id": "msg_792"
+},
+{
+"w": "Loving",
+"req": "Available from the start.",
+"id": "msg_793"
+},
+{
+"w": "Poogie",
+"req": "Available from the start.",
+"id": "msg_794"
+},
+{
+"w": "Stranger",
+"req": "Available from the start.",
+"id": "msg_795"
+},
+{
+"w": "Nervous",
+"req": "Available from the start.",
+"id": "msg_796"
+},
+{
+"w": "Excited",
+"req": "Available from the start.",
+"id": "msg_797"
+},
+{
+"w": "Solo",
+"req": "Available from the start.",
+"id": "msg_798"
+},
+{
+"w": "Dual",
+"req": "Available from the start.",
+"id": "msg_799"
+},
+{
+"w": "Triple",
+"req": "Available from the start.",
+"id": "msg_800"
+},
+{
+"w": "Party",
+"req": "Available from the start.",
+"id": "msg_801"
+},
+{
+"w": "Potion",
+"req": "Available from the start.",
+"id": "msg_802"
+},
+{
+"w": "Honey",
+"req": "Available from the start.",
+"id": "msg_803"
+},
+{
+"w": "Red",
+"req": "Available from the start.",
+"id": "msg_804"
+},
+{
+"w": "Blue",
+"req": "Available from the start.",
+"id": "msg_805"
+},
+{
+"w": "Green",
+"req": "Available from the start.",
+"id": "msg_806"
+},
+{
+"w": "Up-and-coming",
+"req": "Available from the start.",
+"id": "msg_807"
+},
+{
+"w": "Lazy",
+"req": "Available from the start.",
+"id": "msg_808"
+},
+{
+"w": "Third-rate",
+"req": "Available from the start.",
+"id": "msg_809"
+},
+{
+"w": "Offensive",
+"req": "Available from the start.",
+"id": "msg_810"
+},
+{
+"w": "Defensive",
+"req": "Available from the start.",
+"id": "msg_811"
+},
+{
+"w": "Bargain",
+"req": "Available from the start.",
+"id": "msg_812"
+},
+{
+"w": "Warrior",
+"req": "Befriended the Wycoon.",
+"id": "msg_813"
+},
+{
+"w": "Archer",
+"req": "Befriended the Wycoon.",
+"id": "msg_814"
+},
+{
+"w": "Bug-catcher",
+"req": "Befriended the Wycoon.",
+"id": "msg_815"
+},
+{
+"w": "Farmer",
+"req": "Befriended the Wycoon.",
+"id": "msg_816"
+},
+{
+"w": "Bookworm",
+"req": "Befriended the Wycoon.",
+"id": "msg_817"
+},
+{
+"w": "Fashionista",
+"req": "Befriended the Wycoon.",
+"id": "msg_818"
+},
+{
+"w": "Coot",
+"req": "Befriended the Wycoon.",
+"id": "msg_819"
+},
+{
+"w": "Dame",
+"req": "Befriended the Wycoon.",
+"id": "msg_820"
+},
+{
+"w": "Motherly",
+"req": "Befriended the Wycoon.",
+"id": "msg_821"
+},
+{
+"w": "Baker",
+"req": "Befriended the Wycoon.",
+"id": "msg_822"
+},
+{
+"w": "Professor",
+"req": "Befriended the Wycoon.",
+"id": "msg_823"
+},
+{
+"w": "Winner",
+"req": "Befriended the Wycoon.",
+"id": "msg_824"
+},
+{
+"w": "Loser",
+"req": "Befriended the Wycoon.",
+"id": "msg_825"
+},
+{
+"w": "Addict",
+"req": "Befriended the Wycoon.",
+"id": "msg_826"
+},
+{
+"w": "Wimp",
+"req": "Befriended the Wycoon.",
+"id": "msg_827"
+},
+{
+"w": "Skilled",
+"req": "Befriended the Wycoon.",
+"id": "msg_828"
+},
+{
+"w": "Burned",
+"req": "Befriended the Wycoon.",
+"id": "msg_829"
+},
+{
+"w": "Val Habar",
+"req": "Befriended the Wycoon.",
+"id": "msg_830"
+},
+{
+"w": "Beast",
+"req": "Completed the Arluq.",
+"id": "msg_831"
+},
+{
+"w": "Freelancer",
+"req": "Completed the Arluq.",
+"id": "msg_832"
+},
+{
+"w": "Coward",
+"req": "Completed the Arluq.",
+"id": "msg_833"
+},
+{
+"w": "Bug",
+"req": "Completed the Arluq.",
+"id": "msg_834"
+},
+{
+"w": "Silent",
+"req": "Completed the Arluq.",
+"id": "msg_835"
+},
+{
+"w": "Poser",
+"req": "Completed the Arluq.",
+"id": "msg_836"
+},
+{
+"w": "Treasure",
+"req": "Completed the Arluq.",
+"id": "msg_837"
+},
+{
+"w": "Walker",
+"req": "Completed the Arluq.",
+"id": "msg_838"
+},
+{
+"w": "Alchemist",
+"req": "Completed the Arluq.",
+"id": "msg_839"
+},
+{
+"w": "Thief",
+"req": "Completed the Arluq.",
+"id": "msg_840"
+},
+{
+"w": "Hostage",
+"req": "Completed the Arluq.",
+"id": "msg_841"
+},
+{
+"w": "Miner",
+"req": "Completed the Arluq.",
+"id": "msg_842"
+},
+{
+"w": "Transporter",
+"req": "Completed the Arluq.",
+"id": "msg_843"
+},
+{
+"w": "Guardian",
+"req": "Completed the Arluq.",
+"id": "msg_844"
+},
+{
+"w": "Prototype",
+"req": "Completed the Arluq.",
+"id": "msg_845"
+},
+{
+"w": "Warhorse",
+"req": "Completed the Arluq.",
+"id": "msg_846"
+},
+{
+"w": "Explorer",
+"req": "Completed the Arluq.",
+"id": "msg_847"
+},
+{
+"w": "Spelunker",
+"req": "Completed the Arluq.",
+"id": "msg_848"
+},
+{
+"w": "Harth",
+"req": "Completed the Arluq.",
+"id": "msg_849"
+},
+{
+"w": "Felyne",
+"req": "Saved Cheeko Sands.",
+"id": "msg_850"
+},
+{
+"w": "Friend",
+"req": "Saved Cheeko Sands.",
+"id": "msg_851"
+},
+{
+"w": "Intelligent",
+"req": "Saved Cheeko Sands.",
+"id": "msg_852"
+},
+{
+"w": "Chum-Chum",
+"req": "Saved Cheeko Sands.",
+"id": "msg_853"
+},
+{
+"w": "Old Hand",
+"req": "Saved Cheeko Sands.",
+"id": "msg_854"
+},
+{
+"w": "Diver",
+"req": "Saved Cheeko Sands.",
+"id": "msg_855"
+},
+{
+"w": "Rodeo",
+"req": "Saved Cheeko Sands.",
+"id": "msg_856"
+},
+{
+"w": "Beloved",
+"req": "Saved Cheeko Sands.",
+"id": "msg_857"
+},
+{
+"w": "Client",
+"req": "Saved Cheeko Sands.",
+"id": "msg_858"
+},
+{
+"w": "Strolling",
+"req": "Saved Cheeko Sands.",
+"id": "msg_859"
+},
+{
+"w": "Starstruck",
+"req": "Saved Cheeko Sands.",
+"id": "msg_860"
+},
+{
+"w": "Infatuated",
+"req": "Saved Cheeko Sands.",
+"id": "msg_861"
+},
+{
+"w": "Love",
+"req": "Saved Cheeko Sands.",
+"id": "msg_862"
+},
+{
+"w": "Roving",
+"req": "Saved Cheeko Sands.",
+"id": "msg_863"
+},
+{
+"w": "Rare",
+"req": "Saved Cheeko Sands.",
+"id": "msg_864"
+},
+{
+"w": "Well-done",
+"req": "Saved Cheeko Sands.",
+"id": "msg_865"
+},
+{
+"w": "Second-rate",
+"req": "Saved Cheeko Sands.",
+"id": "msg_866"
+},
+{
+"w": "Nightingale",
+"req": "Saved Cheeko Sands.",
+"id": "msg_867"
+},
+{
+"w": "Mascot",
+"req": "Saved Cheeko Sands.",
+"id": "msg_868"
+},
+{
+"w": "Cheeko",
+"req": "Saved Cheeko Sands.",
+"id": "msg_869"
+},
+{
+"w": "Sunsnug",
+"req": "Saved Cheeko Sands.",
+"id": "msg_870"
+},
+{
+"w": "Head",
+"req": "Completed the airship.",
+"id": "msg_871"
+},
+{
+"w": "Face",
+"req": "Completed the airship.",
+"id": "msg_872"
+},
+{
+"w": "Chest",
+"req": "Completed the airship.",
+"id": "msg_873"
+},
+{
+"w": "Torso",
+"req": "Completed the airship.",
+"id": "msg_874"
+},
+{
+"w": "Arms",
+"req": "Completed the airship.",
+"id": "msg_875"
+},
+{
+"w": "Hands",
+"req": "Completed the airship.",
+"id": "msg_876"
+},
+{
+"w": "Waist",
+"req": "Completed the airship.",
+"id": "msg_877"
+},
+{
+"w": "Hips",
+"req": "Completed the airship.",
+"id": "msg_878"
+},
+{
+"w": "Legs",
+"req": "Completed the airship.",
+"id": "msg_879"
+},
+{
+"w": "Feet",
+"req": "Completed the airship.",
+"id": "msg_880"
+},
+{
+"w": "Armor",
+"req": "Completed the airship.",
+"id": "msg_881"
+},
+{
+"w": "Assassin",
+"req": "Completed the airship.",
+"id": "msg_882"
+},
+{
+"w": "Magnificent",
+"req": "Completed the airship.",
+"id": "msg_883"
+},
+{
+"w": "Buster",
+"req": "Completed the airship.",
+"id": "msg_884"
+},
+{
+"w": "Strider",
+"req": "Completed the airship.",
+"id": "msg_885"
+},
+{
+"w": "Saber",
+"req": "Completed the airship.",
+"id": "msg_886"
+},
+{
+"w": "Slayer",
+"req": "Completed the airship.",
+"id": "msg_887"
+},
+{
+"w": "Brave",
+"req": "Completed the airship.",
+"id": "msg_888"
+},
+{
+"w": "Cathar",
+"req": "Completed the airship.",
+"id": "msg_889"
+},
+{
+"w": "Phoenix",
+"req": "Became a true hunter.",
+"id": "msg_890"
+},
+{
+"w": "Wunderkind",
+"req": "Became a true hunter.",
+"id": "msg_891"
+},
+{
+"w": "Prodigy",
+"req": "Became a true hunter.",
+"id": "msg_892"
+},
+{
+"w": "Hot-blooded",
+"req": "Became a true hunter.",
+"id": "msg_893"
+},
+{
+"w": "Vanguard",
+"req": "Became a true hunter.",
+"id": "msg_894"
+},
+{
+"w": "Amnesiac",
+"req": "Became a true hunter.",
+"id": "msg_895"
+},
+{
+"w": "Scrivener",
+"req": "Became a true hunter.",
+"id": "msg_896"
+},
+{
+"w": "Mushroom",
+"req": "Became a true hunter.",
+"id": "msg_897"
+},
+{
+"w": "Goldenfish",
+"req": "Became a true hunter.",
+"id": "msg_898"
+},
+{
+"w": "Laid-back",
+"req": "Became a true hunter.",
+"id": "msg_899"
+},
+{
+"w": "Deviant",
+"req": "Became a true hunter.",
+"id": "msg_900"
+},
+{
+"w": "Pal",
+"req": "Became a true hunter.",
+"id": "msg_901"
+},
+{
+"w": "Piper",
+"req": "Became a true hunter.",
+"id": "msg_902"
+},
+{
+"w": "Gunslinger",
+"req": "Became a true hunter.",
+"id": "msg_903"
+},
+{
+"w": "Angler",
+"req": "Became a true hunter.",
+"id": "msg_904"
+},
+{
+"w": "Berserker",
+"req": "Became a true hunter.",
+"id": "msg_905"
+},
+{
+"w": "Mercenary",
+"req": "Became a true hunter.",
+"id": "msg_906"
+},
+{
+"w": "Assaulter",
+"req": "Became a true hunter.",
+"id": "msg_907"
+},
+{
+"w": "Bride",
+"req": "Became a true hunter.",
+"id": "msg_908"
+},
+{
+"w": "Pretty",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1328"
+},
+{
+"w": "Nostalgic",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1329"
+},
+{
+"w": "Powerful",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1330"
+},
+{
+"w": "Invincible",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1331"
+},
+{
+"w": "Kid",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1332"
+},
+{
+"w": "Dude",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1333"
+},
+{
+"w": "Best",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1334"
+},
+{
+"w": "Lucky",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1335"
+},
+{
+"w": "Challenger",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1336"
+},
+{
+"w": "Corps",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1337"
+},
+{
+"w": "Marm",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1338"
+},
+{
+"w": "Mister",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1339"
+},
+{
+"w": "New World",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1340"
+},
+{
+"w": "Healing",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1341"
+},
+{
+"w": "Monthly",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1342"
+},
+{
+"w": "Craftsman",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1343"
+},
+{
+"w": "Fanatic",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1344"
+},
+{
+"w": "Pincher",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1345"
+},
+{
+"w": "Heroine",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1346"
+},
+{
+"w": "Fly",
+"req": "Helped repair the Battlequarters.",
+"id": "msg_1347"
+},
+{
+"w": "Subtle",
+"req": "Saved the Master of Defense.",
+"id": "msg_1348"
+},
+{
+"w": "Happy",
+"req": "Saved the Master of Defense.",
+"id": "msg_1349"
+},
+{
+"w": "Natural",
+"req": "Saved the Master of Defense.",
+"id": "msg_1350"
+},
+{
+"w": "Heartthrob",
+"req": "Saved the Master of Defense.",
+"id": "msg_1351"
+},
+{
+"w": "Boy",
+"req": "Saved the Master of Defense.",
+"id": "msg_1352"
+},
+{
+"w": "Would-be",
+"req": "Saved the Master of Defense.",
+"id": "msg_1353"
+},
+{
+"w": "Tiny",
+"req": "Saved the Master of Defense.",
+"id": "msg_1354"
+},
+{
+"w": "Former",
+"req": "Saved the Master of Defense.",
+"id": "msg_1355"
+},
+{
+"w": "Straightforward",
+"req": "Saved the Master of Defense.",
+"id": "msg_1356"
+},
+{
+"w": "Sellsword",
+"req": "Saved the Master of Defense.",
+"id": "msg_1357"
+},
+{
+"w": "Unlucky",
+"req": "Saved the Master of Defense.",
+"id": "msg_1358"
+},
+{
+"w": "Slim",
+"req": "Saved the Master of Defense.",
+"id": "msg_1359"
+},
+{
+"w": "Underdog",
+"req": "Saved the Master of Defense.",
+"id": "msg_1360"
+},
+{
+"w": "Story",
+"req": "Saved the Master of Defense.",
+"id": "msg_1361"
+},
+{
+"w": "Crisis",
+"req": "Saved the Master of Defense.",
+"id": "msg_1362"
+},
+{
+"w": "Gem",
+"req": "Saved the Master of Defense.",
+"id": "msg_1363"
+},
+{
+"w": "Crazy",
+"req": "Saved the Master of Defense.",
+"id": "msg_1364"
+},
+{
+"w": "Economical",
+"req": "Saved the Master of Defense.",
+"id": "msg_1365"
+},
+{
+"w": "Daredevil",
+"req": "Saved the Master of Defense.",
+"id": "msg_1366"
+},
+{
+"w": "Ground",
+"req": "Saved the Master of Defense.",
+"id": "msg_1367"
+},
+{
+"w": "Exclusive",
+"req": "Restored sandskiff service.",
+"id": "msg_1368"
+},
+{
+"w": "Teamplayer",
+"req": "Restored sandskiff service.",
+"id": "msg_1369"
+},
+{
+"w": "Rough",
+"req": "Restored sandskiff service.",
+"id": "msg_1370"
+},
+{
+"w": "Reborn",
+"req": "Restored sandskiff service.",
+"id": "msg_1371"
+},
+{
+"w": "Superb",
+"req": "Restored sandskiff service.",
+"id": "msg_1372"
+},
+{
+"w": "Viva",
+"req": "Restored sandskiff service.",
+"id": "msg_1373"
+},
+{
+"w": "Dramatic",
+"req": "Restored sandskiff service.",
+"id": "msg_1374"
+},
+{
+"w": "Apprentice",
+"req": "Restored sandskiff service.",
+"id": "msg_1375"
+},
+{
+"w": "Priceless",
+"req": "Restored sandskiff service.",
+"id": "msg_1376"
+},
+{
+"w": "Shiny",
+"req": "Restored sandskiff service.",
+"id": "msg_1377"
+},
+{
+"w": "Beauty",
+"req": "Restored sandskiff service.",
+"id": "msg_1378"
+},
+{
+"w": "Temporary",
+"req": "Restored sandskiff service.",
+"id": "msg_1379"
+},
+{
+"w": "Fresh",
+"req": "Restored sandskiff service.",
+"id": "msg_1380"
+},
+{
+"w": "Delicacy",
+"req": "Restored sandskiff service.",
+"id": "msg_1381"
+},
+{
+"w": "Gentle",
+"req": "Restored sandskiff service.",
+"id": "msg_1382"
+},
+{
+"w": "Prime",
+"req": "Restored sandskiff service.",
+"id": "msg_1383"
+},
+{
+"w": "24-7",
+"req": "Restored sandskiff service.",
+"id": "msg_1384"
+},
+{
+"w": "Self Served",
+"req": "Restored sandskiff service.",
+"id": "msg_1385"
+},
+{
+"w": "Spirit",
+"req": "Restored sandskiff service.",
+"id": "msg_1386"
+},
+{
+"w": "Untarnished",
+"req": "Restored sandskiff service.",
+"id": "msg_1387"
+},
+{
+"w": "Robot",
+"req": "Completed Demolisher construction.",
+"id": "msg_1388"
+},
+{
+"w": "Babe",
+"req": "Completed Demolisher construction.",
+"id": "msg_1389"
+},
+{
+"w": "Gorgeous",
+"req": "Completed Demolisher construction.",
+"id": "msg_1390"
+},
+{
+"w": "Short",
+"req": "Completed Demolisher construction.",
+"id": "msg_1391"
+},
+{
+"w": "World-class",
+"req": "Completed Demolisher construction.",
+"id": "msg_1392"
+},
+{
+"w": "Wrathful",
+"req": "Completed Demolisher construction.",
+"id": "msg_1393"
+},
+{
+"w": "Life",
+"req": "Completed Demolisher construction.",
+"id": "msg_1394"
+},
+{
+"w": "Witch",
+"req": "Completed Demolisher construction.",
+"id": "msg_1395"
+},
+{
+"w": "Person",
+"req": "Completed Demolisher construction.",
+"id": "msg_1396"
+},
+{
+"w": "Prohibited",
+"req": "Completed Demolisher construction.",
+"id": "msg_1397"
+},
+{
+"w": "Immortal",
+"req": "Completed Demolisher construction.",
+"id": "msg_1398"
+},
+{
+"w": "Personal",
+"req": "Completed Demolisher construction.",
+"id": "msg_1399"
+},
+{
+"w": "Long",
+"req": "Completed Demolisher construction.",
+"id": "msg_1400"
+},
+{
+"w": "Dauntless",
+"req": "Completed Demolisher construction.",
+"id": "msg_1401"
+},
+{
+"w": "Apex",
+"req": "Completed Demolisher construction.",
+"id": "msg_1402"
+},
+{
+"w": "Year-round",
+"req": "Completed Demolisher construction.",
+"id": "msg_1403"
+},
+{
+"w": "Gourmet",
+"req": "Completed Demolisher construction.",
+"id": "msg_1404"
+},
+{
+"w": "Maid",
+"req": "Completed Demolisher construction.",
+"id": "msg_1405"
+},
+{
+"w": "Magistrate",
+"req": "Completed Demolisher construction.",
+"id": "msg_1406"
+},
+{
+"w": "Weakling",
+"req": "Completed Demolisher construction.",
+"id": "msg_1407"
+},
+{
+"w": "Master of Defense",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1408"
+},
+{
+"w": "Chief",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1409"
+},
+{
+"w": "Business",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1410"
+},
+{
+"w": "Active",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1411"
+},
+{
+"w": "Guildmarm",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1412"
+},
+{
+"w": "Real",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1413"
+},
+{
+"w": "Dramatist",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1414"
+},
+{
+"w": "Princess",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1415"
+},
+{
+"w": "Claimed",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1416"
+},
+{
+"w": "Sought-after",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1417"
+},
+{
+"w": "Successor",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1418"
+},
+{
+"w": "Well-known",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1419"
+},
+{
+"w": "Killer",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1420"
+},
+{
+"w": "Psychic",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1421"
+},
+{
+"w": "Immovable",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1422"
+},
+{
+"w": "Everlasting",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1423"
+},
+{
+"w": "Serviceable",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1424"
+},
+{
+"w": "Historical",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1425"
+},
+{
+"w": "Final",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1426"
+},
+{
+"w": "Homemade",
+"req": "Defended Dundorma with\nfellow hunters.",
+"id": "msg_1427"
+},
+{
+"w": "Wandering",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_909"
+},
+{
+"w": "Sharpshooter",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_910"
+},
+{
+"w": "Gladiator",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_911"
+},
+{
+"w": "Entomologist",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_912"
+},
+{
+"w": "Hustler",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_913"
+},
+{
+"w": "War",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_914"
+},
+{
+"w": "Stinger",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_915"
+},
+{
+"w": "Bearer",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_916"
+},
+{
+"w": "Commander",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_917"
+},
+{
+"w": "Pro",
+"req": "Reached Hunter Rank 6.",
+"id": "msg_918"
+},
+{
+"w": "Pioneer",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_919"
+},
+{
+"w": "Veteran",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_920"
+},
+{
+"w": "Commando",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_921"
+},
+{
+"w": "Divider",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_922"
+},
+{
+"w": "Predator",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_923"
+},
+{
+"w": "Melody",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_924"
+},
+{
+"w": "Cannon",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_925"
+},
+{
+"w": "Morphing",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_926"
+},
+{
+"w": "Rotating",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_927"
+},
+{
+"w": "Frenzied",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_928"
+},
+{
+"w": "Reliable",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_929"
+},
+{
+"w": "Adventurous",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_930"
+},
+{
+"w": "Meteor",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_931"
+},
+{
+"w": "Quick-draw",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_932"
+},
+{
+"w": "Cap'n",
+"req": "Reached Hunter Rank 8.",
+"id": "msg_933"
+},
+{
+"w": "Ruler",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_934"
+},
+{
+"w": "Shinobi",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_935"
+},
+{
+"w": "Freedom",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_936"
+},
+{
+"w": "Dream",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_937"
+},
+{
+"w": "Altair",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_938"
+},
+{
+"w": "Kunoichi",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_939"
+},
+{
+"w": "Vega",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_940"
+},
+{
+"w": "Vagrant",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_941"
+},
+{
+"w": "Iron",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_942"
+},
+{
+"w": "Breaker",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_943"
+},
+{
+"w": "Samurai",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_944"
+},
+{
+"w": "Model",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_945"
+},
+{
+"w": "Traveler",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_946"
+},
+{
+"w": "Slash",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_947"
+},
+{
+"w": "Wing",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_948"
+},
+{
+"w": "Broken",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_949"
+},
+{
+"w": "All",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_950"
+},
+{
+"w": "Armed",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_951"
+},
+{
+"w": "Nameless",
+"req": "Reached Hunter Rank 50.",
+"id": "msg_952"
+},
+{
+"w": "Tail",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_953"
+},
+{
+"w": "Slasher",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_954"
+},
+{
+"w": "Shaker",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_955"
+},
+{
+"w": "Sheathed",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_956"
+},
+{
+"w": "Deadeye",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_957"
+},
+{
+"w": "Collector",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_958"
+},
+{
+"w": "Coordinated",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_959"
+},
+{
+"w": "Royal",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_960"
+},
+{
+"w": "Maniac",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_961"
+},
+{
+"w": "Millionaire",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_962"
+},
+{
+"w": "Superstar",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_963"
+},
+{
+"w": "Dedicated",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_964"
+},
+{
+"w": "Detailed",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_965"
+},
+{
+"w": "Merciful",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_966"
+},
+{
+"w": "Relentless",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_967"
+},
+{
+"w": "Pyro",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_968"
+},
+{
+"w": "Deathblow",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_969"
+},
+{
+"w": "Covert",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_970"
+},
+{
+"w": "Charging",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_971"
+},
+{
+"w": "Territorial",
+"req": "Reached Hunter Rank 100.",
+"id": "msg_972"
+},
+{
+"w": "Complete",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_973"
+},
+{
+"w": "Sage",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_974"
+},
+{
+"w": "Perfect",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_975"
+},
+{
+"w": "Sovereign",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_976"
+},
+{
+"w": "Striker",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_977"
+},
+{
+"w": "Swordsman",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_978"
+},
+{
+"w": "Ferocious",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_979"
+},
+{
+"w": "Risk-taker",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_980"
+},
+{
+"w": "Heavyweight",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_981"
+},
+{
+"w": "Mechanical",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_982"
+},
+{
+"w": "Executioner",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_983"
+},
+{
+"w": "Profiteer",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_984"
+},
+{
+"w": "Impersonator",
+"req": "Reached Hunter Rank 200.",
+"id": "msg_985"
+},
+{
+"w": "Legendary",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_986"
+},
+{
+"w": "Champion",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_987"
+},
+{
+"w": "Hero",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_988"
+},
+{
+"w": "Composed",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_989"
+},
+{
+"w": "Voracious",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_990"
+},
+{
+"w": "Strongest",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_991"
+},
+{
+"w": "First-rate",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_992"
+},
+{
+"w": "Lava",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_993"
+},
+{
+"w": "Unmatched",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_994"
+},
+{
+"w": "Tyrant",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_995"
+},
+{
+"w": "Divine",
+"req": "Reached Hunter Rank 500.",
+"id": "msg_996"
+},
+{
+"w": "Monster",
+"req": "Reached Hunter Rank 999.",
+"id": "msg_997"
+},
+{
+"w": "Macaron",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1428"
+},
+{
+"w": "Scientist",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1429"
+},
+{
+"w": "Gaudy",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1430"
+},
+{
+"w": "Crude",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1431"
+},
+{
+"w": "Amphibian",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1432"
+},
+{
+"w": "Crisp",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1433"
+},
+{
+"w": "Professional",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1434"
+},
+{
+"w": "Adored",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1435"
+},
+{
+"w": "Mecha",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1436"
+},
+{
+"w": "New Type",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1437"
+},
+{
+"w": "Chan",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1438"
+},
+{
+"w": "Vanilla",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1439"
+},
+{
+"w": "Elegance",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1440"
+},
+{
+"w": "Titanic",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1441"
+},
+{
+"w": "Hasty",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1442"
+},
+{
+"w": "Maxed Out",
+"req": "Unlocked the Elder Hall's\nG1★ Quests.",
+"id": "msg_1443"
+},
+{
+"w": "Tragic",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1444"
+},
+{
+"w": "Sweet",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1445"
+},
+{
+"w": "Tomorrow",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1446"
+},
+{
+"w": "Father",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1447"
+},
+{
+"w": "Army",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1448"
+},
+{
+"w": "Peach",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1449"
+},
+{
+"w": "Diet",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1450"
+},
+{
+"w": "Military",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1451"
+},
+{
+"w": "Parent",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1452"
+},
+{
+"w": "Original",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1453"
+},
+{
+"w": "Underage",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1454"
+},
+{
+"w": "Strawberry",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1455"
+},
+{
+"w": "Darling",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1456"
+},
+{
+"w": "Wife",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1457"
+},
+{
+"w": "Cutie",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1458"
+},
+{
+"w": "99%",
+"req": "Unlocked the Elder Hall's\nG2★ Quests.",
+"id": "msg_1459"
+},
+{
+"w": "Me",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1460"
+},
+{
+"w": "Fully Auto",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1461"
+},
+{
+"w": "Chemical",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1462"
+},
+{
+"w": "Starting",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1463"
+},
+{
+"w": "Comfy",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1464"
+},
+{
+"w": "Fate",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1465"
+},
+{
+"w": "Mini",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1466"
+},
+{
+"w": "Old Gen",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1467"
+},
+{
+"w": "Seal",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1468"
+},
+{
+"w": "Graduation",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1469"
+},
+{
+"w": "Vocation",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1470"
+},
+{
+"w": "Cadet",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1471"
+},
+{
+"w": "Neo",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1472"
+},
+{
+"w": "Sister",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1473"
+},
+{
+"w": "Physical",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1474"
+},
+{
+"w": "Maiden",
+"req": "Unlocked the Elder Hall's\nG3★ Quests.",
+"id": "msg_1475"
+},
+{
+"w": "Comrade",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1476"
+},
+{
+"w": "Doppelganger",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1477"
+},
+{
+"w": "Popular",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1478"
+},
+{
+"w": "Dwarf",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1479"
+},
+{
+"w": "Virility",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1480"
+},
+{
+"w": "Syndrome",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1481"
+},
+{
+"w": "Anti",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1482"
+},
+{
+"w": "Crab",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1483"
+},
+{
+"w": "Hand-trained",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1484"
+},
+{
+"w": "Captain",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1485"
+},
+{
+"w": "Warlord",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1486"
+},
+{
+"w": "Smitten",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1487"
+},
+{
+"w": "Unique",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1488"
+},
+{
+"w": "Half",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1489"
+},
+{
+"w": "Heat",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1490"
+},
+{
+"w": "Discounted",
+"req": "Unlocked the Elder Hall's Advanced\nG3★ Quests.",
+"id": "msg_1491"
+},
+{
+"w": "Mega",
+"req": "Deciphered 1 Aged Text.",
+"id": "msg_1510"
+},
+{
+"w": "Ultra",
+"req": "Deciphered 2 Aged Texts.",
+"id": "msg_1511"
+},
+{
+"w": "Disappointment",
+"req": "Deciphered 3 Aged Texts.",
+"id": "msg_1512"
+},
+{
+"w": "Human",
+"req": "Deciphered 4 Aged Texts.",
+"id": "msg_1513"
+},
+{
+"w": "Smart",
+"req": "Deciphered 5 Aged Texts.",
+"id": "msg_1514"
+},
+{
+"w": "Huntsman",
+"req": "Deciphered 6 Aged Texts.",
+"id": "msg_1515"
+},
+{
+"w": "Rider",
+"req": "Deciphered 7 Aged Texts.",
+"id": "msg_1516"
+},
+{
+"w": "Flower",
+"req": "Deciphered 8 Aged Texts.",
+"id": "msg_1517"
+},
+{
+"w": "Strongarm",
+"req": "Deciphered 9 Aged Texts.",
+"id": "msg_1518"
+},
+{
+"w": "Ramen",
+"req": "Deciphered 10 Aged Texts.",
+"id": "msg_1519"
+},
+{
+"w": "Udon",
+"req": "Deciphered all Aged Texts.",
+"id": "msg_1520"
+},
+{
+"w": "Stray",
+"req": "Hired 5 Palicoes.",
+"id": "msg_998"
+},
+{
+"w": "Nya",
+"req": "Hired 10 Palicoes.",
+"id": "msg_999"
+},
+{
+"w": "Palico",
+"req": "Hired 20 Palicoes.",
+"id": "msg_1000"
+},
+{
+"w": "Caretaker",
+"req": "Hired 30 Palicoes.",
+"id": "msg_1001"
+},
+{
+"w": "Ms.",
+"req": "Hired 40 Palicoes.",
+"id": "msg_1521"
+},
+{
+"w": "Sprite",
+"req": "Hired 50 Palicoes.",
+"id": "msg_1522"
+},
+{
+"w": "Secret",
+"req": "Began in a hidden area 5 times.",
+"id": "msg_1002"
+},
+{
+"w": "Hidden",
+"req": "Began in a hidden area 10 times.",
+"id": "msg_1003"
+},
+{
+"w": "Ancestral Steppe",
+"req": "Completed 20 Quests in\nthe Ancestral Steppe.",
+"id": "msg_1004"
+},
+{
+"w": "Sunken Hollow",
+"req": "Completed 20 Quests in\nthe Sunken Hollow.",
+"id": "msg_1005"
+},
+{
+"w": "Primal Forest",
+"req": "Completed 20 Quests in\nthe Primal Forest.",
+"id": "msg_1006"
+},
+{
+"w": "Frozen Seaway",
+"req": "Completed 20 Quests in\nthe Frozen Seaway.",
+"id": "msg_1007"
+},
+{
+"w": "Heaven's Mount",
+"req": "Completed 20 Quests on\nHeaven's Mount.",
+"id": "msg_1008"
+},
+{
+"w": "Volcanic Hollow",
+"req": "Completed 20 Quests in\nthe Volcanic Hollow.",
+"id": "msg_1009"
+},
+{
+"w": "Schrade",
+"req": "Completed 20 Quests in\nCastle Schrade.",
+"id": "msg_1010"
+},
+{
+"w": "Guide",
+"req": "Completed 100 Quests.",
+"id": "msg_1011"
+},
+{
+"w": "Researcher",
+"req": "Completed 1,000 Quests.",
+"id": "msg_1012"
+},
+{
+"w": "Protector",
+"req": "Completed 20 Quests in\nthe Great Desert.",
+"id": "msg_1013"
+},
+{
+"w": "Arcadia",
+"req": "Completed 20 Quests in the\nTower Summit, Speartip Crag,\nIngle Isle, and Sanctuary.",
+"id": "msg_1014"
+},
+{
+"w": "Oasis",
+"req": "Completed a total of 20 Dunes (day)\nand Dunes (night) Quests.",
+"id": "msg_1523"
+},
+{
+"w": "Dunes (day)",
+"req": "Completed 20 Quests in the\nDunes (day).",
+"id": "msg_1524"
+},
+{
+"w": "Dunes (night)",
+"req": "Completed 20 Quests in the\nDunes (night).",
+"id": "msg_1525"
+},
+{
+"w": "Battlequarters",
+"req": "Completed 20 Quests in the\nBattlequarters.",
+"id": "msg_1526"
+},
+{
+"w": "Polar Field",
+"req": "Completed 20 Quests in the\nPolar Field.",
+"id": "msg_1527"
+},
+{
+"w": "Partner",
+"req": "Completed all 1★ Caravan Quests.\n(Weapons training not included)",
+"id": "msg_1015"
+},
+{
+"w": "Defender",
+"req": "Completed all 2★ Caravan Quests.",
+"id": "msg_1016"
+},
+{
+"w": "Scout",
+"req": "Completed all 3★ Caravan Quests.",
+"id": "msg_1017"
+},
+{
+"w": "Pathfinder",
+"req": "Completed all 4★ Caravan Quests.",
+"id": "msg_1018"
+},
+{
+"w": "Master",
+"req": "Completed all 5★ Caravan Quests.",
+"id": "msg_1019"
+},
+{
+"w": "Rescuer",
+"req": "Completed all 6★ Caravan Quests.",
+"id": "msg_1020"
+},
+{
+"w": "Entrepreneur",
+"req": "Completed all 7★ Caravan Quests.",
+"id": "msg_1528"
+},
+{
+"w": "Hope",
+"req": "Completed all 8★ Caravan Quests.",
+"id": "msg_1529"
+},
+{
+"w": "Hacker",
+"req": "Completed all 9★ Caravan Quests.",
+"id": "msg_1530"
+},
+{
+"w": "Freeman",
+"req": "Completed all 10★ Caravan Quests.",
+"id": "msg_1531"
+},
+{
+"w": "Guild",
+"req": "Completed all 1★ Gathering Hall\nQuests.",
+"id": "msg_1021"
+},
+{
+"w": "Knight",
+"req": "Completed all 2★ Gathering Hall\nQuests.",
+"id": "msg_1022"
+},
+{
+"w": "Ace",
+"req": "Completed all 3★ Gathering Hall\nQuests.",
+"id": "msg_1023"
+},
+{
+"w": "General",
+"req": "Completed all 4★ Gathering Hall\nQuests.",
+"id": "msg_1024"
+},
+{
+"w": "Imperial",
+"req": "Completed all 5★ Gathering Hall\nQuests.",
+"id": "msg_1025"
+},
+{
+"w": "Last-ditch",
+"req": "Completed all 6★ Gathering Hall\nQuests.",
+"id": "msg_1026"
+},
+{
+"w": "Supreme",
+"req": "Completed a set number of 7★\nGathering Hall Quests.",
+"id": "msg_1027"
+},
+{
+"w": "Talented",
+"req": "Completed all G1★ Elder Hall Quests.",
+"id": "msg_1532"
+},
+{
+"w": "Stormborn",
+"req": "Completed all G2★ Elder Hall Quests.",
+"id": "msg_1533"
+},
+{
+"w": "God",
+"req": "Completed all G3★ Elder Hall Quests.",
+"id": "msg_1534"
+},
+{
+"w": "Transcendent",
+"req": "Completed a set number of Caravan\nand Gathering Hall Quests.\n(Weapons training not included)",
+"id": "msg_1028"
+},
+{
+"w": "Titleholder",
+"req": "Completed all Caravan, Gathering Hall,\nand Elder Hall Quests.\n(Weapons training not included)",
+"id": "msg_1535"
+},
+{
+"w": "Braggart",
+"req": "Completed all weapons training\nQuests.",
+"id": "msg_1029"
+},
+{
+"w": "Guru",
+"req": "Completed a set number of Arena\nChallenge Quests. (B Rank or higher)",
+"id": "msg_1030"
+},
+{
+"w": "Victor",
+"req": "Completed all Gathering Hall and\nAssembly Arena Quests.\n(B Rank or higher)",
+"id": "msg_1536"
+},
+{
+"w": "Expert",
+"req": "Completed a set number of Arena\nChallenge Quests. (A Rank or higher)",
+"id": "msg_1031"
+},
+{
+"w": "Warman",
+"req": "Completed all Gathering Hall and\nAssembly Arena Quests.\n(A Rank or higher)",
+"id": "msg_1537"
+},
+{
+"w": "Strongman",
+"req": "Completed an Arena Challenge\nQuest with an S Rank.",
+"id": "msg_1032"
+},
+{
+"w": "Instructor",
+"req": "Completed a set number of Arena\nChallenge Quests. (S Rank)",
+"id": "msg_1033"
+},
+{
+"w": "Combatant",
+"req": "Completed all Gathering Hall and\nAssembly Arena Quests.\n(S Rank or higher)",
+"id": "msg_1538"
+},
+{
+"w": "Trailblazer",
+"req": "Used StreetPass for the first time.",
+"id": "msg_1034"
+},
+{
+"w": "StreetPass",
+"req": "Used StreetPass at least 100 times.",
+"id": "msg_1035"
+},
+{
+"w": "Adventurer",
+"req": "Traversed the Everwood.",
+"id": "msg_1036"
+},
+{
+"w": "Everwood",
+"req": "Traversed the Everwood 20 times.",
+"id": "msg_1037"
+},
+{
+"w": "Frontier",
+"req": "Traversed the Everwood 50 times.",
+"id": "msg_1038"
+},
+{
+"w": "Number 1",
+"req": "Completed \"Down to Business.\"",
+"id": "msg_1492"
+},
+{
+"w": "Mrs.",
+"req": "Completed \"Down to Business.\"",
+"id": "msg_1493"
+},
+{
+"w": "Fluffy",
+"req": "Completed \"Down to Business.\"",
+"id": "msg_1494"
+},
+{
+"w": "Chocolate",
+"req": "Completed \"Code 16010.\"",
+"id": "msg_1495"
+},
+{
+"w": "Jewelry",
+"req": "Completed \"Code 16010.\"",
+"id": "msg_1496"
+},
+{
+"w": "Somewhat",
+"req": "Completed \"Code 16010.\"",
+"id": "msg_1497"
+},
+{
+"w": "Born",
+"req": "Completed \"Of Masks & Monsters.\"",
+"id": "msg_1498"
+},
+{
+"w": "No-name",
+"req": "Completed \"Of Masks & Monsters.\"",
+"id": "msg_1499"
+},
+{
+"w": "Titan",
+"req": "Completed \"Of Masks & Monsters.\"",
+"id": "msg_1500"
+},
+{
+"w": "Bogeyman",
+"req": "Completed \"Inimitable Instructor.\"",
+"id": "msg_1501"
+},
+{
+"w": "Improved",
+"req": "Completed \"Inimitable Instructor.\"",
+"id": "msg_1502"
+},
+{
+"w": "Free",
+"req": "Completed \"Inimitable Instructor.\"",
+"id": "msg_1503"
+},
+{
+"w": "Level 6",
+"req": "Completed \"Sweetheart Square Off.\"",
+"id": "msg_1504"
+},
+{
+"w": "Japanese-style",
+"req": "Completed \"Sweetheart Square Off.\"",
+"id": "msg_1505"
+},
+{
+"w": "Nickname",
+"req": "Completed \"Sweetheart Square Off.\"",
+"id": "msg_1506"
+},
+{
+"w": "Prince",
+"req": "Completed \"Lay of the Land.\"",
+"id": "msg_1507"
+},
+{
+"w": "Passion",
+"req": "Completed \"Lay of the Land.\"",
+"id": "msg_1508"
+},
+{
+"w": "Lemon",
+"req": "Completed \"Lay of the Land.\"",
+"id": "msg_1509"
+},
+{
+"w": "Jaggi",
+"req": "Hunted 20 Great Jaggi.",
+"id": "msg_1039"
+},
+{
+"w": "Frilly",
+"req": "Hunted 30 Great Jaggi.",
+"id": "msg_1040"
+},
+{
+"w": "Alpha",
+"req": "Hunted 40 Great Jaggi.",
+"id": "msg_1041"
+},
+{
+"w": "Storm",
+"req": "Hunted 50 Great Jaggi.",
+"id": "msg_1042"
+},
+{
+"w": "Lagombi",
+"req": "Hunted 20 Lagombi.",
+"id": "msg_1043"
+},
+{
+"w": "Ice",
+"req": "Hunted 30 Lagombi.",
+"id": "msg_1044"
+},
+{
+"w": "Glider",
+"req": "Hunted 40 Lagombi.",
+"id": "msg_1045"
+},
+{
+"w": "Rabbit",
+"req": "Hunted 50 Lagombi.",
+"id": "msg_1046"
+},
+{
+"w": "Rathian",
+"req": "Hunted 20 Rathians.",
+"id": "msg_1047"
+},
+{
+"w": "Land",
+"req": "Hunted 30 Rathians.",
+"id": "msg_1048"
+},
+{
+"w": "Graceful",
+"req": "Hunted 40 Rathians.",
+"id": "msg_1049"
+},
+{
+"w": "Wyverness",
+"req": "Hunted 50 Rathians.",
+"id": "msg_1050"
+},
+{
+"w": "Pink",
+"req": "Hunted 20 Pink Rathians.",
+"id": "msg_1051"
+},
+{
+"w": "Poisonous",
+"req": "Hunted 30 Pink Rathians.",
+"id": "msg_1052"
+},
+{
+"w": "Soaring",
+"req": "Hunted 40 Pink Rathians.",
+"id": "msg_1053"
+},
+{
+"w": "Queen",
+"req": "Hunted 50 Pink Rathians.",
+"id": "msg_1054"
+},
+{
+"w": "Female",
+"req": "Hunted 10 Gold Rathians.",
+"id": "msg_1055"
+},
+{
+"w": "Golden",
+"req": "Hunted 15 Gold Rathians.",
+"id": "msg_1056"
+},
+{
+"w": "Lune",
+"req": "Hunted 20 Gold Rathians.",
+"id": "msg_1057"
+},
+{
+"w": "Heart",
+"req": "Hunted 30 Gold Rathians.",
+"id": "msg_1058"
+},
+{
+"w": "Rathalos",
+"req": "Hunted 20 Rathalos.",
+"id": "msg_1059"
+},
+{
+"w": "Skies",
+"req": "Hunted 30 Rathalos.",
+"id": "msg_1060"
+},
+{
+"w": "Fireball",
+"req": "Hunted 40 Rathalos.",
+"id": "msg_1061"
+},
+{
+"w": "King",
+"req": "Hunted 50 Rathalos.",
+"id": "msg_1062"
+},
+{
+"w": "Azure",
+"req": "Hunted 20 Azure Rathalos.",
+"id": "msg_1063"
+},
+{
+"w": "Flying",
+"req": "Hunted 30 Azure Rathalos.",
+"id": "msg_1064"
+},
+{
+"w": "Soul",
+"req": "Hunted 40 Azure Rathalos.",
+"id": "msg_1065"
+},
+{
+"w": "Crown",
+"req": "Hunted 50 Azure Rathalos.",
+"id": "msg_1066"
+},
+{
+"w": "Male",
+"req": "Hunted 10 Silver Rathalos.",
+"id": "msg_1067"
+},
+{
+"w": "Silver",
+"req": "Hunted 15 Silver Rathalos.",
+"id": "msg_1068"
+},
+{
+"w": "Sol",
+"req": "Hunted 20 Silver Rathalos.",
+"id": "msg_1069"
+},
+{
+"w": "Wyvern",
+"req": "Hunted 30 Silver Rathalos.",
+"id": "msg_1070"
+},
+{
+"w": "Brachydios",
+"req": "Hunted 20 Brachydios.",
+"id": "msg_1071"
+},
+{
+"w": "Slime",
+"req": "Hunted 30 Brachydios.",
+"id": "msg_1072"
+},
+{
+"w": "Obsidian",
+"req": "Hunted 40 Brachydios.",
+"id": "msg_1073"
+},
+{
+"w": "Explosive",
+"req": "Hunted 50 Brachydios.",
+"id": "msg_1074"
+},
+{
+"w": "Awakened",
+"req": "Hunted 60 Brachydios.",
+"id": "msg_1580"
+},
+{
+"w": "Zinogre",
+"req": "Hunted 20 Zinogres.",
+"id": "msg_1075"
+},
+{
+"w": "Peerless",
+"req": "Hunted 30 Zinogres.",
+"id": "msg_1076"
+},
+{
+"w": "Burst",
+"req": "Hunted 40 Zinogres.",
+"id": "msg_1077"
+},
+{
+"w": "Monarch",
+"req": "Hunted 50 Zinogres.",
+"id": "msg_1078"
+},
+{
+"w": "Underworld",
+"req": "Hunted 20 Stygian Zinogres.",
+"id": "msg_1079"
+},
+{
+"w": "Stygian",
+"req": "Hunted 30 Stygian Zinogres.",
+"id": "msg_1080"
+},
+{
+"w": "Rebel",
+"req": "Hunted 40 Stygian Zinogres.",
+"id": "msg_1081"
+},
+{
+"w": "Emperor",
+"req": "Hunted 50 Stygian Zinogres.",
+"id": "msg_1082"
+},
+{
+"w": "Deviljho",
+"req": "Hunted 20 Deviljho.",
+"id": "msg_1083"
+},
+{
+"w": "Demon",
+"req": "Hunted 30 Deviljho.",
+"id": "msg_1084"
+},
+{
+"w": "Savage",
+"req": "Hunted 40 Deviljho.",
+"id": "msg_1085"
+},
+{
+"w": "Devourer",
+"req": "Hunted 50 Deviljho.",
+"id": "msg_1086"
+},
+{
+"w": "Tigrex",
+"req": "Hunted 20 Tigrex.",
+"id": "msg_1087"
+},
+{
+"w": "Absolute",
+"req": "Hunted 30 Tigrex.",
+"id": "msg_1088"
+},
+{
+"w": "Wild",
+"req": "Hunted 40 Tigrex.",
+"id": "msg_1089"
+},
+{
+"w": "Evil Tiger",
+"req": "Hunted 50 Tigrex.",
+"id": "msg_1090"
+},
+{
+"w": "Rex",
+"req": "Hunted 20 Brute Tigrex.",
+"id": "msg_1091"
+},
+{
+"w": "Roar",
+"req": "Hunted 30 Brute Tigrex.",
+"id": "msg_1092"
+},
+{
+"w": "Dark",
+"req": "Hunted 40 Brute Tigrex.",
+"id": "msg_1093"
+},
+{
+"w": "Black Tiger",
+"req": "Hunted 50 Brute Tigrex.",
+"id": "msg_1094"
+},
+{
+"w": "Great",
+"req": "Hunted 10 Molten Tigrex.",
+"id": "msg_1095"
+},
+{
+"w": "Blaze",
+"req": "Hunted 15 Molten Tigrex.",
+"id": "msg_1096"
+},
+{
+"w": "Gargantuan",
+"req": "Hunted 20 Molten Tigrex.",
+"id": "msg_1097"
+},
+{
+"w": "Blue Streak",
+"req": "Hunted 30 Molten Tigrex.",
+"id": "msg_1098"
+},
+{
+"w": "Akantor",
+"req": "Slew 10 Akantor.",
+"id": "msg_1099"
+},
+{
+"w": "Savior",
+"req": "Slew 15 Akantor.",
+"id": "msg_1100"
+},
+{
+"w": "Tycoon",
+"req": "Slew 20 Akantor.",
+"id": "msg_1101"
+},
+{
+"w": "Royal Road",
+"req": "Slew 30 Akantor.",
+"id": "msg_1102"
+},
+{
+"w": "Ukanlos",
+"req": "Slew 10 Ukanlos.",
+"id": "msg_1539"
+},
+{
+"w": "Destruction",
+"req": "Slew 15 Ukanlos.",
+"id": "msg_1540"
+},
+{
+"w": "Drill",
+"req": "Slew 20 Ukanlos.",
+"id": "msg_1541"
+},
+{
+"w": "Miracle",
+"req": "Slew 30 Ukanlos.",
+"id": "msg_1542"
+},
+{
+"w": "Kut-Ku",
+"req": "Hunted 20 Yian Kut-Ku.",
+"id": "msg_1103"
+},
+{
+"w": "Round",
+"req": "Hunted 30 Yian Kut-Ku.",
+"id": "msg_1104"
+},
+{
+"w": "Red Bird",
+"req": "Hunted 40 Yian Kut-Ku.",
+"id": "msg_1105"
+},
+{
+"w": "Sensei",
+"req": "Hunted 50 Yian Kut-Ku.",
+"id": "msg_1106"
+},
+{
+"w": "Funny",
+"req": "Hunted 20 Blue Yian Kut-Ku.",
+"id": "msg_1107"
+},
+{
+"w": "Cobalt",
+"req": "Hunted 30 Blue Yian Kut-Ku.",
+"id": "msg_1108"
+},
+{
+"w": "Blue Bird",
+"req": "Hunted 40 Blue Yian Kut-Ku.",
+"id": "msg_1109"
+},
+{
+"w": "Big Nose",
+"req": "Hunted 50 Blue Yian Kut-Ku.",
+"id": "msg_1110"
+},
+{
+"w": "Garuga",
+"req": "Hunted 20 Yian Garuga.",
+"id": "msg_1111"
+},
+{
+"w": "Dark Wolf",
+"req": "Hunted 30 Yian Garuga.",
+"id": "msg_1112"
+},
+{
+"w": "Wolf",
+"req": "Hunted 40 Yian Garuga.",
+"id": "msg_1113"
+},
+{
+"w": "Lofty",
+"req": "Hunted 50 Yian Garuga.",
+"id": "msg_1114"
+},
+{
+"w": "Gypceros",
+"req": "Hunted 20 Gypceros.",
+"id": "msg_1115"
+},
+{
+"w": "Fury",
+"req": "Hunted 30 Gypceros.",
+"id": "msg_1116"
+},
+{
+"w": "Purple",
+"req": "Hunted 40 Gypceros.",
+"id": "msg_1117"
+},
+{
+"w": "Marathon Runner",
+"req": "Hunted 50 Gypceros.",
+"id": "msg_1118"
+},
+{
+"w": "Toxin Spewer",
+"req": "Hunted 20 Purple Gypceros.",
+"id": "msg_1119"
+},
+{
+"w": "Vivid",
+"req": "Hunted 30 Purple Gypceros.",
+"id": "msg_1120"
+},
+{
+"w": "Low-down",
+"req": "Hunted 40 Purple Gypceros.",
+"id": "msg_1121"
+},
+{
+"w": "Sore Loser",
+"req": "Hunted 50 Purple Gypceros.",
+"id": "msg_1122"
+},
+{
+"w": "Basarios",
+"req": "Hunted 20 Basarios.",
+"id": "msg_1123"
+},
+{
+"w": "Shadow",
+"req": "Hunted 30 Basarios.",
+"id": "msg_1124"
+},
+{
+"w": "Hermit",
+"req": "Hunted 40 Basarios.",
+"id": "msg_1125"
+},
+{
+"w": "Childish",
+"req": "Hunted 50 Basarios.",
+"id": "msg_1126"
+},
+{
+"w": "Private",
+"req": "Hunted 20 Ruby Basarios.",
+"id": "msg_1127"
+},
+{
+"w": "Ruby",
+"req": "Hunted 30 Ruby Basarios.",
+"id": "msg_1128"
+},
+{
+"w": "Blood Red",
+"req": "Hunted 40 Ruby Basarios.",
+"id": "msg_1129"
+},
+{
+"w": "Rose",
+"req": "Hunted 50 Ruby Basarios.",
+"id": "msg_1130"
+},
+{
+"w": "Gravios",
+"req": "Hunted 20 Gravios.",
+"id": "msg_1131"
+},
+{
+"w": "Scorcher",
+"req": "Hunted 30 Gravios.",
+"id": "msg_1132"
+},
+{
+"w": "Flame",
+"req": "Hunted 40 Gravios.",
+"id": "msg_1133"
+},
+{
+"w": "Firing",
+"req": "Hunted 50 Gravios.",
+"id": "msg_1134"
+},
+{
+"w": "Hothead",
+"req": "Hunted 20 Black Gravios.",
+"id": "msg_1135"
+},
+{
+"w": "Critical",
+"req": "Hunted 30 Black Gravios.",
+"id": "msg_1136"
+},
+{
+"w": "Rolypoly",
+"req": "Hunted 40 Black Gravios.",
+"id": "msg_1137"
+},
+{
+"w": "Beam",
+"req": "Hunted 50 Black Gravios.",
+"id": "msg_1138"
+},
+{
+"w": "Khezu",
+"req": "Hunted 20 Khezu.",
+"id": "msg_1139"
+},
+{
+"w": "Sparky",
+"req": "Hunted 30 Khezu.",
+"id": "msg_1140"
+},
+{
+"w": "Bolt",
+"req": "Hunted 40 Khezu.",
+"id": "msg_1141"
+},
+{
+"w": "Shocking",
+"req": "Hunted 50 Khezu.",
+"id": "msg_1142"
+},
+{
+"w": "Creepy",
+"req": "Hunted 20 Red Khezu.",
+"id": "msg_1143"
+},
+{
+"w": "Blood",
+"req": "Hunted 30 Red Khezu.",
+"id": "msg_1144"
+},
+{
+"w": "Reaper",
+"req": "Hunted 40 Red Khezu.",
+"id": "msg_1145"
+},
+{
+"w": "Bad Dream",
+"req": "Hunted 50 Red Khezu.",
+"id": "msg_1146"
+},
+{
+"w": "Monoblos",
+"req": "Hunted 20 Monoblos.",
+"id": "msg_1595"
+},
+{
+"w": "Blood Pump",
+"req": "Hunted 30 Monoblos.",
+"id": "msg_1596"
+},
+{
+"w": "Vermilion",
+"req": "Hunted 40 Monoblos.",
+"id": "msg_1597"
+},
+{
+"w": "Pride",
+"req": "Hunted 50 Monoblos.",
+"id": "msg_1598"
+},
+{
+"w": "Single",
+"req": "Hunted 20 White Monoblos.",
+"id": "msg_1599"
+},
+{
+"w": "One Horned",
+"req": "Hunted 30 White Monoblos.",
+"id": "msg_1600"
+},
+{
+"w": "Screaming",
+"req": "Hunted 40 White Monoblos.",
+"id": "msg_1601"
+},
+{
+"w": "Platinum",
+"req": "Hunted 50 White Monoblos.",
+"id": "msg_1602"
+},
+{
+"w": "Diablos",
+"req": "Hunted 20 Diablos.",
+"id": "msg_1603"
+},
+{
+"w": "Disturbed",
+"req": "Hunted 30 Diablos.",
+"id": "msg_1604"
+},
+{
+"w": "Dessert",
+"req": "Hunted 40 Diablos.",
+"id": "msg_1605"
+},
+{
+"w": "Twisted",
+"req": "Hunted 50 Diablos.",
+"id": "msg_1606"
+},
+{
+"w": "Black",
+"req": "Hunted 20 Black Diablos.",
+"id": "msg_1607"
+},
+{
+"w": "Violence",
+"req": "Hunted 30 Black Diablos.",
+"id": "msg_1608"
+},
+{
+"w": "Piercing",
+"req": "Hunted 40 Black Diablos.",
+"id": "msg_1609"
+},
+{
+"w": "Devil",
+"req": "Hunted 50 Black Diablos.",
+"id": "msg_1610"
+},
+{
+"w": "Seregios",
+"req": "Hunted 20 Seregios.",
+"id": "msg_1611"
+},
+{
+"w": "Kicker",
+"req": "Hunted 30 Seregios.",
+"id": "msg_1612"
+},
+{
+"w": "Dagger",
+"req": "Hunted 40 Seregios.",
+"id": "msg_1613"
+},
+{
+"w": "Tornado",
+"req": "Hunted 50 Seregios.",
+"id": "msg_1614"
+},
+{
+"w": "Conga",
+"req": "Hunted 20 Congalalas.",
+"id": "msg_1147"
+},
+{
+"w": "Buffoon",
+"req": "Hunted 30 Congalalas.",
+"id": "msg_1148"
+},
+{
+"w": "Starving",
+"req": "Hunted 40 Congalalas.",
+"id": "msg_1149"
+},
+{
+"w": "Carefree",
+"req": "Hunted 50 Congalalas.",
+"id": "msg_1150"
+},
+{
+"w": "Volatile",
+"req": "Hunted 20 Emerald Congalalas.",
+"id": "msg_1151"
+},
+{
+"w": "Hungry",
+"req": "Hunted 30 Emerald Congalalas.",
+"id": "msg_1152"
+},
+{
+"w": "Green-haired",
+"req": "Hunted 40 Emerald Congalalas.",
+"id": "msg_1153"
+},
+{
+"w": "Trickster",
+"req": "Hunted 50 Emerald Congalalas.",
+"id": "msg_1154"
+},
+{
+"w": "Rajang",
+"req": "Hunted 20 Rajang.",
+"id": "msg_1155"
+},
+{
+"w": "Boss",
+"req": "Hunted 30 Rajang.",
+"id": "msg_1156"
+},
+{
+"w": "Gold",
+"req": "Hunted 40 Rajang.",
+"id": "msg_1157"
+},
+{
+"w": "Imp",
+"req": "Hunted 50 Rajang.",
+"id": "msg_1158"
+},
+{
+"w": "Kirin",
+"req": "Hunted 10 Kirin.",
+"id": "msg_1159"
+},
+{
+"w": "Invisible",
+"req": "Hunted 15 Kirin.",
+"id": "msg_1160"
+},
+{
+"w": "Crimson",
+"req": "Hunted 20 Kirin.",
+"id": "msg_1161"
+},
+{
+"w": "Flash",
+"req": "Hunted 30 Kirin.",
+"id": "msg_1162"
+},
+{
+"w": "Swift",
+"req": "Hunted 10 Oroshi Kirin.",
+"id": "msg_1163"
+},
+{
+"w": "Jade",
+"req": "Hunted 15 Oroshi Kirin.",
+"id": "msg_1164"
+},
+{
+"w": "Maelstrom",
+"req": "Hunted 20 Oroshi Kirin.",
+"id": "msg_1165"
+},
+{
+"w": "Frost",
+"req": "Hunted 30 Oroshi Kirin.",
+"id": "msg_1166"
+},
+{
+"w": "Kushala",
+"req": "Slew 10 Kushala Daora.",
+"id": "msg_1167"
+},
+{
+"w": "Snow",
+"req": "Slew 15 Kushala Daora.",
+"id": "msg_1168"
+},
+{
+"w": "Cyclone",
+"req": "Slew 20 Kushala Daora.",
+"id": "msg_1169"
+},
+{
+"w": "Flight",
+"req": "Slew 30 Kushala Daora.",
+"id": "msg_1170"
+},
+{
+"w": "Hybrid",
+"req": "Slew 40 Kushala Daora.",
+"id": "msg_1581"
+},
+{
+"w": "Teostra",
+"req": "Slew 10 Teostra.",
+"id": "msg_1171"
+},
+{
+"w": "Haze",
+"req": "Slew 15 Teostra.",
+"id": "msg_1172"
+},
+{
+"w": "Kaiser",
+"req": "Slew 20 Teostra.",
+"id": "msg_1173"
+},
+{
+"w": "Flame Emperor",
+"req": "Slew 30 Teostra.",
+"id": "msg_1174"
+},
+{
+"w": "Chameleos",
+"req": "Slew 10 Chameleos.",
+"id": "msg_1543"
+},
+{
+"w": "Silence",
+"req": "Slew 15 Chameleos.",
+"id": "msg_1544"
+},
+{
+"w": "Solemn",
+"req": "Slew 20 Chameleos.",
+"id": "msg_1545"
+},
+{
+"w": "Mirage",
+"req": "Slew 30 Chameleos.",
+"id": "msg_1546"
+},
+{
+"w": "Fatalis",
+"req": "Slew 10 Fatalis.",
+"id": "msg_1175"
+},
+{
+"w": "Dragon Slayer",
+"req": "Slew 15 Fatalis.",
+"id": "msg_1176"
+},
+{
+"w": "Dragoon",
+"req": "Slew 20 Fatalis.",
+"id": "msg_1177"
+},
+{
+"w": "Dragon Ruiner",
+"req": "Slew 30 Fatalis.",
+"id": "msg_1178"
+},
+{
+"w": "Newborn",
+"req": "Slew 40 Fatalis.",
+"id": "msg_1582"
+},
+{
+"w": "Velociprey",
+"req": "Hunted 20 Velocidrome.",
+"id": "msg_1179"
+},
+{
+"w": "Bear",
+"req": "Hunted 30 Velocidrome.",
+"id": "msg_1180"
+},
+{
+"w": "Blue Talon",
+"req": "Hunted 40 Velocidrome.",
+"id": "msg_1181"
+},
+{
+"w": "Leader",
+"req": "Hunted 50 Velocidrome.",
+"id": "msg_1182"
+},
+{
+"w": "Genprey",
+"req": "Hunted 20 Gendrome.",
+"id": "msg_1183"
+},
+{
+"w": "Green Fang",
+"req": "Hunted 30 Gendrome.",
+"id": "msg_1184"
+},
+{
+"w": "Heal",
+"req": "Hunted 40 Gendrome.",
+"id": "msg_1185"
+},
+{
+"w": "Barbell",
+"req": "Hunted 50 Gendrome.",
+"id": "msg_1186"
+},
+{
+"w": "Ioprey",
+"req": "Hunted 20 Iodrome.",
+"id": "msg_1187"
+},
+{
+"w": "Scarlet",
+"req": "Hunted 30 Iodrome.",
+"id": "msg_1188"
+},
+{
+"w": "Crimson Toxin",
+"req": "Hunted 40 Iodrome.",
+"id": "msg_1189"
+},
+{
+"w": "Deep",
+"req": "Hunted 50 Iodrome.",
+"id": "msg_1190"
+},
+{
+"w": "Kecha Wacha",
+"req": "Hunted 20 Kecha Wacha.",
+"id": "msg_1191"
+},
+{
+"w": "Gliding",
+"req": "Hunted 30 Kecha Wacha.",
+"id": "msg_1192"
+},
+{
+"w": "Claw",
+"req": "Hunted 40 Kecha Wacha.",
+"id": "msg_1193"
+},
+{
+"w": "Mask",
+"req": "Hunted 50 Kecha Wacha.",
+"id": "msg_1194"
+},
+{
+"w": "Hanging",
+"req": "Hunted 20 Ash Kecha Wacha.",
+"id": "msg_1547"
+},
+{
+"w": "Frivolous",
+"req": "Hunted 30 Ash Kecha Wacha.",
+"id": "msg_1548"
+},
+{
+"w": "Monkey",
+"req": "Hunted 40 Ash Kecha Wacha.",
+"id": "msg_1549"
+},
+{
+"w": "Fox",
+"req": "Hunted 50 Ash Kecha Wacha.",
+"id": "msg_1550"
+},
+{
+"w": "Tetsucabra",
+"req": "Hunted 20 Tetsucabras.",
+"id": "msg_1195"
+},
+{
+"w": "Fortress",
+"req": "Hunted 30 Tetsucabras.",
+"id": "msg_1196"
+},
+{
+"w": "Muscle",
+"req": "Hunted 40 Tetsucabras.",
+"id": "msg_1197"
+},
+{
+"w": "Tackler",
+"req": "Hunted 50 Tetsucabras.",
+"id": "msg_1198"
+},
+{
+"w": "Crasher",
+"req": "Hunted 20 Berserk Tetsucabras.",
+"id": "msg_1551"
+},
+{
+"w": "Frog",
+"req": "Hunted 30 Berserk Tetsucabras.",
+"id": "msg_1552"
+},
+{
+"w": "Gobbler",
+"req": "Hunted 40 Berserk Tetsucabras.",
+"id": "msg_1553"
+},
+{
+"w": "Rock",
+"req": "Hunted 50 Berserk Tetsucabras.",
+"id": "msg_1554"
+},
+{
+"w": "Zamtrios",
+"req": "Hunted 20 Zamtrios.",
+"id": "msg_1199"
+},
+{
+"w": "Shark",
+"req": "Hunted 30 Zamtrios.",
+"id": "msg_1200"
+},
+{
+"w": "Sharkskin",
+"req": "Hunted 40 Zamtrios.",
+"id": "msg_1201"
+},
+{
+"w": "Shoddy Body",
+"req": "Hunted 50 Zamtrios.",
+"id": "msg_1202"
+},
+{
+"w": "Plop",
+"req": "Hunted 20 Tigerstripe Zamtrios.",
+"id": "msg_1555"
+},
+{
+"w": "Protean",
+"req": "Hunted 30 Tigerstripe Zamtrios.",
+"id": "msg_1556"
+},
+{
+"w": "Frozen",
+"req": "Hunted 40 Tigerstripe Zamtrios.",
+"id": "msg_1557"
+},
+{
+"w": "Cool",
+"req": "Hunted 50 Tigerstripe Zamtrios.",
+"id": "msg_1558"
+},
+{
+"w": "Najarala",
+"req": "Hunted 20 Najarala.",
+"id": "msg_1203"
+},
+{
+"w": "Cunning",
+"req": "Hunted 30 Najarala.",
+"id": "msg_1204"
+},
+{
+"w": "Giant",
+"req": "Hunted 40 Najarala.",
+"id": "msg_1205"
+},
+{
+"w": "Buveur",
+"req": "Hunted 50 Najarala.",
+"id": "msg_1206"
+},
+{
+"w": "Shackled",
+"req": "Hunted 20 Tidal Najarala.",
+"id": "msg_1559"
+},
+{
+"w": "Violent",
+"req": "Hunted 30 Tidal Najarala.",
+"id": "msg_1560"
+},
+{
+"w": "Creep",
+"req": "Hunted 40 Tidal Najarala.",
+"id": "msg_1561"
+},
+{
+"w": "Snake",
+"req": "Hunted 50 Tidal Najarala.",
+"id": "msg_1562"
+},
+{
+"w": "Dalamadur",
+"req": "Slew 10 Dalamadur.",
+"id": "msg_1207"
+},
+{
+"w": "Yore",
+"req": "Slew 15 Dalamadur.",
+"id": "msg_1208"
+},
+{
+"w": "Calamity",
+"req": "Slew 20 Dalamadur.",
+"id": "msg_1209"
+},
+{
+"w": "Universe",
+"req": "Slew 30 Dalamadur.",
+"id": "msg_1210"
+},
+{
+"w": "Spiral",
+"req": "Slew 10 Shah Dalamadur.",
+"id": "msg_1563"
+},
+{
+"w": "Tempest",
+"req": "Slew 15 Shah Dalamadur.",
+"id": "msg_1564"
+},
+{
+"w": "Comet",
+"req": "Slew 20 Shah Dalamadur.",
+"id": "msg_1565"
+},
+{
+"w": "Transfixed",
+"req": "Slew 30 Shah Dalamadur.",
+"id": "msg_1566"
+},
+{
+"w": "Gogmazios",
+"req": "Slew 10 Gogmazios.",
+"id": "msg_1615"
+},
+{
+"w": "Armament",
+"req": "Slew 15 Gogmazios.",
+"id": "msg_1616"
+},
+{
+"w": "Monsterweight",
+"req": "Slew 20 Gogmazios.",
+"id": "msg_1617"
+},
+{
+"w": "Ultimate",
+"req": "Slew 30 Gogmazios.",
+"id": "msg_1618"
+},
+{
+"w": "Seltas",
+"req": "Hunted 20 Seltas.",
+"id": "msg_1211"
+},
+{
+"w": "Attacker",
+"req": "Hunted 30 Seltas.",
+"id": "msg_1212"
+},
+{
+"w": "Beetle",
+"req": "Hunted 40 Seltas.",
+"id": "msg_1213"
+},
+{
+"w": "Kirin Bolt",
+"req": "Hunted 50 Seltas.",
+"id": "msg_1214"
+},
+{
+"w": "Lightweight",
+"req": "Hunted 20 Desert Seltas.",
+"id": "msg_1567"
+},
+{
+"w": "Speedy",
+"req": "Hunted 30 Desert Seltas.",
+"id": "msg_1568"
+},
+{
+"w": "Convenient",
+"req": "Hunted 40 Desert Seltas.",
+"id": "msg_1569"
+},
+{
+"w": "Workaholic",
+"req": "Hunted 50 Desert Seltas.",
+"id": "msg_1570"
+},
+{
+"w": "Seltas Queen",
+"req": "Hunted 20 Seltas Queens.",
+"id": "msg_1215"
+},
+{
+"w": "Carrier",
+"req": "Hunted 30 Seltas Queens.",
+"id": "msg_1216"
+},
+{
+"w": "Pheromone",
+"req": "Hunted 40 Seltas Queens.",
+"id": "msg_1217"
+},
+{
+"w": "Henpecked",
+"req": "Hunted 50 Seltas Queens.",
+"id": "msg_1218"
+},
+{
+"w": "Mother",
+"req": "Hunted 20 Desert Seltas Queens.",
+"id": "msg_1571"
+},
+{
+"w": "Heavy",
+"req": "Hunted 30 Desert Seltas Queens.",
+"id": "msg_1572"
+},
+{
+"w": "Panzer",
+"req": "Hunted 40 Desert Seltas Queens.",
+"id": "msg_1573"
+},
+{
+"w": "Trooper",
+"req": "Hunted 50 Desert Seltas Queens.",
+"id": "msg_1574"
+},
+{
+"w": "Nerscylla",
+"req": "Hunted 20 Nerscylla.",
+"id": "msg_1219"
+},
+{
+"w": "Scissor",
+"req": "Hunted 30 Nerscylla.",
+"id": "msg_1220"
+},
+{
+"w": "Trap",
+"req": "Hunted 40 Nerscylla.",
+"id": "msg_1221"
+},
+{
+"w": "Slobbery",
+"req": "Hunted 50 Nerscylla.",
+"id": "msg_1222"
+},
+{
+"w": "Poison",
+"req": "Hunted 20 Shrouded Nerscylla.",
+"id": "msg_1575"
+},
+{
+"w": "Spider",
+"req": "Hunted 30 Shrouded Nerscylla.",
+"id": "msg_1576"
+},
+{
+"w": "Fairy",
+"req": "Hunted 40 Shrouded Nerscylla.",
+"id": "msg_1577"
+},
+{
+"w": "Pleasing",
+"req": "Hunted 50 Shrouded Nerscylla.",
+"id": "msg_1578"
+},
+{
+"w": "Cephalos",
+"req": "Hunted 20 Cephadrome.",
+"id": "msg_1583"
+},
+{
+"w": "Yellow",
+"req": "Hunted 30 Cephadrome.",
+"id": "msg_1584"
+},
+{
+"w": "Seafarer",
+"req": "Hunted 40 Cephadrome.",
+"id": "msg_1585"
+},
+{
+"w": "Underground",
+"req": "Hunted 50 Cephadrome.",
+"id": "msg_1586"
+},
+{
+"w": "Lobster",
+"req": "Hunted 20 Daimyo Hermitaurs.",
+"id": "msg_1587"
+},
+{
+"w": "Porter",
+"req": "Hunted 30 Daimyo Hermitaurs.",
+"id": "msg_1588"
+},
+{
+"w": "Clandestine",
+"req": "Hunted 40 Daimyo Hermitaurs.",
+"id": "msg_1589"
+},
+{
+"w": "Daimyo",
+"req": "Hunted 50 Daimyo Hermitaurs.",
+"id": "msg_1590"
+},
+{
+"w": "Fake",
+"req": "Hunted 20 Plum Daimyo\nHermitaurs.",
+"id": "msg_1591"
+},
+{
+"w": "Air",
+"req": "Hunted 30 Plum Daimyo\nHermitaurs.",
+"id": "msg_1592"
+},
+{
+"w": "Nail",
+"req": "Hunted 40 Plum Daimyo\nHermitaurs.",
+"id": "msg_1593"
+},
+{
+"w": "Sidewalker",
+"req": "Hunted 50 Plum Daimyo\nHermitaurs.",
+"id": "msg_1594"
+},
+{
+"w": "Gore",
+"req": "Hunted 20 Gore Magalas.",
+"id": "msg_1223"
+},
+{
+"w": "Infected",
+"req": "Hunted 30 Gore Magalas.",
+"id": "msg_1224"
+},
+{
+"w": "Virus",
+"req": "Hunted 40 Gore Magalas.",
+"id": "msg_1225"
+},
+{
+"w": "Frenzy",
+"req": "Hunted 50 Gore Magalas.",
+"id": "msg_1226"
+},
+{
+"w": "Evolved",
+"req": "Hunted 60 Gore Magalas.",
+"id": "msg_1579"
+},
+{
+"w": "Shagaru",
+"req": "Hunted 10 Shagaru Magalas.",
+"id": "msg_1227"
+},
+{
+"w": "Holy",
+"req": "Hunted 15 Shagaru Magalas.",
+"id": "msg_1228"
+},
+{
+"w": "Fairy-tale",
+"req": "Hunted 20 Shagaru Magalas.",
+"id": "msg_1229"
+},
+{
+"w": "Wheel",
+"req": "Hunted 30 Shagaru Magalas.",
+"id": "msg_1230"
+},
+{
+"w": "Dah'ren",
+"req": "Slew 10 Dah'ren Mohran.",
+"id": "msg_1231"
+},
+{
+"w": "Prosperity",
+"req": "Slew 15 Dah'ren Mohran.",
+"id": "msg_1232"
+},
+{
+"w": "Juggernaut",
+"req": "Slew 20 Dah'ren Mohran.",
+"id": "msg_1233"
+},
+{
+"w": "Helix",
+"req": "Slew 30 Dah'ren Mohran.",
+"id": "msg_1234"
+},
+{
+"w": "My Bad",
+"req": "Acquired via download.",
+"id": "msg_1235"
+},
+{
+"w": "Triforce",
+"req": "Acquired via download.",
+"id": "msg_1236"
+},
+{
+"w": "Zelda",
+"req": "Acquired via download.",
+"id": "msg_1237"
+},
+{
+"w": "Fairy Fountain",
+"req": "Acquired via download.",
+"id": "msg_1238"
+},
+{
+"w": "Legend",
+"req": "Acquired via download.",
+"id": "msg_1239"
+},
+{
+"w": "Rupee",
+"req": "Acquired via download.",
+"id": "msg_1240"
+},
+{
+"w": "Bros.",
+"req": "Acquired via download.",
+"id": "msg_1241"
+},
+{
+"w": "Dash",
+"req": "Acquired via download.",
+"id": "msg_1242"
+},
+{
+"w": "Mario",
+"req": "Acquired via download.",
+"id": "msg_1243"
+},
+{
+"w": "1-Up",
+"req": "Acquired via download.",
+"id": "msg_1244"
+},
+{
+"w": "Super",
+"req": "Acquired via download.",
+"id": "msg_1245"
+},
+{
+"w": "Conqueror",
+"req": "Acquired via download.",
+"id": "msg_1246"
+},
+{
+"w": "Loaded",
+"req": "Acquired via download.",
+"id": "msg_1247"
+},
+{
+"w": "Horizon",
+"req": "Acquired via download.",
+"id": "msg_1248"
+},
+{
+"w": "Vigor",
+"req": "Acquired via download.",
+"id": "msg_1249"
+},
+{
+"w": "Boom!",
+"req": "Acquired via download.",
+"id": "msg_1250"
+},
+{
+"w": "Marine",
+"req": "Acquired via download.",
+"id": "msg_1251"
+},
+{
+"w": "Unimaginable",
+"req": "Acquired via download.",
+"id": "msg_1252"
+},
+{
+"w": "Great Treasure",
+"req": "Acquired via download.",
+"id": "msg_1253"
+},
+{
+"w": "Pirates",
+"req": "Acquired via download.",
+"id": "msg_1254"
+},
+{
+"w": "Band",
+"req": "Acquired via download.",
+"id": "msg_1255"
+},
+{
+"w": "First Mate",
+"req": "Acquired via download.",
+"id": "msg_1256"
+},
+{
+"w": "Farm School",
+"req": "Acquired via download.",
+"id": "msg_1257"
+},
+{
+"w": "Never-say-no",
+"req": "Acquired via download.",
+"id": "msg_1258"
+},
+{
+"w": "Dangerous",
+"req": "Acquired via download.",
+"id": "msg_1259"
+},
+{
+"w": "Grandpa",
+"req": "Acquired via download.",
+"id": "msg_1260"
+},
+{
+"w": "Wicked",
+"req": "Acquired via download.",
+"id": "msg_1261"
+},
+{
+"w": "Hagitoko!",
+"req": "Acquired via download.",
+"id": "msg_1262"
+},
+{
+"w": "Manager",
+"req": "Acquired via download.",
+"id": "msg_1263"
+},
+{
+"w": "Neophyte",
+"req": "Acquired via download.",
+"id": "msg_1264"
+},
+{
+"w": "Self-betterer",
+"req": "Acquired via download.",
+"id": "msg_1265"
+},
+{
+"w": "Field Trip",
+"req": "Acquired via download.",
+"id": "msg_1266"
+},
+{
+"w": "Magazine",
+"req": "Acquired via download.",
+"id": "msg_1267"
+},
+{
+"w": "Jump",
+"req": "Acquired via download.",
+"id": "msg_1268"
+},
+{
+"w": "Famitsu",
+"req": "Acquired via download.",
+"id": "msg_1269"
+},
+{
+"w": "Dengeki",
+"req": "Acquired via download.",
+"id": "msg_1270"
+},
+{
+"w": "Sunday",
+"req": "Acquired via download.",
+"id": "msg_1271"
+},
+{
+"w": "CoroCoro",
+"req": "Acquired via download.",
+"id": "msg_1272"
+},
+{
+"w": "Crows",
+"req": "Acquired via download.",
+"id": "msg_1273"
+},
+{
+"w": "Keroro",
+"req": "Acquired via download.",
+"id": "msg_1274"
+},
+{
+"w": "Giroro",
+"req": "Acquired via download.",
+"id": "msg_1275"
+},
+{
+"w": "Tamama",
+"req": "Acquired via download.",
+"id": "msg_1276"
+},
+{
+"w": "Kululu",
+"req": "Acquired via download.",
+"id": "msg_1277"
+},
+{
+"w": "Dororo",
+"req": "Acquired via download.",
+"id": "msg_1278"
+},
+{
+"w": "Sergeant",
+"req": "Acquired via download.",
+"id": "msg_1279"
+},
+{
+"w": "Corporal",
+"req": "Acquired via download.",
+"id": "msg_1280"
+},
+{
+"w": "Pvt 2nd Class",
+"req": "Acquired via download.",
+"id": "msg_1281"
+},
+{
+"w": "Sergeant Major",
+"req": "Acquired via download.",
+"id": "msg_1282"
+},
+{
+"w": "Lance Corporal",
+"req": "Acquired via download.",
+"id": "msg_1283"
+},
+{
+"w": "Universal",
+"req": "Acquired via download.",
+"id": "msg_1284"
+},
+{
+"w": "Studios",
+"req": "Acquired via download.",
+"id": "msg_1285"
+},
+{
+"w": "USJ",
+"req": "Acquired via download.",
+"id": "msg_1286"
+},
+{
+"w": "Baleful",
+"req": "Acquired via download.",
+"id": "msg_1287"
+},
+{
+"w": "Shocker",
+"req": "Acquired via download.",
+"id": "msg_1288"
+},
+{
+"w": "Scholar",
+"req": "Acquired via download.",
+"id": "msg_1289"
+},
+{
+"w": "Graduate",
+"req": "Acquired via download.",
+"id": "msg_1290"
+},
+{
+"w": "Dragonwatch",
+"req": "Acquired via download.",
+"id": "msg_1291"
+},
+{
+"w": "Uncanny",
+"req": "Acquired via download.",
+"id": "msg_1292"
+},
+{
+"w": "Sentry",
+"req": "Acquired via download.",
+"id": "msg_1293"
+},
+{
+"w": "Disaster",
+"req": "Acquired via download.",
+"id": "msg_1294"
+},
+{
+"w": "Baki",
+"req": "Acquired via download.",
+"id": "msg_1295"
+},
+{
+"w": "Grappler",
+"req": "Acquired via download.",
+"id": "msg_1296"
+},
+{
+"w": "Standing Firm",
+"req": "Acquired via download.",
+"id": "msg_1297"
+},
+{
+"w": "Huggy",
+"req": "Acquired via download.",
+"id": "msg_1298"
+},
+{
+"w": "Toughest Alive",
+"req": "Acquired via download.",
+"id": "msg_1299"
+},
+{
+"w": "Creature",
+"req": "Acquired via download.",
+"id": "msg_1300"
+},
+{
+"w": "Ogre",
+"req": "Acquired via download.",
+"id": "msg_1301"
+},
+{
+"w": "Kokoto",
+"req": "Acquired via download.",
+"id": "msg_1302"
+},
+{
+"w": "Jumbo",
+"req": "Acquired via download.",
+"id": "msg_1303"
+},
+{
+"w": "Minegarde",
+"req": "Acquired via download.",
+"id": "msg_1304"
+},
+{
+"w": "Dundorma",
+"req": "Acquired via download.",
+"id": "msg_1305"
+},
+{
+"w": "Yukumo",
+"req": "Acquired via download.",
+"id": "msg_1306"
+},
+{
+"w": "Pokke",
+"req": "Acquired via download.",
+"id": "msg_1307"
+},
+{
+"w": "Moga",
+"req": "Acquired via download.",
+"id": "msg_1308"
+},
+{
+"w": "Loc Lac",
+"req": "Acquired via download.",
+"id": "msg_1309"
+},
+{
+"w": "Tanzia",
+"req": "Acquired via download.",
+"id": "msg_1310"
+},
+{
+"w": "Fan",
+"req": "Acquired via download.",
+"id": "msg_1311"
+},
+{
+"w": "Diva",
+"req": "Acquired via download.",
+"id": "msg_1312"
+},
+{
+"w": "Monster Hunter",
+"req": "Acquired via download.",
+"id": "msg_1313"
+},
+{
+"w": "Jack",
+"req": "Acquired via download.",
+"id": "msg_1314"
+},
+{
+"w": "Fire",
+"req": "Acquired via download.",
+"id": "msg_1315"
+},
+{
+"w": "Dragon",
+"req": "Acquired via download.",
+"id": "msg_1316"
+},
+{
+"w": "Majestic",
+"req": "Acquired via download.",
+"id": "msg_1317"
+},
+{
+"w": "Bold",
+"req": "Acquired via download.",
+"id": "msg_1318"
+},
+{
+"w": "Bullfango",
+"req": "Acquired via download.",
+"id": "msg_1319"
+},
+{
+"w": "Brute",
+"req": "Acquired via download.",
+"id": "msg_1320"
+},
+{
+"w": "Sabertooth",
+"req": "Acquired via download.",
+"id": "msg_1321"
+},
+{
+"w": "Baller",
+"req": "Acquired via download.",
+"id": "msg_1322"
+},
+{
+"w": "Eternal",
+"req": "Acquired via download.",
+"id": "msg_1323"
+},
+{
+"w": "Drink",
+"req": "Acquired via download.",
+"id": "msg_1324"
+},
+{
+"w": "Egg",
+"req": "Acquired via download.",
+"id": "msg_1325"
+},
+{
+"w": "Tart",
+"req": "Acquired via download.",
+"id": "msg_1326"
+},
+{
+"w": "Friendly",
+"req": "Acquired via download.",
+"id": "msg_1327"
+},
+{
+"w": "Wonder",
+"req": "Acquired via download.",
+"id": "msg_1619"
+},
+{
+"w": "Magical",
+"req": "Acquired via download.",
+"id": "msg_1620"
+},
+{
+"w": "Pirate",
+"req": "Acquired via download.",
+"id": "msg_1621"
+},
+{
+"w": "Shonen",
+"req": "Acquired via download.",
+"id": "msg_1668"
+},
+{
+"w": "Sparring",
+"req": "Acquired via download.",
+"id": "msg_1622"
+},
+{
+"w": "Underground Fight",
+"req": "Acquired via download.",
+"id": "msg_1667"
+},
+{
+"w": "Brain",
+"req": "Acquired via download.",
+"id": "msg_1623"
+},
+{
+"w": "Recommended",
+"req": "Acquired via download.",
+"id": "msg_1624"
+},
+{
+"w": "Magi",
+"req": "Acquired via download.",
+"id": "msg_1625"
+},
+{
+"w": "Labyrinth",
+"req": "Acquired via download.",
+"id": "msg_1626"
+},
+{
+"w": "Magic",
+"req": "Acquired via download.",
+"id": "msg_1627"
+},
+{
+"w": "Media",
+"req": "Acquired via download.",
+"id": "msg_1628"
+},
+{
+"w": "Polytan",
+"req": "Acquired via download.",
+"id": "msg_1629"
+},
+{
+"w": "Verified",
+"req": "Acquired via download.",
+"id": "msg_1630"
+},
+{
+"w": "Hunt Meet",
+"req": "Acquired via download.",
+"id": "msg_1631"
+},
+{
+"w": "Dr.",
+"req": "Acquired via download.",
+"id": "msg_1632"
+},
+{
+"w": "Rush",
+"req": "Acquired via download.",
+"id": "msg_1633"
+},
+{
+"w": "Peace",
+"req": "Acquired via download.",
+"id": "msg_1634"
+},
+{
+"w": "E-Tank",
+"req": "Acquired via download.",
+"id": "msg_1635"
+},
+{
+"w": "Sliding",
+"req": "Acquired via download.",
+"id": "msg_1664"
+},
+{
+"w": "Gaist",
+"req": "Acquired via download.",
+"id": "msg_1636"
+},
+{
+"w": "Crusher",
+"req": "Acquired via download.",
+"id": "msg_1637"
+},
+{
+"w": "Gaimetal",
+"req": "Acquired via download.",
+"id": "msg_1638"
+},
+{
+"w": "Hot",
+"req": "Acquired via download.",
+"id": "msg_1639"
+},
+{
+"w": "Gaist Phone",
+"req": "Acquired via download.",
+"id": "msg_1665"
+},
+{
+"w": "Metroid",
+"req": "Acquired via download.",
+"id": "msg_1640"
+},
+{
+"w": "Chozo",
+"req": "Acquired via download.",
+"id": "msg_1641"
+},
+{
+"w": "Alien",
+"req": "Acquired via download.",
+"id": "msg_1642"
+},
+{
+"w": "Mother Brain",
+"req": "Acquired via download.",
+"id": "msg_1643"
+},
+{
+"w": "Zebes",
+"req": "Acquired via download.",
+"id": "msg_1644"
+},
+{
+"w": "Crossing",
+"req": "Acquired via download.",
+"id": "msg_1645"
+},
+{
+"w": "Wild World",
+"req": "Acquired via download.",
+"id": "msg_1646"
+},
+{
+"w": "New Leaf",
+"req": "Acquired via download.",
+"id": "msg_1647"
+},
+{
+"w": "Villager",
+"req": "Acquired via download.",
+"id": "msg_1648"
+},
+{
+"w": "Tourney",
+"req": "Acquired via download.",
+"id": "msg_1649"
+},
+{
+"w": "Supersonic",
+"req": "Acquired via download.",
+"id": "msg_1650"
+},
+{
+"w": "Blue Blur",
+"req": "Acquired via download.",
+"id": "msg_1651"
+},
+{
+"w": "Ring",
+"req": "Acquired via download.",
+"id": "msg_1652"
+},
+{
+"w": "Hedgehog",
+"req": "Acquired via download.",
+"id": "msg_1653"
+},
+{
+"w": "Chaos",
+"req": "Acquired via download.",
+"id": "msg_1666"
+},
+{
+"w": "Nightmare",
+"req": "Acquired via download.",
+"id": "msg_1654"
+},
+{
+"w": "Summon",
+"req": "Acquired via download.",
+"id": "msg_1655"
+},
+{
+"w": "Hot Spring",
+"req": "Acquired via download.",
+"id": "msg_1656"
+},
+{
+"w": "Taiko",
+"req": "Acquired via download.",
+"id": "msg_1657"
+},
+{
+"w": "Festival",
+"req": "Acquired via download.",
+"id": "msg_1658"
+},
+{
+"w": "DON",
+"req": "Acquired via download.",
+"id": "msg_1659"
+},
+{
+"w": "KA",
+"req": "Acquired via download.",
+"id": "msg_1660"
+},
+{
+"w": "Seven",
+"req": "Acquired via download.",
+"id": "msg_1661"
+},
+{
+"w": "Sins",
+"req": "Acquired via download.",
+"id": "msg_1662"
+},
+{
+"w": "Rage",
+"req": "Acquired via download.",
+"id": "msg_1663"
+}
+],
+"joins": [
+{
+"w": "of",
+"id": "msg_1670"
+},
+{
+"w": "and",
+"id": "msg_1671"
+},
+{
+"w": "for",
+"id": "msg_1672"
+},
+{
+"w": "by",
+"id": "msg_1673"
+},
+{
+"w": "or",
+"id": "msg_1674"
+},
+{
+"w": "to",
+"id": "msg_1675"
+},
+{
+"w": "from",
+"id": "msg_1676"
+},
+{
+"w": "in",
+"id": "msg_1677"
+},
+{
+"w": "out",
+"id": "msg_1678"
+},
+{
+"w": "on",
+"id": "msg_1679"
+},
+{
+"w": "off",
+"id": "msg_1680"
+},
+{
+"w": "but",
+"id": "msg_1681"
+},
+{
+"w": "not",
+"id": "msg_1682"
+},
+{
+"w": "yet",
+"id": "msg_1683"
+},
+{
+"w": "my",
+"id": "msg_1684"
+},
+{
+"w": "your",
+"id": "msg_1685"
+},
+{
+"w": "near",
+"id": "msg_1686"
+},
+{
+"w": "far",
+"id": "msg_1687"
+},
+{
+"w": "do",
+"id": "msg_1688"
+},
+{
+"w": "back",
+"id": "msg_1689"
+},
+{
+"w": "about",
+"id": "msg_1690"
+},
+{
+"w": "our",
+"id": "msg_1691"
+},
+{
+"w": "onto",
+"id": "msg_1692"
+},
+{
+"w": "up",
+"id": "msg_1693"
+},
+{
+"w": "down",
+"id": "msg_1694"
+},
+{
+"w": "via",
+"id": "msg_1695"
+},
+{
+"w": "till",
+"id": "msg_1696"
+},
+{
+"w": "plus",
+"id": "msg_1697"
+},
+{
+"w": "at",
+"id": "msg_1698"
+},
+{
+"w": "as",
+"id": "msg_1699"
+},
+{
+"w": "the",
+"id": "msg_1700"
+},
+{
+"w": "want",
+"id": "msg_1701"
+},
+{
+"w": "with",
+"id": "msg_1702"
+},
+{
+"w": "is",
+"id": "msg_1703"
+},
+{
+"w": "are",
+"id": "msg_1704"
+},
+{
+"w": "when",
+"id": "msg_1705"
+},
+{
+"w": "through",
+"id": "msg_1706"
+},
+{
+"w": "uber",
+"id": "msg_1707"
+},
+{
+"w": "was",
+"id": "msg_1708"
+},
+{
+"w": "will",
+"id": "msg_1709"
+},
+{
+"w": "lead",
+"id": "msg_1710"
+},
+{
+"w": "main",
+"id": "msg_1711"
+},
+{
+"w": "be",
+"id": "msg_1712"
+},
+{
+"w": "only",
+"id": "msg_1713"
+},
+{
+"w": "more",
+"id": "msg_1714"
+},
+{
+"w": "less",
+"id": "msg_1715"
+},
+{
+"w": "Khan",
+"id": "msg_1716"
+},
+{
+"w": "Czar",
+"id": "msg_1717"
+},
+{
+"w": "Miss",
+"id": "msg_1718"
+},
+{
+"w": "Duke",
+"id": "msg_1719"
+},
+{
+"w": "Earl",
+"id": "msg_1720"
+},
+{
+"w": "Von",
+"id": "msg_1721"
+},
+{
+"w": "Van",
+"id": "msg_1722"
+},
+{
+"w": "Ser",
+"id": "msg_1723"
+},
+{
+"w": "Sire",
+"id": "msg_1724"
+},
+{
+"w": "&",
+"id": "msg_1725"
+},
+{
+"w": "+",
+"id": "msg_1726"
+},
+{
+"w": "-",
+"id": "msg_1727"
+},
+{
+"w": "×",
+"id": "msg_1728"
+},
+{
+"w": "?",
+"id": "msg_1729"
+},
+{
+"w": "!",
+"id": "msg_1730"
+},
+{
+"w": "=",
+"id": "msg_1731"
+},
+{
+"w": "~",
+"id": "msg_1732"
+},
+{
+"w": "・",
+"id": "msg_1733"
+},
+{
+"w": "/",
+"id": "msg_1734"
+},
+{
+"w": ":",
+"id": "msg_1735"
+},
+{
+"w": ",",
+"id": "msg_1736"
+},
+{
+"w": "$",
+"id": "msg_1737"
+},
+{
+"w": "\\",
+"id": "msg_1738"
+},
+{
+"w": "€",
+"id": "msg_1739"
+},
+{
+"w": "α",
+"id": "msg_1740"
+},
+{
+"w": "β",
+"id": "msg_1741"
+},
+{
+"w": "γ",
+"id": "msg_1742"
+},
+{
+"w": "★",
+"id": "msg_1743"
+},
+{
+"w": "A",
+"id": "msg_1744"
+},
+{
+"w": "B",
+"id": "msg_1745"
+},
+{
+"w": "C",
+"id": "msg_1746"
+},
+{
+"w": "D",
+"id": "msg_1747"
+},
+{
+"w": "E",
+"id": "msg_1748"
+},
+{
+"w": "F",
+"id": "msg_1749"
+},
+{
+"w": "G",
+"id": "msg_1750"
+},
+{
+"w": "H",
+"id": "msg_1751"
+},
+{
+"w": "I",
+"id": "msg_1752"
+},
+{
+"w": "J",
+"id": "msg_1753"
+},
+{
+"w": "K",
+"id": "msg_1754"
+},
+{
+"w": "L",
+"id": "msg_1755"
+},
+{
+"w": "M",
+"id": "msg_1756"
+},
+{
+"w": "N",
+"id": "msg_1757"
+},
+{
+"w": "O",
+"id": "msg_1758"
+},
+{
+"w": "P",
+"id": "msg_1759"
+},
+{
+"w": "Q",
+"id": "msg_1760"
+},
+{
+"w": "R",
+"id": "msg_1761"
+},
+{
+"w": "S",
+"id": "msg_1762"
+},
+{
+"w": "T",
+"id": "msg_1763"
+},
+{
+"w": "U",
+"id": "msg_1764"
+},
+{
+"w": "V",
+"id": "msg_1765"
+},
+{
+"w": "W",
+"id": "msg_1766"
+},
+{
+"w": "X",
+"id": "msg_1767"
+},
+{
+"w": "Y",
+"id": "msg_1768"
+},
+{
+"w": "Z",
+"id": "msg_1769"
+}
+]
+}

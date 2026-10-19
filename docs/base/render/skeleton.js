@@ -19,7 +19,11 @@ export function bonesByGid(root, joints){
       // is the one a pose drives. Everything that moves the skeleton works through `node`; only
       // SCALE has to reach the leaf as well, since MT authors a joint's scale on the leaf and
       // scaling the parent would drag the whole chain below it instead of just this joint's mesh.
-      if (node && !map.has(info.gid)) map.set(info.gid, { node, leaf: info.leaf ? bone : null });
+      // EVERY NODE OF A JOINT ID, not only the first (the MH3U Armor Viewer's ff15d83, 2026-10-18): a model can carry one
+      // gid on two nodes -- a second copy of an arm or leg chain its meshes are skinned to as well -- and keeping the first
+      // left the copy at bind, a T-posed limb beside the animated hunter (MH3U's Barioth Guards Z). Keyed by NODE, so the
+      // list can hold one gid twice; a caller that wants one node per gid keeps the first (pose.js firstByGid).
+      if (node && !map.has(node)) map.set(node, { gid: info.gid, leaf: info.leaf ? bone : null });
     });
   });
   // Sorted PARENT-FIRST. Poses are applied as world matrices expressed in each node's
@@ -27,7 +31,7 @@ export function bonesByGid(root, joints){
   // descendant is computed against it.
   const depth = n => { let d = 0; for (let p = n; p; p = p.parent) d++; return d; };
   return [...map.entries()]
-    .map(([gid, e]) => ({ gid, node: e.node, leaf: e.leaf, d: depth(e.node) }))
+    .map(([node, e]) => ({ gid: e.gid, node, leaf: e.leaf, d: depth(node) }))
     .sort((a, b) => a.d - b.d);
 }
 

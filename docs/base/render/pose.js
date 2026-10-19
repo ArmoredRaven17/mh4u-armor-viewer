@@ -10,6 +10,8 @@
 import * as THREE from 'three';
 import { loader, loadGlb, poseCache, bust } from './assets.js';
 import { bonesByGid, gidBonesOf, skeletonClone } from './skeleton.js';
+// a gid -> value Map that keeps the FIRST entry of a gid (a Map built from the list would keep the last)
+function firstByGid(list, pick){ const m = new Map(); for (const e of list) if (!m.has(e.gid)) m.set(e.gid, pick(e)); return m; }
 
 export const POSES = {
   't-pose': {},
@@ -131,7 +133,7 @@ export class PoseDriver {
       gltf = { scene: proxy.scene, animations: anim.animations, userData: proxy.userData };
     }
     if (!gltf) {
-      gltf = await loader.loadAsync(entry.file);
+      gltf = await loader.loadAsync(bust(entry.file));
       // Snapshot the REST pose. The proxy is cached and reused across poses, so by the
       // second pose its bones still hold wherever the previous clip left them -- measuring
       // the rest hip and ground height off that gave a correction of ~0 and every pose
@@ -154,10 +156,11 @@ export class PoseDriver {
     if (!clip) { this.onError('pose clip missing: ' + entry.clip); return; }
     // the proxy is never added to the scene; it exists only to be sampled
     gltf.scene.updateMatrixWorld(true);
-    this.proxyBones = new Map(bonesByGid(gltf.scene, poseJoints).map(e => [e.gid, e.node]));
+    // one node per gid, the FIRST, as before bonesByGid listed every node of a gid (skeleton.js)
+    const proxyList = bonesByGid(gltf.scene, poseJoints);
+    this.proxyBones = firstByGid(proxyList, e => e.node);
     // the proxy's LEAF per gid, kept beside the drivable node purely to carry joint scale
-    this.proxyLeaves = new Map(bonesByGid(gltf.scene, poseJoints)
-      .filter(e => e.leaf).map(e => [e.gid, e.leaf]));
+    this.proxyLeaves = firstByGid(proxyList.filter(e => e.leaf), e => e.leaf);
     this.referenceNode = this.holdReference ? (gltf.scene.getObjectByName('reference') || null) : null;
     this.mixer = new THREE.AnimationMixer(gltf.scene);
     // Where the pelvis sits at REST. Many of these motions carry root translation -- they
@@ -188,7 +191,8 @@ export class PoseDriver {
     // every clip ships rather than only the _loop ones, the one-shots snapping back
     // mid-swing is worse. The lobby poses are authored as held loops and keep looping.
     const mode = this.loopMode ? this.loopMode(entry) : null;
-    const once = mode ? mode === 'once' : /poses\/weapons\//.test(entry.file || '');
+    // a weapon stance plays once: GU's live under poses/weapons/, another game's entry says so (stance: true)
+    const once = mode ? mode === 'once' : (entry.stance === true || /poses\/weapons\//.test(entry.file || ''));
     if (once) {
       this.action.setLoop(THREE.LoopOnce);
       this.action.clampWhenFinished = true;

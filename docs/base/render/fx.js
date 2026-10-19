@@ -31,8 +31,8 @@ void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4( 
 
 // the sRGB transfer, written out so no pass depends on which helpers three's prefix carries
 const COMMON = /* glsl */`
-float mhguLuma( vec3 c ){ return dot( c, vec3( 0.2126, 0.7152, 0.0722 ) ); }
-vec3 mhguOetf( vec3 c ){
+float viewLuma( vec3 c ){ return dot( c, vec3( 0.2126, 0.7152, 0.0722 ) ); }
+vec3 viewOetf( vec3 c ){
   c = max( c, vec3( 0.0 ) );
   return mix( pow( c, vec3( 1.0 / 2.4 ) ) * 1.055 - 0.055, c * 12.92, vec3( lessThanEqual( c, vec3( 0.0031308 ) ) ) );
 }`;
@@ -49,7 +49,7 @@ const HighpassShader = {
 uniform sampler2D tDiffuse; uniform float uThreshold; varying vec2 vUv;
 void main(){
   vec4 c = texture2D( tDiffuse, vUv );
-  float k = smoothstep( uThreshold - 0.1, uThreshold + 0.1, mhguLuma( c.rgb ) );
+  float k = smoothstep( uThreshold - 0.1, uThreshold + 0.1, viewLuma( c.rgb ) );
   gl_FragColor = c * k;
 }`
 };
@@ -351,9 +351,9 @@ void main(){
   if ( uToneMap > 2.5 ) c = neutral( c );
   else if ( uToneMap > 1.5 ) c = c / ( vec3( 1.0 ) + c );
   else if ( uToneMap > 0.5 ) c = aces( c );
-  c = mhguOetf( clamp( c, 0.0, 1.0 ) );
+  c = viewOetf( clamp( c, 0.0, 1.0 ) );
   c = ( c - 0.5 ) * uContrast + 0.5;
-  float l = mhguLuma( c );
+  float l = viewLuma( c );
   c = clamp( mix( vec3( l ), c, uSaturation ), 0.0, 1.0 );
   gl_FragColor = vec4( c * a, a );
 }`

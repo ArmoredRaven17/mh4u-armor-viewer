@@ -4,8 +4,9 @@ A fan-made 3D viewer for Monster Hunter 4 Ultimate (3DS) armour. Pick a piece fo
 either gender, with the hunter's face, hair, clothing, features and colours, in the game's own
 motions.
 
-A port of the MH3U Armor Viewer, meant as the base for a fuller app along the lines of the MHGU
-Armor Viewer. Live at https://armoredraven17.github.io/mh4u-armor-viewer/.
+A port of the MH3U Armor Viewer, now on the shared viewer base (`docs/base`, the MHGU Armor Viewer's
+UI and render core; the plan: `C:\Coding Repos\VIEWER-BASE-PLAN.md`), so it has the MHGU viewer's
+panels, markup and behaviour. Live at https://armoredraven17.github.io/mh4u-armor-viewer/.
 
 ## What it does
 
@@ -15,8 +16,13 @@ Armor Viewer. Live at https://armoredraven17.github.io/mh4u-armor-viewer/.
 - The clothing (inner wear, six types) the game draws under an empty chest, arms or legs slot
 - Faces (16) and hairstyles (28), with the hair and face parts each helm leaves visible, per
   hairstyle, from the game's own table; Features (Type 1-12), hidden by the helms that hide them
-- Colours: each piece's own default pigment from the game's 70-colour table; Custom pigment, skin,
-  hair, clothing and feature colours picked from the game's own colour board
+- Colours: each piece's own default pigment from the game's 70-colour table, a colour of its own,
+  or the game's Rainbow (its eight colours and blend, read from the code); skin, hair, clothing and
+  Features colours picked from the game's own colour board. Eye Color: the game's ten eye cells (it
+  moves the eye map, it does not tint)
+- The Charge Blade's Charge Gauge (levels from 30 / 46 / 72) and Shield Charge (red, then yellow in
+  its last 30 s), read from the game's code; the glow colours are drawn as the viewer's reading of
+  two material members whose use in 4U's shader is not decoded
 - Every weapon in the game's tables (2,743 over the 14 classes), with the game's own names and
   pigment, hung on the hunter where the game hangs it, sheathed or drawn (the game's own mount, read
   from the executable): shields and the Kinsect on the forearm, the Long Sword in its scabbard, the
@@ -37,7 +43,8 @@ Armor Viewer. Live at https://armoredraven17.github.io/mh4u-armor-viewer/.
   frame Wyvern's Fire fires
 - The hunter's motion lists, clip by clip: field and lobby common motions, character creation,
   Guild Card, Arena, and each weapon class's own list
-- Hunter slots, and the MHGU viewers' Lighting, Camera and Effects panels
+- The shared base's Hunter Slots, Save / Open, Guild Info (the Guild Card title words), Animation
+  (transport and Chain), Lighting, Camera and Effects panels
 
 **Lighting is generic three.js lighting, not the game's.** MH4U's shading is not decoded.
 
@@ -67,7 +74,12 @@ No build step for the page. Serve `docs/` with any static file server:
 
 ## Contents
 
-    docs/index.html       the app: markup, styles and logic
+    docs/index.html       the markup: the MHGU viewer's, with the shared base's stylesheet
+    docs/app.js           the app: MH4U's data, colour rules, masks, weapon mount, stances, Charge Blade
+    docs/game.js          this game for the shared base (window.VIEWER_GAME): themes, rows, pigments, titles
+    docs/adapter.js       armor.json / weapons.json mapped for the shared base's panels
+    docs/base/            the shared viewer base, pulled from the MHGU Armor Viewer (dev/sync-base.py)
+    docs/guild-card-titles.json  the Guild Card title words and their unlocks (scripts/build_guild_titles.py)
     docs/armor.json       the game's armour tables, every player model, the clothing drawn under an
                           empty slot, per helm the hair and face parts it leaves, the colours and the
                           motion lists; `_about` says where each comes from
@@ -83,7 +95,12 @@ No build step for the page. Serve `docs/` with any static file server:
     docs/poses/<g>/       the motion lists, animations only
     docs/tex/             textures, deduplicated by content hash
     docs/ui/colorscale.png  the game's own colour board
-    docs/render/          the render core, copied from the MH3U Armor Viewer
+    docs/ui/skin-strip.json the Skin Tone's strip, 184 positions (scripts/build_skin_strip.py)
+    docs/render/piece.js  one player model, as the MH3U Armor Viewer builds it (the rest is docs/base/render)
+    docs/shading.json     every MaterialStd's fragment state as the game's apply leaves it (TEV programs,
+                          constants, lighting colours, LUTs) and the character-creation lights
+    docs/render/shade4u.js  the game's own shading on top of the base material: an option (Lighting ->
+                          Game shading), in progress; notes/shading-decode.md is the decode
 
 ## Where the data comes from
 
@@ -103,6 +120,12 @@ the English text under `arcx\`); RevilToolset does the model, texture and motion
     scripts/action_modes.py    the form each Switch Axe / Charge Blade action declares, by its motion
     scripts/static_init.py     runs one of the game's static initialisers in an emulator (unicorn): the
                                weapon placement tables are filled at boot
+    scripts/build_skin_strip.py  docs/ui/skin-strip.json from the character creation's demo_hadairo texture
+    scripts/build_shading.py   shading.json: runs the game's MaterialStd apply on every material
+    scripts/tev_apply.py       that apply (0x62a900) in an emulator, and the TEV decode
+    scripts/lut_gen.py         the game's LUT generator (0xbe7388) in an emulator
+    scripts/sdl_lights.py      the scheduler files' light sets (a stage's -f, player\char_make-f)
+    scripts/pica.py            the shader package's vertex shaders, disassembled
     scripts/mrl.py, lmt_fix.py, reduce_keys.py, mtlib.py   the MH3U viewers' helpers (4U keeps the formats)
 
 Run them in that order. Neither the extract nor the game's files are part of this repository.

@@ -9,10 +9,11 @@
 //   * every mesh keeps its PART id (glTF "Group[n]"): the hair and face are switched part by part by
 //     the helm (applyParts below), exactly as the game writes the model's PartsDisp bits
 import * as THREE from 'three';
-import { loadGlb, getTexture } from './assets.js';
-import { skeletonClone, meshGroupId } from './skeleton.js';
-import { createMaterial, allMats } from './material.js';
-import { specFor, refForGlb } from './materials-db.js';
+import { loadGlb, getTexture } from '../base/render/assets.js';
+import { skeletonClone, meshGroupId } from '../base/render/skeleton.js';
+import { createMaterial, allMats, setChannelColor } from '../base/render/material.js';
+import { specFor, refForGlb } from '../base/render/materials-db.js';
+import { attach4u, setAlbedoColour4u } from './shade4u.js';
 
 export const pieceMats = [];
 
@@ -43,6 +44,8 @@ export async function loadPiece(rec, ctx){
     // 95% alpha 0). The blend state reads the fragment alpha and the map is what carries the shape; the
     // 3DS's own alpha combiner stage is not read.
     if (rom && rom.state && rom.state.blend === 'blend' && mat.userData.u) mat.userData.u.uAlphaCut.value = 1;
+    // the game's own MaterialStd shading, chained on as an option (render/shade4u.js; off by default)
+    attach4u(mat, ref, srcName, rom);
     o.material = mat; allMats.push(mat); pieceMats.push(mat); mats.push(mat);
     if (mat.userData.renderOrder) o.renderOrder = mat.userData.renderOrder;
     if (rom && rom.albedo) jobs.push(getTexture(rom.albedo).then(t => {
@@ -76,16 +79,19 @@ export function applyParts(root, mask, bits, pick){
 // colour written into its CBMaterialStd fMaterialStdAlbedoColor (the setter 0x567b54), which multiplies
 // its albedo map. `byType` maps a type to [R, G, B] (0-255) for THIS unit -- the caller applies the
 // game's per-unit rules (the hair takes 1 and 4, the face 2, 4, 5 and 6, an armour slot 2, 3 and 4).
-// A material whose type has no colour here draws its map as it is. The 3DS multiplies in its own
-// 8-bit space; the colour is converted from sRGB so the product matches on a linear-light renderer.
+// A material whose type has no colour here draws its map as it is. The colour goes through the shared
+// base's CHANNEL colour (base/render/material.js setChannelColor): the bytes multiply the texel, decoded
+// from sRGB like a texel, which is the game's rule here (the albedo colour multiplies the map). An unlit
+// (additive) material has no channel and keeps its own colour, as before (the MH3U Armor Viewer's change).
 export function applyColours(root, byType){
   root.traverse(o => {
     if (!(o.isMesh || o.isSkinnedMesh)) return;
     const m = o.material;
-    if (!m || !m.color) return;
+    if (!m || !m.userData) return;
     const c = m.userData.ct ? byType[m.userData.ct] : null;
-    if (c) m.color.setRGB(c[0] / 255, c[1] / 255, c[2] / 255, THREE.SRGBColorSpace);
-    else m.color.setRGB(1, 1, 1);
+    setAlbedoColour4u(m, c || null);              // the same colour into TEV stage 0's constant (shade4u.js)
+    if (m.userData.u && m.userData.u.uChan) setChannelColor(m, c || null);
+    else if (m.color) m.color.setRGB(1, 1, 1);
   });
 }
 

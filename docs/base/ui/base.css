@@ -1,0 +1,469 @@
+/* THE SHARED VIEWER BASE'S STYLESHEET (docs/base/ui/base.css; the plan: C:\Coding Repos\VIEWER-BASE-PLAN.md): the MH
+   apps family's chrome -- the panels, buttons, modals, the camera bar, the swatches. Moved verbatim from GU's index.html
+   (2026-10-18). Its url()s point at the APP's own docs/assets and docs/fonts (../../ from here), so each viewer keeps
+   its own textures and font; the theme engine (shell.js) sets the colours as --bg, --accent, ... on :root. */
+/* MHFU game font, as the sibling MHGU apps use */
+@font-face{ font-family:'MHFU'; src:url('../../fonts/mhfu_font.ttf') format('truetype'); font-display:swap; }
+
+:root{
+  --bg:#3e3e3e; --bg1:#000000; --bg2:#333; --hover:#2f2f2f;
+  --accent:#7a7a7a; --accent-hover:#9a9a9a; --cta:#19e0d2;
+  --text:#f3f3f3; --text-dim:#ffffff; --text-hint:#b9b9b9;
+  --stage:#0e1013;
+  --line:#ffffff1f; --card:#ffffff0d;
+}
+*{box-sizing:border-box}
+/* The standard properties and ::-webkit-scrollbar are mutually exclusive in Chrome: set
+   `scrollbar-color` or `scrollbar-width` on an element and the -webkit pseudo-elements
+   below are IGNORED for it. Having both on `*` is why the width here had no effect --
+   scrollbars measured 15px (the `auto` default) no matter what was asked for. So the
+   standard ones are scoped to engines with no -webkit pseudo-element (Firefox), which
+   get the colours; Chrome takes the rules below and an actual custom width. */
+@supports not selector(::-webkit-scrollbar){
+  *{scrollbar-color:var(--accent) var(--bg2);scrollbar-width:auto}
+}
+::-webkit-scrollbar{width:22px;height:22px}
+/* a touch darker than the panel so the channel itself is visible */
+::-webkit-scrollbar-track{background:var(--bg);border-radius:11px}
+/* min-height matters more than width on these lists: an equipment dropdown holds over a
+   thousand options, so a proportional thumb is a few pixels tall and unusable to drag. */
+/* The thumb sat on a track the same colour as the panel behind it, so it read as part of
+   the background. A lighter fill plus a light inset edge gives it a shape of its own
+   without hard-coding a colour that would fight the theme. */
+::-webkit-scrollbar-thumb{background:var(--accent-hover);border-radius:10px;min-height:56px;
+  border:3px solid transparent;background-clip:padding-box;
+  box-shadow:inset 0 0 0 1px #ffffff55}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-hover);background-clip:padding-box;
+  border:2px solid transparent;box-shadow:inset 0 0 0 1px #ffffff99}
+/* Stated again for the dropdown lists. Whether a native <select> popup honours page CSS
+   is up to the engine -- Chrome on Windows draws that list itself and ignores it. */
+select::-webkit-scrollbar{width:22px}
+select::-webkit-scrollbar-thumb{min-height:56px}
+input,select,button,textarea{font-family:inherit}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:'MHFU',"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);
+     font-size:14px;user-select:none;-webkit-user-select:none}
+#app{display:flex;flex-direction:column;height:100vh}
+.hidden{display:none !important}
+
+/* Title bar */
+.titlebar{display:flex;align-items:center;gap:10px;padding:8px 14px}
+.titlebar-header{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('../../assets/titlebar-background.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+.titlebar h1{font-size:15px;font-weight:600;margin:0;flex:1}
+.titlebar .btn.tiny{margin-right:6px;white-space:nowrap}
+.title-icon{width:32px;height:32px;object-fit:contain}
+.icon-btn{background:transparent;border:none;color:var(--text);font-size:18px;
+  cursor:pointer;padding:6px 9px;border-radius:6px;line-height:1}
+.icon-btn:hover{background:#ffffff1a}
+/* an id rule setting display: would outrank the UA [hidden] rule */
+[hidden]{display:none !important}
+
+/* Layout */
+.layout{display:flex;flex:1;min-height:0}
+/* the sidebar's own gap only reaches its direct children, and the panels are now one
+   level down inside a pane -- so each pane carries the same column gap itself */
+#paneHunter,#panePalico{display:flex;flex-direction:column;gap:8px}
+.sidebar{
+  width:300px;flex-shrink:0;padding:12px;overflow-y:scroll;scrollbar-gutter:stable;
+  display:flex;flex-direction:column;gap:8px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--accent) 90%,transparent),color-mix(in srgb,var(--accent) 90%,transparent)),
+    url('../../assets/sidebar-background-texture1.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+/* The render area is the Weapon Tree's stage: --stage, the darkest shade in the set. It is
+   the one surface with no backing of its own — the model sits directly on it. */
+.content{
+  flex:1;min-width:0;position:relative;
+  background-color:var(--stage);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--stage) 78%,transparent),color-mix(in srgb,var(--stage) 78%,transparent)),
+    url('../../assets/rockyTextureDark2.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+/* The render area is the Weapon Tree's stage: --stage, the darkest shade in the set — the one
+   surface with no backing of its own, with the model sitting directly on it.
+
+   The texture and its tint are the Hunting Log's .editor (its editorPane), verbatim, so the two
+   apps' main working surfaces match: rockyTextureDark.png under an 84% wash of the surface
+   colour, repeated at 200px. */
+.content{
+  flex:1;min-width:0;position:relative;
+  background-color:var(--stage);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--stage) 84%,transparent),color-mix(in srgb,var(--stage) 84%,transparent)),
+    url('../../assets/rockyTextureDark.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+}
+/* A chroma backdrop has to be a flat, single value for a keyer to pull, so the texture and its
+   tint come off. Nothing else about the app changes — only the surface being keyed. */
+:root.chroma .content{background-image:none}
+#viewport{position:absolute;inset:0}
+/* "Loading..." over the render area until the first framed render (Raven, 2026-09-03) */
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:var(--text-hint);font-size:15px;letter-spacing:.06em;pointer-events:none}
+#loading[hidden]{display:none}
+/* Floating toolbar over the render area, matching the Weapon Tree's #bar.
+   width:max-content is load-bearing: with left:50% the default shrink-to-fit only
+   counts the space from the centre to the right edge, so the bar would cap at half
+   the viewport and wrap into a stack while the left half sat empty. */
+#bar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  width:max-content;max-width:calc(100% - 32px);
+  padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background-color:var(--bg2);
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 84%,transparent),
+                    color-mix(in srgb,var(--bg2) 84%,transparent)),
+    url('../../assets/rockyTextureDark2.png');
+  background-repeat:repeat;background-size:auto,200px 200px;
+  box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#bar > *{flex:0 0 auto}
+#bar button{white-space:nowrap}
+#bar .sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+#bar .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+#bar .btn:disabled{opacity:.4;pointer-events:none}
+#camPanel input:disabled,#camPanel select:disabled{opacity:.4}
+/* the first-person camera's prompt, above the bar; no pointer events, so the click it asks
+   for reaches the canvas (Raven, 2026-09-04) */
+#flyHint{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);max-width:calc(100% - 32px);
+  white-space:nowrap;font-size:12px;line-height:1.4;color:var(--text);background:rgba(0,0,0,.55);
+  border:1px solid var(--line);border-radius:8px;padding:6px 12px;pointer-events:none}
+/* the Animation panel: Loop, frame stepping, the scrubber and a frame readout. Greyed
+   out until an animation is playing, so the panel never has to hide or move. */
+#anim{display:flex;flex-direction:column;gap:6px}
+#anim .row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}   /* Raven: centred */
+#anim .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+#animPlay{min-width:var(--play-w,58px)}   /* one width for "Play" and "Pause" (Raven) */
+#anim input[type=range]{width:100%;margin:0}
+#anim.idle .transport .btn,#anim.idle .transport input{opacity:.4;pointer-events:none}
+#anim .transport{display:flex;flex-direction:column;gap:6px}
+#anim .chain-head{font-size:13px;font-weight:600;color:var(--text-dim);margin-top:6px}
+#anim .row.pick{justify-content:flex-start;flex-wrap:nowrap}
+#anim .row.pick select{flex:1 1 auto;min-width:0}
+#anim .row.pick .btn{flex:0 0 auto}
+#animFrame{font-size:12px;color:var(--text-hint);text-align:center}   /* under the scrubber, centred (Raven) */
+/* the chain, listed in order under its buttons (Raven); the playing link is lit, the x removes */
+.chain{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.chain li{display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 8px;border:1px solid var(--line);border-radius:6px;background:#ffffff14}
+.chain li.on{border-color:var(--accent-hover);background:#ffffff26}
+.chain li.off .lab{opacity:.45}
+/* the hunter slots: click a row to switch to that hunter; the one on screen is lit */
+.chain.hunters li{cursor:pointer}
+.chain.hunters li.on{cursor:default}
+.chain.hunters .tag{font-size:11px;color:var(--text-hint)}
+.chain.hunters input{flex:1 1 auto;min-width:0;font:inherit;font-size:12px;padding:1px 4px;background:#00000033;color:var(--text);border:1px solid var(--line);border-radius:4px}
+.chain li .n{color:var(--text-hint);min-width:1.4em}
+.chain li .lab{flex:1 1 auto}
+.chain li .x{cursor:pointer;color:var(--text-hint);padding:0 4px}
+.chain li .x:hover{color:var(--text)}
+.chain li .grip{cursor:grab;color:var(--text-hint);user-select:none;touch-action:none;padding:0 2px;font-size:13px;line-height:1}
+.chain li .grip:hover{color:var(--text)}
+.chain.dragging,.chain.dragging li,.chain.dragging li .grip{cursor:grabbing}
+.chain li.drag{opacity:.35}
+.chain li.ins-before{box-shadow:0 -3px 0 var(--accent-hover)}
+.chain li.ins-after{box-shadow:0 3px 0 var(--accent-hover)}
+.chain-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+/* Toggled off, the toolbar MOVES into the header rather than disappearing, so the
+   controls stay reachable while the render area is left clear. It is the same element,
+   so `#bar .sep` and `#bar .btn.on` keep applying -- which is why the whole bar moves
+   rather than its buttons being reparented one by one. */
+header #bar{position:static;transform:none;width:auto;max-width:none;
+  padding:0;border:none;border-radius:0;background:none;box-shadow:none;flex-wrap:nowrap}
+header #bar .sep{height:16px}
+/* the titlebar adds its own margin to .btn.tiny, which doubles up with #bar's gap */
+header #bar .btn.tiny{margin-right:0}
+/* The camera bar's controls are icons, their labels moved into the tooltip as
+   "Label: what it does" (Raven, 2026-09-04). Equal squares, so a button that the state
+   renames can no longer shunt the ones beside it -- which is what the two width-pinning
+   measurements below the bar used to be for. */
+#bar .ico{display:inline-flex;align-items:center;justify-content:center;width:32px;padding:3px 0}
+#bar .ico svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* the Record button is bright red in both states, the dot and the stop square
+   (Raven, 2026-09-04) */
+#clipBtn svg{color:#ff2a2a}
+/* The clip countdown (Raven, 2026-09-05: "a timer that counts down ... :30 -> :09 format ...
+   remains the same size"): tabular digits in a fixed box, so :30 and :09 take the same room and
+   nothing beside it shifts. Amber through the 3 s lead, red while the clip runs, and a flash of
+   :00 when it ends. The Record button blinks in step: fast through the lead, once a second while
+   recording -- opacity only, so the button never changes size. */
+#bar .clip-timer{display:inline-flex;align-items:center;justify-content:center;width:34px;height:22px;
+  font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:var(--text-hint);user-select:none}
+#bar .clip-timer.pre{color:#ffb020}
+#bar .clip-timer.on{color:#ff2a2a}
+#bar .clip-timer.end{color:#ff2a2a;animation:clipEndFlash .45s steps(1,end) 4}
+#clipBtn.pre svg{animation:clipBlink .5s steps(1,end) infinite}
+#clipBtn.on svg{animation:clipBlink 1s steps(1,end) infinite}
+@keyframes clipBlink{50%{opacity:.15}}
+@keyframes clipEndFlash{50%{opacity:.1}}
+@media (prefers-reduced-motion: reduce){#clipBtn.pre svg,#clipBtn.on svg,#bar .clip-timer.end{animation:none}}
+#viewport canvas{display:block;width:100%;height:100%}
+#viewport.fly canvas{cursor:crosshair}   /* the first-person camera; Hide Cursor below still wins */
+/* Scoped to the render area on purpose: #bar and the overlays are SIBLINGS of #viewport,
+   so the toolbar keeps its pointer and stays usable while the cursor is hidden. */
+#viewport.nocursor,#viewport.nocursor canvas{cursor:none}
+
+/* Buttons */
+.btn{background:#ffffff14;color:var(--text);border:1px solid var(--line);
+  border-radius:7px;padding:8px 14px;cursor:pointer;font-size:14px}
+.btn:hover{background:#ffffff24}
+.btn.block{width:100%}
+.btn.tiny{padding:3px 10px;font-size:12px}
+.btn.block,.btn.tiny{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('../../assets/banner-background.png');
+  background-position:right;
+}
+.btn.accent{background:var(--bg1);border-color:#000;color:#fff;font-weight:600}
+/* Reset: the Bingo app's accent button on the theme's complementary colour (--cta) */
+.btn.cta{background:var(--cta);background-image:none;border-color:rgba(0,0,0,.45);color:#fff;font-weight:600;
+  text-shadow:-1px 0 rgba(0,0,0,.55),1px 0 rgba(0,0,0,.55),0 -1px rgba(0,0,0,.55),0 1px rgba(0,0,0,.55)}
+.btn.cta:hover{background:color-mix(in srgb,var(--cta) 84%,#ffffff)}
+/* Selected gender. Was a fixed green (#3d6b45) that ignored the theme entirely; this is the
+   theme's own colour instead — var(--hover) is darken(hex,.30), the family's deep shade.
+
+   The white border does the selecting, not the fill. A lighter fill was the obvious try (the
+   family's .btn.on white wash) and it reads well but costs legibility: white label text drops
+   to 3.67:1 on the pale themes, against 6.5:1 on the green it replaced, so it made the button
+   worse to read in order to look righter. --hover goes the other way and holds white text at
+   14.7:1 everywhere. The fill difference alone is slight, which is why the border is white and
+   the label bold — that pair is unambiguous without asking the fill to carry it. */
+.btn.accent.on{background:var(--hover);border-color:#fff;color:#fff;font-weight:600}
+
+/* Collapsible panels */
+.panel{border:1px solid var(--line);border-radius:8px;overflow:clip;background:var(--bg2)}
+.panel-head{width:100%;text-align:left;background:transparent;border:none;color:var(--text);
+  padding:8px 14px;font-size:16px;font-weight:600;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg2) 80%,transparent),color-mix(in srgb,var(--bg2) 80%,transparent)),
+    url('../../assets/banner-background.png');
+  background-size:auto 100%;background-position:left center;background-repeat:repeat;
+}
+.panel-head:hover{background-color:#ffffff0d}
+/* the panels locked until the model is in (shell.js, game.panelsUntilReady): their heads dimmed, no hover */
+body.booting .panel-head{opacity:.5;cursor:progress}
+body.booting .panel-head:hover{background-color:transparent}
+/* The panel chevrons are hidden -- the accordion only ever has one panel open, so the
+   open one is obvious from the panel body and the arrows were just noise. The spans stay
+   in the markup so the heads keep their layout. */
+.chev{display:none}
+.panel-body{display:none;padding:8px 12px 12px;flex-direction:column;gap:6px;
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--bg1) 60%,transparent),color-mix(in srgb,var(--bg1) 60%,transparent)),
+    url('../../assets/panel-body-bg.png');
+  background-size:contain 100%;background-position:left center;background-repeat:repeat;
+}
+.panel[data-open="true"] .panel-body{display:flex}
+
+/* Controls */
+.chk{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;line-height:1.3}
+.chk input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer;flex-shrink:0}
+.chk:hover{color:var(--accent-hover)}
+.hint{color:var(--text-hint);font-size:12px;margin:2px 0}
+.row{display:flex;align-items:center}
+.row.gap{gap:8px}
+.field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--text-dim)}
+.art-levels{display:contents}   /* the Arts' level selects sit in the panel's own flow */
+.field .row.gap > select{flex:1;min-width:0}
+.hexbtn{flex:1;min-width:0;background:transparent;border:1px solid transparent;
+  color:var(--text-hint);font-family:inherit;font-size:12px;letter-spacing:.02em;
+  text-align:left;padding:3px 5px;border-radius:5px;cursor:text}
+.hexbtn:hover{border-color:var(--line);color:var(--text)}
+.hexbtn:focus{border-color:var(--accent-hover);color:var(--text);outline:none;
+  background:var(--bg2)}
+.rgb-input{flex:0 0 auto;width:34px;height:30px;padding:0;cursor:pointer;
+  background:var(--bg2);border:1px solid var(--line);border-radius:7px}
+.rgb-input::-webkit-color-swatch-wrapper{padding:2px}
+/* the colour itself gets the black edge, so a pale pigment still reads as a swatch */
+.rgb-input::-webkit-color-swatch{border:1px solid #000;border-radius:5px}
+.rgb-input::-moz-color-swatch{border:1px solid #000;border-radius:5px}
+.field select,.field input[type=text]{
+  background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:7px;
+  padding:6px 8px;font-size:13px;line-height:1.4;
+  /* option names run past 60 chars; without min-width:0 a flex select forces the
+     sidebar far wider than its declared width */
+  width:100%;min-width:0;max-width:100%;text-overflow:ellipsis;
+}
+
+/* no focus ring on selects: a select just picked stays focused, and the ring around it
+   read as a stray highlight (Raven, 2026-09-04: "We don't need the highlight around the
+   box") -- Chrome keeps :focus-visible on after its popup closes, so it goes outright */
+select:focus{outline:none}
+.field input[type=text]::placeholder{color:var(--text-hint);opacity:1}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* Pigment swatches */
+#pig{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-height:170px;overflow-y:auto}
+#pig i{display:block;aspect-ratio:1;border-radius:3px;cursor:pointer;border:1px solid #0006}
+#pig i.on{outline:2px solid var(--accent-hover);outline-offset:1px}
+
+/* Viewport overlays */
+#hud{display:none;position:absolute;top:12px;left:12px;white-space:pre;font-size:12px;line-height:1.5;
+  background:rgba(0,0,0,.55);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+  pointer-events:none;color:var(--text)}
+#err{position:absolute;bottom:12px;left:12px;color:#ff6b6b;white-space:pre;max-width:60ch}
+/* sits over the render area; pointer-events off so it never eats an orbit drag */
+#renderNote{position:absolute;top:10px;left:0;right:0;margin:0;text-align:center;
+  font-size:12px;line-height:1.4;color:var(--text-hint);opacity:.75;
+  pointer-events:none;padding:0 12px}
+#legend{font-size:11px;line-height:1.35}
+
+/* In-game pigment palette. Opens per pigment row and writes into that row's hex field,
+   so it is a way to REACH the game's 125 colours through the existing RGB interface
+   rather than a second interface beside it. */
+.palbtn{flex:0 0 auto;width:26px;height:26px;padding:0;line-height:1;font-size:13px;
+  background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;
+  cursor:pointer}
+.palbtn:hover{background:#ffffff1a;border-color:var(--accent-hover)}
+#pigModal .modal-card{width:min(420px,92vw)}
+#titleModal .modal-card{width:min(760px,94vw)}
+#titleFilter{flex:1;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--text);font:inherit}
+#titlePage{width:4.5em;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg2);color:var(--text);font:inherit}
+/* the native spinner reads backwards against a list: its up arrow raises the number, which
+   moves you DOWN the page (Raven, 2026-09-09: "going down goes up"). Hidden, and replaced by a
+   < number > pager, which carries no vertical sense to get backwards (Raven: "We would want
+   something like < Number > for normal use"). */
+#titlePage::-webkit-inner-spin-button,#titlePage::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#titlePage{-moz-appearance:textfield;text-align:center}
+.pager{display:inline-flex;align-items:center;gap:4px}
+.pager .btn{padding:4px 9px;line-height:1}
+/* the page jumped to, and the words on the plate: white on the family's .on wash (the theme's accent as TEXT vanishes on the
+   dark themes -- Raven, 2026-10-19: "the selected page text is too dark, it is not visible on some themes") */
+#titleList .title-pg.hit{color:var(--text);font-weight:600;border-top-color:var(--accent-hover);background:#ffffff26;padding-left:6px;border-radius:0 0 4px 4px}
+/* lighter than the browser's placeholder gray (Raven, 2026-09-06), mixed from the theme's text so it holds on either theme */
+#titleFilter::placeholder{color:color-mix(in srgb, var(--text) 85%, var(--bg2));opacity:1}
+#titleCount{white-space:nowrap;align-self:center}
+#titleList{display:grid;grid-template-columns:max-content max-content 1fr;gap:3px 14px;margin-top:12px;font-size:13px;line-height:1.35;max-height:56vh;overflow-y:auto;padding-right:4px}
+#titleList .title-p{color:var(--text-hint);font-variant-numeric:tabular-nums;white-space:nowrap}
+#titleList .title-none{font-weight:400;font-style:italic;color:var(--text-hint)}
+#titleList .title-pg{grid-column:1/-1;margin:8px 0 2px;padding-top:6px;border-top:1px solid var(--line);
+  font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text-hint)}
+#titleList .title-h{grid-column:1/-1;margin:10px 0 2px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-dim)}
+#titleList .title-w{font-weight:600}
+#titleList .title-r{color:var(--text-dim)}
+#titleList .sel{color:var(--text);background:#ffffff26;border-radius:3px;box-shadow:0 0 0 2px #ffffff26}
+/* align-items:start: stretched rows were sized before the tiles' aspect-ratio and the last row ran past the grid, under
+   the next heading (Raven, 2026-10-18: "we need space in the modal for the color board") */
+#pigGrid,.pig-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:12px 0;align-items:start}
+/* black, not --line: a pale swatch against the panel had no edge at all, so light
+   colours ran together and white was invisible */
+#pigGrid button,.pig-grid button{aspect-ratio:1;padding:0;border:1px solid #000;
+  border-radius:4px;cursor:pointer}
+#pigGrid button:hover,.pig-grid button:hover{border-color:#fff}
+#pigGrid button.sel,.pig-grid button.sel{outline:2px solid #fff;outline-offset:1px}
+#pigDeviant .stage-h{margin:14px 0 0}
+#pigDevList .stage-h{margin:14px 0 6px}
+#pigPalettes .stage-h,#pigBaseHead .stage-h{margin:16px 0 0;font-size:13px}
+#pigPalettes .hx,#pigBaseHead .hx{font-weight:400;font-size:11px;opacity:.6}
+#pigPalettes .stage-h:first-child{margin-top:6px}
+.devrow{display:flex;align-items:center;gap:6px;margin:0 0 4px}
+.devpick{display:flex;align-items:center;gap:8px;flex:1;min-width:0;padding:5px 8px;
+  background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--text);
+  cursor:pointer;font:inherit;font-size:12px;text-align:left}
+.devpick:hover{border-color:var(--accent-hover);background:#ffffff12}
+.devanim{flex:0 0 auto;width:76px}
+.devrow .sw{width:16px;height:16px;border-radius:3px;border:1px solid #000;flex:0 0 auto}
+.devrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.devrow .hx{opacity:.65;font-size:11px}
+
+/* Other MHGU apps modal — the block is shared verbatim with the sibling apps. */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;
+  align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;
+  padding:20px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto}
+.modal-card h2{margin:0 0 12px;font-size:22px}
+.modal-card h3{margin:16px 0 6px;font-size:14px;color:var(--text-dim)}
+.modal-card code{font-size:12px;opacity:.85}
+.modal-card p{line-height:1.55;font-size:13px}
+.modal-card a{color:color-mix(in srgb, hsl(from var(--accent) calc(h + 180) 75% 60%) 50%, var(--text))}
+.modal-card .muted{color:var(--text-dim);font-size:13px;opacity:.75}
+/* Backdrop override, above the swatches so it is seen. Chroma chips sit on the two key buttons so
+   the colour is visible on the control that sets it. */
+.stage-h{margin:0 0 4px;font-size:14px}
+.stage-row{margin-bottom:15px}
+/* the Lighting panel (Raven, 2026-09-04: "Add these settings to a panel under animations") */
+.light-row{display:flex;gap:4px;flex-wrap:wrap}
+.light-row .btn{flex:1 1 30%}
+.light-row .btn.on{border-color:var(--accent-hover);background:#ffffff26}
+.fx-head{margin:8px 0 2px;font-size:11px;color:var(--text-hint);text-transform:uppercase;letter-spacing:.05em}
+.stage-row .btn{position:relative;padding-left:26px}
+.stage-row .btn::before{content:"";position:absolute;left:8px;top:50%;width:10px;height:10px;
+  margin-top:-5px;border-radius:2px;border:1px solid #0006;background:var(--chip,transparent)}
+#stgTheme::before{display:none}
+#stgGreen{--chip:#00FF00}
+#stgBlue{--chip:#0000FF}
+
+/* Settings modal — Theme and Backdrop live here too, because "Theme" on its own was
+   easy to miss when looking for a setting. The swatch grid is copied verbatim from the
+   other apps; the id stays `themeModal` so the shared theme script needs no change. */
+/* The links modal is wider (560px); the family sizes the THEME card at 460 so a swatch
+   comes out the same size here as in every other app. Scoped so the links modal is untouched. */
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:15px}
+.swatch{aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;padding:0}
+.swatch.sel{border-color:#fff}
+.swatch-icon{position:absolute;top:7%;left:50%;transform:translateX(-50%);width:60%;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.swatch span{position:absolute;bottom:0;left:0;right:0;text-align:center;font-size:10px;line-height:1.5;color:#fff;background:rgba(0,0,0,.45)}
+.row.end{justify-content:flex-end}
+.app-links{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:10px}
+.app-links li{border:1px solid var(--line);border-radius:8px;padding:9px 12px;background:#ffffff08}
+.app-links li.current{opacity:.72}
+.app-links a,.app-name{font-weight:600;font-size:14px}
+.app-here{font-weight:400;font-size:11px;opacity:.7;border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin-left:7px}
+.app-desc{display:block;margin-top:3px;font-size:12px;opacity:.8;line-height:1.4}
+
+/* the combined picker's game tabs, and a pigment row the worn piece cannot take (base/ui/pigment.js) */
+.pig-tabs{margin:4px 0 8px;flex-wrap:wrap}
+.field.off > label{opacity:.5}
+.pig-board{margin:0 0 18px}
+#pigBoard > .stage-h{margin-top:22px}
+.pig-board canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair;border-radius:4px;border:1px solid rgba(255,255,255,.35);margin-top:8px}
+#pigRainbow{margin:0 0 4px}
+.devrow .sw.rb{width:34px}
+
+/* a strip row (base/ui/hunter-tab.js kind 'strip'; 3U's Skin Tone): the range over the game's colour strip, and the
+   swatch of the colour picked beside it (the MH3U / MH4U Armor Viewers' chip) */
+.row > input[type=range].strip{flex:1;min-width:0;height:14px;border-radius:4px;-webkit-appearance:none;appearance:none}
+/* a strip row on an RGB... colour marks no position on the strip */
+.row > input[type=range].strip.free::-webkit-slider-thumb{opacity:0}
+.row > input[type=range].strip.free::-moz-range-thumb{opacity:0}
+.chip{display:inline-block;flex:0 0 26px;width:26px;height:26px;border-radius:5px;border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+
+/* the true RGB selection (base/ui/rgb-picker.js): R, G, B as a slider and a number box each, then the hex, the native
+   picker and the swatch */
+.rgbx{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+.rgbx-row{display:flex;align-items:center;gap:8px}
+.rgbx-n{flex:0 0 12px;font-size:12px;opacity:.8;text-align:center}
+.rgbx-row input[type=range]{flex:1;min-width:0;height:12px;border-radius:4px;-webkit-appearance:none;appearance:none;
+  background:var(--rgbx-track, var(--line))}
+.rgbx-row input[type=number]{flex:0 0 58px;width:58px}
+.rgbx-foot{align-items:center}
+.rgbx-hex{flex:1;min-width:0;font-family:ui-monospace,Consolas,monospace;text-transform:uppercase}
+
+/* a colour row's swatch on its Default (the map as drawn: no colour to show) */
+.chip.none{background:repeating-linear-gradient(45deg,var(--bg2) 0 4px,var(--line) 4px 8px)}
+.chip[role=button]{cursor:pointer}
+/* a colour row's current colour, filling the space its select took, the hex (or "Default") on it */
+.chip.wide{flex:1;width:auto;min-width:0;height:28px;display:flex;align-items:center;justify-content:center;
+  font:12px/1 ui-monospace,Consolas,monospace;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.6);overflow:hidden;white-space:nowrap}
+.chip.wide.none{color:var(--text);text-shadow:none}
+/* THE COLOUR FIELD (Raven, 2026-10-18): a hex field that shows its colour -- the pigment rows' pgHex_*, the colour rows'
+   and the strip rows' *Hex -- its text dark or light against it; hatched when there is no colour to show */
+.hexbtn.colourfield{flex:1;min-width:0;text-align:center;font:12px/1 ui-monospace,Consolas,monospace;
+  border:1px solid rgba(255,255,255,.35);border-radius:5px;height:28px;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.6)}
+.hexbtn.colourfield.light{color:#111;text-shadow:none}
+.hexbtn.colourfield.none{background:repeating-linear-gradient(45deg,var(--bg2) 0 4px,var(--line) 4px 8px);color:var(--text);text-shadow:none}
+.hexbtn.colourfield:disabled{opacity:.45}
+/* a row's own game strip in the selector's character mode (base/ui/pigment.js showCharStrip): one cell per texel */
+.pig-strip canvas{display:block;width:100%;height:22px;image-rendering:pixelated;cursor:crosshair;border-radius:4px;
+  border:1px solid rgba(255,255,255,.35);margin:6px 0 4px}
+/* the merged Armor Pieces panel: a piece and its pigment row read as one group, a little space before the next piece
+   (Raven, 2026-10-19: "Add a little bit of space between armor pieces/their pigment control") */
+.field.piece-pig{margin-bottom:10px}

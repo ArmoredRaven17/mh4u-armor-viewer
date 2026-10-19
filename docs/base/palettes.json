@@ -1,0 +1,2135 @@
+{
+ "_about": "The combined colour picker: a tab per game, each from the game's own data (dev/build-palettes.py). name null = the game gives none. A board pick is a colour like any other: the row stores the hex.",
+ "tabs": [
+  {
+   "game": "MHGU",
+   "label": "MHGU",
+   "board": {
+    "image": "boards/mhgu-colorscale.png",
+    "w": 512,
+    "h": 128,
+    "region": [
+     2,
+     2,
+     353,
+     103
+    ]
+   },
+   "pigments": [
+    {
+     "i": 0,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 1,
+     "hex": "#c93036",
+     "name": null
+    },
+    {
+     "i": 2,
+     "hex": "#ff711e",
+     "name": null
+    },
+    {
+     "i": 3,
+     "hex": "#ffec3b",
+     "name": null
+    },
+    {
+     "i": 4,
+     "hex": "#b0dd64",
+     "name": null
+    },
+    {
+     "i": 5,
+     "hex": "#34766d",
+     "name": null
+    },
+    {
+     "i": 6,
+     "hex": "#3862cd",
+     "name": null
+    },
+    {
+     "i": 7,
+     "hex": "#ba96e2",
+     "name": null
+    },
+    {
+     "i": 8,
+     "hex": "#693249",
+     "name": null
+    },
+    {
+     "i": 9,
+     "hex": "#ff94a4",
+     "name": null
+    },
+    {
+     "i": 10,
+     "hex": "#a19691",
+     "name": null
+    },
+    {
+     "i": 11,
+     "hex": "#e1feff",
+     "name": null
+    },
+    {
+     "i": 12,
+     "hex": "#3d363e",
+     "name": null
+    },
+    {
+     "i": 13,
+     "hex": "#98444a",
+     "name": null
+    },
+    {
+     "i": 14,
+     "hex": "#405157",
+     "name": null
+    },
+    {
+     "i": 15,
+     "hex": "#607950",
+     "name": null
+    },
+    {
+     "i": 16,
+     "hex": "#7f604a",
+     "name": null
+    },
+    {
+     "i": 17,
+     "hex": "#f5a009",
+     "name": null
+    },
+    {
+     "i": 18,
+     "hex": "#60dad4",
+     "name": null
+    },
+    {
+     "i": 19,
+     "hex": "#6a648e",
+     "name": null
+    },
+    {
+     "i": 20,
+     "hex": "#f2fedc",
+     "name": null
+    },
+    {
+     "i": 21,
+     "hex": "#a33633",
+     "name": null
+    },
+    {
+     "i": 22,
+     "hex": "#c0373d",
+     "name": null
+    },
+    {
+     "i": 23,
+     "hex": "#fa4122",
+     "name": null
+    },
+    {
+     "i": 24,
+     "hex": "#8bc2c5",
+     "name": null
+    },
+    {
+     "i": 25,
+     "hex": "#4d544e",
+     "name": null
+    },
+    {
+     "i": 26,
+     "hex": "#9b7de1",
+     "name": null
+    },
+    {
+     "i": 27,
+     "hex": "#ff0000",
+     "name": null
+    },
+    {
+     "i": 28,
+     "hex": "#f5c8aa",
+     "name": null
+    },
+    {
+     "i": 29,
+     "hex": "#3c78aa",
+     "name": null
+    },
+    {
+     "i": 30,
+     "hex": "#8ba150",
+     "name": null
+    },
+    {
+     "i": 31,
+     "hex": "#c832dc",
+     "name": null
+    },
+    {
+     "i": 32,
+     "hex": "#405b7f",
+     "name": null
+    },
+    {
+     "i": 33,
+     "hex": "#c9b47d",
+     "name": null
+    },
+    {
+     "i": 34,
+     "hex": "#88ff32",
+     "name": null
+    },
+    {
+     "i": 35,
+     "hex": "#ff23a7",
+     "name": null
+    },
+    {
+     "i": 36,
+     "hex": "#e66e1e",
+     "name": null
+    },
+    {
+     "i": 37,
+     "hex": "#eb530a",
+     "name": null
+    },
+    {
+     "i": 38,
+     "hex": "#fff5c3",
+     "name": null
+    },
+    {
+     "i": 39,
+     "hex": "#00fa52",
+     "name": null
+    },
+    {
+     "i": 40,
+     "hex": "#003c74",
+     "name": null
+    },
+    {
+     "i": 41,
+     "hex": "#faf5e6",
+     "name": null
+    },
+    {
+     "i": 42,
+     "hex": "#4b3755",
+     "name": null
+    },
+    {
+     "i": 43,
+     "hex": "#6882aa",
+     "name": null
+    },
+    {
+     "i": 44,
+     "hex": "#3c2828",
+     "name": null
+    },
+    {
+     "i": 45,
+     "hex": "#fa410a",
+     "name": null
+    },
+    {
+     "i": 46,
+     "hex": "#3c5aaa",
+     "name": null
+    },
+    {
+     "i": 47,
+     "hex": "#c37d3e",
+     "name": null
+    },
+    {
+     "i": 48,
+     "hex": "#5f9146",
+     "name": null
+    },
+    {
+     "i": 49,
+     "hex": "#4c1bb3",
+     "name": null
+    },
+    {
+     "i": 50,
+     "hex": "#874128",
+     "name": null
+    },
+    {
+     "i": 51,
+     "hex": "#006e82",
+     "name": null
+    },
+    {
+     "i": 52,
+     "hex": "#9382be",
+     "name": null
+    },
+    {
+     "i": 53,
+     "hex": "#145569",
+     "name": null
+    },
+    {
+     "i": 54,
+     "hex": "#ff9141",
+     "name": null
+    },
+    {
+     "i": 55,
+     "hex": "#87b0e1",
+     "name": null
+    },
+    {
+     "i": 56,
+     "hex": "#34404f",
+     "name": null
+    },
+    {
+     "i": 57,
+     "hex": "#49b0ff",
+     "name": null
+    },
+    {
+     "i": 58,
+     "hex": "#112754",
+     "name": null
+    },
+    {
+     "i": 59,
+     "hex": "#a33342",
+     "name": null
+    },
+    {
+     "i": 60,
+     "hex": "#32c3cd",
+     "name": null
+    },
+    {
+     "i": 61,
+     "hex": "#af4632",
+     "name": null
+    },
+    {
+     "i": 62,
+     "hex": "#afa07d",
+     "name": null
+    },
+    {
+     "i": 63,
+     "hex": "#c3aa7d",
+     "name": null
+    },
+    {
+     "i": 64,
+     "hex": "#3f3937",
+     "name": null
+    },
+    {
+     "i": 65,
+     "hex": "#9a4654",
+     "name": null
+    },
+    {
+     "i": 66,
+     "hex": "#465faa",
+     "name": null
+    },
+    {
+     "i": 67,
+     "hex": "#f8e6d2",
+     "name": null
+    },
+    {
+     "i": 68,
+     "hex": "#ebc658",
+     "name": null
+    },
+    {
+     "i": 69,
+     "hex": "#ffc83c",
+     "name": null
+    },
+    {
+     "i": 70,
+     "hex": "#f5ad20",
+     "name": null
+    },
+    {
+     "i": 71,
+     "hex": "#467894",
+     "name": null
+    },
+    {
+     "i": 72,
+     "hex": "#202020",
+     "name": null
+    },
+    {
+     "i": 73,
+     "hex": "#ff2364",
+     "name": null
+    },
+    {
+     "i": 74,
+     "hex": "#84c338",
+     "name": null
+    },
+    {
+     "i": 75,
+     "hex": "#fae4d9",
+     "name": null
+    },
+    {
+     "i": 76,
+     "hex": "#ffa6f1",
+     "name": null
+    },
+    {
+     "i": 77,
+     "hex": "#706541",
+     "name": null
+    },
+    {
+     "i": 78,
+     "hex": "#0f804e",
+     "name": null
+    },
+    {
+     "i": 79,
+     "hex": "#ff00ff",
+     "name": null
+    },
+    {
+     "i": 80,
+     "hex": "#ff5683",
+     "name": null
+    },
+    {
+     "i": 81,
+     "hex": "#f556ba",
+     "name": null
+    },
+    {
+     "i": 82,
+     "hex": "#a1764f",
+     "name": null
+    },
+    {
+     "i": 83,
+     "hex": "#3e97ff",
+     "name": null
+    },
+    {
+     "i": 84,
+     "hex": "#7f66ba",
+     "name": null
+    },
+    {
+     "i": 85,
+     "hex": "#d2965a",
+     "name": null
+    },
+    {
+     "i": 86,
+     "hex": "#989898",
+     "name": null
+    },
+    {
+     "i": 87,
+     "hex": "#272a36",
+     "name": null
+    },
+    {
+     "i": 88,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 89,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 90,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 91,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 92,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 93,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 94,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 95,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 96,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 97,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 98,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 99,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 100,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 101,
+     "hex": "#990e1a",
+     "name": null
+    },
+    {
+     "i": 102,
+     "hex": "#382f46",
+     "name": null
+    },
+    {
+     "i": 103,
+     "hex": "#0fc332",
+     "name": null
+    },
+    {
+     "i": 104,
+     "hex": "#885ac0",
+     "name": null
+    },
+    {
+     "i": 105,
+     "hex": "#d64037",
+     "name": null
+    },
+    {
+     "i": 106,
+     "hex": "#c3cd91",
+     "name": null
+    },
+    {
+     "i": 107,
+     "hex": "#dec141",
+     "name": null
+    },
+    {
+     "i": 108,
+     "hex": "#3caa1e",
+     "name": null
+    },
+    {
+     "i": 109,
+     "hex": "#ff3723",
+     "name": null
+    },
+    {
+     "i": 110,
+     "hex": "#aa69f0",
+     "name": null
+    },
+    {
+     "i": 111,
+     "hex": "#3291d2",
+     "name": null
+    },
+    {
+     "i": 112,
+     "hex": "#dc9b0f",
+     "name": null
+    },
+    {
+     "i": 113,
+     "hex": "#cc66ff",
+     "name": null
+    },
+    {
+     "i": 114,
+     "hex": "#7eff66",
+     "name": null
+    },
+    {
+     "i": 115,
+     "hex": "#ff6666",
+     "name": null
+    },
+    {
+     "i": 116,
+     "hex": "#d5d932",
+     "name": null
+    },
+    {
+     "i": 117,
+     "hex": "#c3cdc3",
+     "name": null
+    },
+    {
+     "i": 118,
+     "hex": "#ebe1e6",
+     "name": null
+    },
+    {
+     "i": 119,
+     "hex": "#dc7391",
+     "name": null
+    },
+    {
+     "i": 120,
+     "hex": "#8246a5",
+     "name": null
+    },
+    {
+     "i": 121,
+     "hex": "#645046",
+     "name": null
+    },
+    {
+     "i": 122,
+     "hex": "#c0a018",
+     "name": null
+    },
+    {
+     "i": 123,
+     "hex": "#d7dbdd",
+     "name": null
+    },
+    {
+     "i": 124,
+     "hex": "#d92626",
+     "name": null
+    }
+   ],
+   "groups": [
+    {
+     "label": "Group 1",
+     "colors": [
+      {
+       "hex": "#e6e6e6",
+       "name": null
+      },
+      {
+       "hex": "#ffffff",
+       "name": null
+      },
+      {
+       "hex": "#bebebe",
+       "name": null
+      },
+      {
+       "hex": "#ff0000",
+       "name": null
+      },
+      {
+       "hex": "#ffff50",
+       "name": null
+      },
+      {
+       "hex": "#0080ff",
+       "name": null
+      },
+      {
+       "hex": "#00ff00",
+       "name": null
+      },
+      {
+       "hex": "#d1ba3f",
+       "name": null
+      },
+      {
+       "hex": "#ff8400",
+       "name": null
+      },
+      {
+       "hex": "#f011ee",
+       "name": null
+      },
+      {
+       "hex": "#6fe8ed",
+       "name": null
+      },
+      {
+       "hex": "#5f5f5f",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 2",
+     "colors": [
+      {
+       "hex": "#7c2020",
+       "name": null
+      },
+      {
+       "hex": "#28190f",
+       "name": null
+      },
+      {
+       "hex": "#56ff56",
+       "name": null
+      },
+      {
+       "hex": "#be3200",
+       "name": null
+      },
+      {
+       "hex": "#6e46ff",
+       "name": null
+      },
+      {
+       "hex": "#003296",
+       "name": null
+      },
+      {
+       "hex": "#28285a",
+       "name": null
+      },
+      {
+       "hex": "#4e320b",
+       "name": null
+      },
+      {
+       "hex": "#a01e98",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 3",
+     "colors": [
+      {
+       "hex": "#f5f5f5",
+       "name": null
+      },
+      {
+       "hex": "#e1505c",
+       "name": null
+      },
+      {
+       "hex": "#69bf83",
+       "name": null
+      },
+      {
+       "hex": "#9fbbff",
+       "name": null
+      },
+      {
+       "hex": "#f7cf65",
+       "name": null
+      },
+      {
+       "hex": "#c3a3d1",
+       "name": null
+      },
+      {
+       "hex": "#9bdff0",
+       "name": null
+      },
+      {
+       "hex": "#f79a65",
+       "name": null
+      },
+      {
+       "hex": "#f8889d",
+       "name": null
+      },
+      {
+       "hex": "#add56d",
+       "name": null
+      },
+      {
+       "hex": "#aaaaaa",
+       "name": null
+      },
+      {
+       "hex": "#c1972e",
+       "name": null
+      },
+      {
+       "hex": "#57ebc7",
+       "name": null
+      },
+      {
+       "hex": "#55893b",
+       "name": null
+      },
+      {
+       "hex": "#990000",
+       "name": null
+      },
+      {
+       "hex": "#003399",
+       "name": null
+      },
+      {
+       "hex": "#660066",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 4",
+     "colors": [
+      {
+       "hex": "#e6e6e6",
+       "name": null
+      },
+      {
+       "hex": "#b092f2",
+       "name": null
+      },
+      {
+       "hex": "#ded55e",
+       "name": null
+      },
+      {
+       "hex": "#e88e9e",
+       "name": null
+      },
+      {
+       "hex": "#6fc773",
+       "name": null
+      },
+      {
+       "hex": "#708ef8",
+       "name": null
+      },
+      {
+       "hex": "#da565a",
+       "name": null
+      },
+      {
+       "hex": "#4c9eac",
+       "name": null
+      },
+      {
+       "hex": "#ee8c5d",
+       "name": null
+      },
+      {
+       "hex": "#ff45bd",
+       "name": null
+      },
+      {
+       "hex": "#7d00ff",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 5",
+     "colors": [
+      {
+       "hex": "#f22515",
+       "name": null
+      },
+      {
+       "hex": "#3dd7d2",
+       "name": null
+      },
+      {
+       "hex": "#e6e60a",
+       "name": null
+      },
+      {
+       "hex": "#0ae80a",
+       "name": null
+      },
+      {
+       "hex": "#f5a4a4",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 6",
+     "colors": [
+      {
+       "hex": "#5f5f5f",
+       "name": null
+      },
+      {
+       "hex": "#ffffff",
+       "name": null
+      },
+      {
+       "hex": "#f011ee",
+       "name": null
+      },
+      {
+       "hex": "#ff0000",
+       "name": null
+      },
+      {
+       "hex": "#2028ff",
+       "name": null
+      },
+      {
+       "hex": "#00ff00",
+       "name": null
+      },
+      {
+       "hex": "#ffff00",
+       "name": null
+      },
+      {
+       "hex": "#80bfff",
+       "name": null
+      },
+      {
+       "hex": "#ff8400",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 7",
+     "colors": [
+      {
+       "hex": "#f01010",
+       "name": null
+      },
+      {
+       "hex": "#10f010",
+       "name": null
+      },
+      {
+       "hex": "#b4b4b4",
+       "name": null
+      },
+      {
+       "hex": "#4040f0",
+       "name": null
+      },
+      {
+       "hex": "#be621b",
+       "name": null
+      },
+      {
+       "hex": "#bd76d4",
+       "name": null
+      }
+     ]
+    },
+    {
+     "label": "Group 8",
+     "colors": [
+      {
+       "hex": "#000080",
+       "name": null
+      },
+      {
+       "hex": "#c80000",
+       "name": null
+      },
+      {
+       "hex": "#c86e00",
+       "name": null
+      },
+      {
+       "hex": "#ffff00",
+       "name": null
+      },
+      {
+       "hex": "#00d250",
+       "name": null
+      },
+      {
+       "hex": "#d2d2d2",
+       "name": null
+      },
+      {
+       "hex": "#0000ff",
+       "name": null
+      },
+      {
+       "hex": "#cd32f0",
+       "name": null
+      },
+      {
+       "hex": "#d2d2d2",
+       "name": null
+      },
+      {
+       "hex": "#232323",
+       "name": null
+      },
+      {
+       "hex": "#7f7f7f",
+       "name": null
+      }
+     ]
+    }
+   ],
+   "deviants": [
+    {
+     "name": "Redhelm",
+     "a": "#0089ec",
+     "b": "#ff4033",
+     "anim": "fade"
+    },
+    {
+     "name": "Snowbaron",
+     "a": "#ffffff",
+     "b": "#8f43ff",
+     "anim": "pulse"
+    },
+    {
+     "name": "Stonefist",
+     "a": "#971f2d",
+     "b": "#fcbac4",
+     "anim": "pulse"
+    },
+    {
+     "name": "Dreadqueen",
+     "a": "#400f5b",
+     "b": "#ff0fbf",
+     "anim": "pulse"
+    },
+    {
+     "name": "Drilltusk",
+     "a": "#3a0a00",
+     "b": "#ff763b",
+     "anim": "pulse"
+    },
+    {
+     "name": "Silverwind",
+     "a": "#212121",
+     "b": "#ffffff",
+     "anim": "pulse"
+    },
+    {
+     "name": "Crystalbeard",
+     "a": "#4b410d",
+     "b": "#fee68d",
+     "anim": "pulse"
+    },
+    {
+     "name": "Deadeye",
+     "a": "#293f14",
+     "b": "#cdfad0",
+     "anim": "pulse"
+    },
+    {
+     "name": "Dreadking",
+     "a": "#060000",
+     "b": "#ff2121",
+     "anim": "fade"
+    },
+    {
+     "name": "Thunderlord",
+     "a": "#413509",
+     "b": "#fff546",
+     "anim": "fade"
+    },
+    {
+     "name": "Grimclaw",
+     "a": "#002d6b",
+     "b": "#93f8ff",
+     "anim": "fade"
+    },
+    {
+     "name": "Hellblade",
+     "a": "#560000",
+     "b": "#ff8e00",
+     "anim": "fade"
+    },
+    {
+     "name": "Nightcloak",
+     "a": "#000217",
+     "b": "#273fe5",
+     "anim": "fade"
+    },
+    {
+     "name": "Rustrazor",
+     "a": "#15274b",
+     "b": "#bcfffe",
+     "anim": "pulse"
+    },
+    {
+     "name": "Soulseer",
+     "a": "#312425",
+     "b": "#fe97f0",
+     "anim": "fade"
+    },
+    {
+     "name": "Boltreaver",
+     "a": "#4dbf00",
+     "b": "#9cd3ff",
+     "anim": "fade"
+    },
+    {
+     "name": "Elderfrost",
+     "a": "#292930",
+     "b": "#c5dee4",
+     "anim": "fade"
+    },
+    {
+     "name": "Bloodbath",
+     "a": "#1e32f0",
+     "b": "#ff2929",
+     "anim": "pulse"
+    }
+   ],
+   "source": "docs/ui/colorscale.png (eng GUI HD_lby_colorscale); docs/pigments.json (equipBaseColorData.ebcd); index.html DEVIANTS, PALETTES"
+  },
+  {
+   "game": "MH3U",
+   "label": "MH3U",
+   "board": {
+    "image": "boards/mh3u-td_color.png",
+    "w": 256,
+    "h": 64,
+    "region": [
+     0,
+     0,
+     177,
+     52
+    ]
+   },
+   "presets": [
+    {
+     "label": "Hair Color",
+     "colors": [
+      {
+       "hex": "#d0111c",
+       "name": "1",
+       "board": [
+        2,
+        15
+       ]
+      },
+      {
+       "hex": "#f15125",
+       "name": "2",
+       "board": [
+        9,
+        13
+       ]
+      },
+      {
+       "hex": "#ffe057",
+       "name": "3",
+       "board": [
+        21,
+        9
+       ]
+      },
+      {
+       "hex": "#86d783",
+       "name": "4",
+       "board": [
+        59,
+        47
+       ]
+      },
+      {
+       "hex": "#1a4c34",
+       "name": "5",
+       "board": [
+        62,
+        32
+       ]
+      },
+      {
+       "hex": "#134a81",
+       "name": "6",
+       "board": [
+        97,
+        19
+       ]
+      },
+      {
+       "hex": "#a05ce0",
+       "name": "7",
+       "board": [
+        126,
+        8
+       ]
+      },
+      {
+       "hex": "#6b0818",
+       "name": "8",
+       "board": [
+        155,
+        21
+       ]
+      },
+      {
+       "hex": "#ff5ca0",
+       "name": "9",
+       "board": [
+        152,
+        8
+       ]
+      },
+      {
+       "hex": "#a18c76",
+       "name": "10",
+       "board": [
+        15,
+        44
+       ]
+      },
+      {
+       "hex": "#cedede",
+       "name": "11",
+       "board": [
+        87,
+        51
+       ]
+      },
+      {
+       "hex": "#202020",
+       "name": "12",
+       "board": [
+        169,
+        29
+       ]
+      }
+     ]
+    },
+    {
+     "label": null,
+     "colors": [
+      {
+       "hex": "#c93036",
+       "name": "1",
+       "board": [
+        163,
+        14
+       ]
+      },
+      {
+       "hex": "#e1711e",
+       "name": "2",
+       "board": [
+        14,
+        15
+       ]
+      },
+      {
+       "hex": "#ffec0f",
+       "name": "3",
+       "board": [
+        23,
+        10
+       ]
+      },
+      {
+       "hex": "#96ff46",
+       "name": "4",
+       "board": [
+        46,
+        10
+       ]
+      },
+      {
+       "hex": "#706541",
+       "name": "5",
+       "board": [
+        21,
+        37
+       ]
+      },
+      {
+       "hex": "#2e627d",
+       "name": "6",
+       "board": [
+        89,
+        25
+       ]
+      },
+      {
+       "hex": "#9569e2",
+       "name": "7",
+       "board": [
+        123,
+        8
+       ]
+      },
+      {
+       "hex": "#7d1834",
+       "name": "8",
+       "board": [
+        152,
+        20
+       ]
+      },
+      {
+       "hex": "#ff468e",
+       "name": "9",
+       "board": [
+        153,
+        9
+       ]
+      },
+      {
+       "hex": "#a1764f",
+       "name": "10",
+       "board": [
+        12,
+        42
+       ]
+      },
+      {
+       "hex": "#fae4d9",
+       "name": "11",
+       "board": [
+        16,
+        2
+       ]
+      },
+      {
+       "hex": "#3d363e",
+       "name": "12",
+       "board": [
+        166,
+        32
+       ]
+      }
+     ]
+    }
+   ],
+   "pigments": [
+    {
+     "i": 0,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 1,
+     "hex": "#c93036",
+     "name": null
+    },
+    {
+     "i": 2,
+     "hex": "#ff711e",
+     "name": null
+    },
+    {
+     "i": 3,
+     "hex": "#ffec3b",
+     "name": null
+    },
+    {
+     "i": 4,
+     "hex": "#b0dd64",
+     "name": null
+    },
+    {
+     "i": 5,
+     "hex": "#34766d",
+     "name": null
+    },
+    {
+     "i": 6,
+     "hex": "#3862cd",
+     "name": null
+    },
+    {
+     "i": 7,
+     "hex": "#ba96e2",
+     "name": null
+    },
+    {
+     "i": 8,
+     "hex": "#693249",
+     "name": null
+    },
+    {
+     "i": 9,
+     "hex": "#ff94a4",
+     "name": null
+    },
+    {
+     "i": 10,
+     "hex": "#a19691",
+     "name": null
+    },
+    {
+     "i": 11,
+     "hex": "#e1feff",
+     "name": null
+    },
+    {
+     "i": 12,
+     "hex": "#3d363e",
+     "name": null
+    },
+    {
+     "i": 13,
+     "hex": "#8c2015",
+     "name": null
+    },
+    {
+     "i": 14,
+     "hex": "#273f5c",
+     "name": null
+    },
+    {
+     "i": 15,
+     "hex": "#507d50",
+     "name": null
+    },
+    {
+     "i": 16,
+     "hex": "#7f604a",
+     "name": null
+    },
+    {
+     "i": 17,
+     "hex": "#f5af0a",
+     "name": null
+    },
+    {
+     "i": 18,
+     "hex": "#28e1e1",
+     "name": null
+    },
+    {
+     "i": 19,
+     "hex": "#443457",
+     "name": null
+    },
+    {
+     "i": 20,
+     "hex": "#f5f5dc",
+     "name": null
+    },
+    {
+     "i": 21,
+     "hex": "#a33633",
+     "name": null
+    },
+    {
+     "i": 22,
+     "hex": "#c0373d",
+     "name": null
+    },
+    {
+     "i": 23,
+     "hex": "#64b4ff",
+     "name": null
+    },
+    {
+     "i": 24,
+     "hex": "#8bc2c5",
+     "name": null
+    },
+    {
+     "i": 25,
+     "hex": "#4d544e",
+     "name": null
+    },
+    {
+     "i": 26,
+     "hex": "#425c6d",
+     "name": null
+    },
+    {
+     "i": 27,
+     "hex": "#a19691",
+     "name": null
+    },
+    {
+     "i": 28,
+     "hex": "#f5c8aa",
+     "name": null
+    },
+    {
+     "i": 29,
+     "hex": "#3c78aa",
+     "name": null
+    },
+    {
+     "i": 30,
+     "hex": "#c28b40",
+     "name": null
+    },
+    {
+     "i": 31,
+     "hex": "#3862cd",
+     "name": null
+    },
+    {
+     "i": 32,
+     "hex": "#405b7f",
+     "name": null
+    },
+    {
+     "i": 33,
+     "hex": "#c9b47d",
+     "name": null
+    },
+    {
+     "i": 34,
+     "hex": "#88ff32",
+     "name": null
+    },
+    {
+     "i": 35,
+     "hex": "#ff23a7",
+     "name": null
+    },
+    {
+     "i": 36,
+     "hex": "#e6531e",
+     "name": null
+    },
+    {
+     "i": 37,
+     "hex": "#eb530a",
+     "name": null
+    },
+    {
+     "i": 38,
+     "hex": "#252525",
+     "name": null
+    },
+    {
+     "i": 39,
+     "hex": "#00fa52",
+     "name": null
+    },
+    {
+     "i": 40,
+     "hex": "#fa4122",
+     "name": null
+    },
+    {
+     "i": 41,
+     "hex": "#a68042",
+     "name": null
+    },
+    {
+     "i": 42,
+     "hex": "#003c74",
+     "name": null
+    },
+    {
+     "i": 43,
+     "hex": "#85335e",
+     "name": null
+    }
+   ],
+   "skin": {
+    "strip": [
+     "#282319",
+     "#292319",
+     "#2a241a",
+     "#2b241a",
+     "#2c251a",
+     "#2d251a",
+     "#2e261a",
+     "#30261b",
+     "#30261b",
+     "#31271b",
+     "#33271c",
+     "#34271c",
+     "#35291c",
+     "#36291c",
+     "#38291d",
+     "#392a1d",
+     "#3b2b1d",
+     "#3c2b1d",
+     "#3d2c1d",
+     "#3e2c1d",
+     "#402d1f",
+     "#422d1e",
+     "#432e1e",
+     "#442e1f",
+     "#463020",
+     "#473020",
+     "#493120",
+     "#4b3120",
+     "#4d3121",
+     "#4d3322",
+     "#4f3322",
+     "#513422",
+     "#533523",
+     "#543522",
+     "#563623",
+     "#583724",
+     "#5a3824",
+     "#5b3825",
+     "#5e3a25",
+     "#5f3a25",
+     "#603a26",
+     "#623b26",
+     "#643c26",
+     "#663d26",
+     "#683d27",
+     "#694028",
+     "#6a4028",
+     "#6c4028",
+     "#6e422a",
+     "#70422a",
+     "#72422a",
+     "#72442b",
+     "#75452c",
+     "#77462c",
+     "#78472d",
+     "#7a482d",
+     "#7c492d",
+     "#7d4a2f",
+     "#7f4b2f",
+     "#804b30",
+     "#814d30",
+     "#834d30",
+     "#844e31",
+     "#864f32",
+     "#875032",
+     "#895132",
+     "#8b5233",
+     "#8d5334",
+     "#8d5434",
+     "#8e5636",
+     "#905836",
+     "#925837",
+     "#935937",
+     "#955b38",
+     "#975c39",
+     "#985e3a",
+     "#9a5f3a",
+     "#9c603b",
+     "#9e613c",
+     "#9f623c",
+     "#a0643d",
+     "#a2653d",
+     "#a4673e",
+     "#a5683f",
+     "#a8693f",
+     "#a96b41",
+     "#aa6d42",
+     "#ac6d42",
+     "#ad6f43",
+     "#af7144",
+     "#b17244",
+     "#b27446",
+     "#b47546",
+     "#b67647",
+     "#b87848",
+     "#b97a49",
+     "#ba7c4a",
+     "#bc7c4a",
+     "#bd7f4b",
+     "#bf7f4d",
+     "#c1814d",
+     "#c2824d",
+     "#c3834f",
+     "#c5854f",
+     "#c68751",
+     "#c88952",
+     "#ca8b52",
+     "#ca8b53",
+     "#cc8c55",
+     "#ce8e56",
+     "#cf9057",
+     "#d09157",
+     "#d19258",
+     "#d3945a",
+     "#d4965a",
+     "#d5975c",
+     "#d6985d",
+     "#d79a5e",
+     "#d89b5f",
+     "#d99c60",
+     "#db9d61",
+     "#db9e63",
+     "#dc9f63",
+     "#dda165",
+     "#dea266",
+     "#dfa366",
+     "#e0a468",
+     "#e2a569",
+     "#e2a76b",
+     "#e2a86d",
+     "#e4a96e",
+     "#e5aa6f",
+     "#e5ab71",
+     "#e6ad73",
+     "#e6ad74",
+     "#e7af76",
+     "#e8af77",
+     "#e8b178",
+     "#e9b27a",
+     "#e9b27b",
+     "#e9b47d",
+     "#eab47f",
+     "#eab680",
+     "#ebb783",
+     "#ebb885",
+     "#ebb987",
+     "#ecba89",
+     "#ecbc89",
+     "#edbd8b",
+     "#ecbe8d",
+     "#edbe8f",
+     "#edbf91",
+     "#edc093",
+     "#edc196",
+     "#eec297",
+     "#edc399",
+     "#eec49a",
+     "#eec59d",
+     "#eec69f",
+     "#efc6a1",
+     "#eec7a2",
+     "#eec8a3",
+     "#efc9a6",
+     "#eecaa8",
+     "#eecbaa",
+     "#efccab",
+     "#efcead",
+     "#eeceaf",
+     "#eeceb1",
+     "#efd0b2",
+     "#efd0b4",
+     "#efd1b6",
+     "#efd2b7",
+     "#efd3b9",
+     "#efd3bb",
+     "#efd3bc",
+     "#efd5be",
+     "#f0d6bf",
+     "#efd6c0",
+     "#f0d6c2",
+     "#f0d7c3",
+     "#efd8c4",
+     "#f0d8c5",
+     "#f0d9c6",
+     "#f0d9c8",
+     "#f0ddcc",
+     "#f1e0d1",
+     "#f3e2d7",
+     "#faefe6",
+     "#ffffff"
+    ],
+    "default": 189
+   },
+   "source": "MH3U-Armor-Viewer docs/armor.json colors"
+  },
+  {
+   "game": "MH4U",
+   "label": "MH4U",
+   "board": {
+    "image": "boards/mh4u-colorscale.png",
+    "w": 256,
+    "h": 64,
+    "region": [
+     1,
+     1,
+     176,
+     51
+    ]
+   },
+   "pigments": [
+    {
+     "i": 0,
+     "hex": "#ffffff",
+     "name": null
+    },
+    {
+     "i": 1,
+     "hex": "#c93036",
+     "name": null
+    },
+    {
+     "i": 2,
+     "hex": "#ff711e",
+     "name": null
+    },
+    {
+     "i": 3,
+     "hex": "#ffec3b",
+     "name": null
+    },
+    {
+     "i": 4,
+     "hex": "#b0dd64",
+     "name": null
+    },
+    {
+     "i": 5,
+     "hex": "#34766d",
+     "name": null
+    },
+    {
+     "i": 6,
+     "hex": "#3862cd",
+     "name": null
+    },
+    {
+     "i": 7,
+     "hex": "#ba96e2",
+     "name": null
+    },
+    {
+     "i": 8,
+     "hex": "#693249",
+     "name": null
+    },
+    {
+     "i": 9,
+     "hex": "#ff94a4",
+     "name": null
+    },
+    {
+     "i": 10,
+     "hex": "#a19691",
+     "name": null
+    },
+    {
+     "i": 11,
+     "hex": "#e1feff",
+     "name": null
+    },
+    {
+     "i": 12,
+     "hex": "#3d363e",
+     "name": null
+    },
+    {
+     "i": 13,
+     "hex": "#98444a",
+     "name": null
+    },
+    {
+     "i": 14,
+     "hex": "#405157",
+     "name": null
+    },
+    {
+     "i": 15,
+     "hex": "#607950",
+     "name": null
+    },
+    {
+     "i": 16,
+     "hex": "#7f604a",
+     "name": null
+    },
+    {
+     "i": 17,
+     "hex": "#f5a009",
+     "name": null
+    },
+    {
+     "i": 18,
+     "hex": "#60dad4",
+     "name": null
+    },
+    {
+     "i": 19,
+     "hex": "#6a648e",
+     "name": null
+    },
+    {
+     "i": 20,
+     "hex": "#f2fedc",
+     "name": null
+    },
+    {
+     "i": 21,
+     "hex": "#a33633",
+     "name": null
+    },
+    {
+     "i": 22,
+     "hex": "#c0373d",
+     "name": null
+    },
+    {
+     "i": 23,
+     "hex": "#fa4122",
+     "name": null
+    },
+    {
+     "i": 24,
+     "hex": "#8bc2c5",
+     "name": null
+    },
+    {
+     "i": 25,
+     "hex": "#4d544e",
+     "name": null
+    },
+    {
+     "i": 26,
+     "hex": "#9b7de1",
+     "name": null
+    },
+    {
+     "i": 27,
+     "hex": "#ff0000",
+     "name": null
+    },
+    {
+     "i": 28,
+     "hex": "#f5c8aa",
+     "name": null
+    },
+    {
+     "i": 29,
+     "hex": "#3c78aa",
+     "name": null
+    },
+    {
+     "i": 30,
+     "hex": "#8ba150",
+     "name": null
+    },
+    {
+     "i": 31,
+     "hex": "#c832dc",
+     "name": null
+    },
+    {
+     "i": 32,
+     "hex": "#405b7f",
+     "name": null
+    },
+    {
+     "i": 33,
+     "hex": "#c9b47d",
+     "name": null
+    },
+    {
+     "i": 34,
+     "hex": "#88ff32",
+     "name": null
+    },
+    {
+     "i": 35,
+     "hex": "#ff23a7",
+     "name": null
+    },
+    {
+     "i": 36,
+     "hex": "#e66e1e",
+     "name": null
+    },
+    {
+     "i": 37,
+     "hex": "#eb530a",
+     "name": null
+    },
+    {
+     "i": 38,
+     "hex": "#fff5c3",
+     "name": null
+    },
+    {
+     "i": 39,
+     "hex": "#00fa52",
+     "name": null
+    },
+    {
+     "i": 40,
+     "hex": "#003c74",
+     "name": null
+    },
+    {
+     "i": 41,
+     "hex": "#faf5e6",
+     "name": null
+    },
+    {
+     "i": 42,
+     "hex": "#4b3755",
+     "name": null
+    },
+    {
+     "i": 43,
+     "hex": "#6882aa",
+     "name": null
+    },
+    {
+     "i": 44,
+     "hex": "#3c2828",
+     "name": null
+    },
+    {
+     "i": 45,
+     "hex": "#fa410a",
+     "name": null
+    },
+    {
+     "i": 46,
+     "hex": "#3c5aaa",
+     "name": null
+    },
+    {
+     "i": 47,
+     "hex": "#c37d3e",
+     "name": null
+    },
+    {
+     "i": 48,
+     "hex": "#5f9146",
+     "name": null
+    },
+    {
+     "i": 49,
+     "hex": "#4c1bb3",
+     "name": null
+    },
+    {
+     "i": 50,
+     "hex": "#874128",
+     "name": null
+    },
+    {
+     "i": 51,
+     "hex": "#006e82",
+     "name": null
+    },
+    {
+     "i": 52,
+     "hex": "#9382be",
+     "name": null
+    },
+    {
+     "i": 53,
+     "hex": "#648cf0",
+     "name": null
+    },
+    {
+     "i": 54,
+     "hex": "#ff9141",
+     "name": null
+    },
+    {
+     "i": 55,
+     "hex": "#87b0e1",
+     "name": null
+    },
+    {
+     "i": 56,
+     "hex": "#0a4678",
+     "name": null
+    },
+    {
+     "i": 57,
+     "hex": "#19191e",
+     "name": null
+    },
+    {
+     "i": 58,
+     "hex": "#ffe6be",
+     "name": null
+    },
+    {
+     "i": 59,
+     "hex": "#343c41",
+     "name": null
+    },
+    {
+     "i": 60,
+     "hex": "#8cff64",
+     "name": null
+    },
+    {
+     "i": 61,
+     "hex": "#ff8737",
+     "name": null
+    },
+    {
+     "i": 62,
+     "hex": "#91f4ff",
+     "name": null
+    },
+    {
+     "i": 63,
+     "hex": "#ffb707",
+     "name": null
+    },
+    {
+     "i": 64,
+     "hex": "#e13036",
+     "name": null
+    },
+    {
+     "i": 65,
+     "hex": "#87dde1",
+     "name": null
+    },
+    {
+     "i": 66,
+     "hex": "#623c28",
+     "name": null
+    },
+    {
+     "i": 67,
+     "hex": "#d7191e",
+     "name": null
+    },
+    {
+     "i": 68,
+     "hex": "#4b62cd",
+     "name": null
+    },
+    {
+     "i": 69,
+     "hex": "#3c7896",
+     "name": null
+    }
+   ],
+   "specials": [
+    {
+     "name": "Default",
+     "hex": null
+    },
+    {
+     "name": "Rainbow",
+     "hex": null
+    }
+   ],
+   "source": "mh4u-armor-viewer docs/armor.json colors; labels: the MH4U agent read 2026-10-18"
+  }
+ ]
+}
