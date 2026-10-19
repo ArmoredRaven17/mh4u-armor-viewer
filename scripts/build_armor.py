@@ -209,10 +209,46 @@ def inner_models(slot):
     return [mh4u.half(INNER[slot] + 2 * i) for i in range(N_INNER)]
 
 
+
+# ---- the helms' Blademaster / Gunner (Settings -> Equipment, base/ui/armor-panel.js headBoth) -------------------------
+
+def helm_types():
+    """{helm record id: 'b' | 'g' | 'bg'}. Nearly every helm record is wearable by both (+4 bits 4 and 8); its own
+    type is its SET's, read from the records: the u16 at +0x1c is the set id the pieces of a set share (Rathalos Helm S
+    and Rathalos Mail S: 0xf6), or, in the sets numbered piece by piece, the listing index that runs helm, chest, arms,
+    waist, legs (GX Hunter's Casque 0x5dd, its Armor .. Cuisses 0x5de .. 0x5e1). A helm takes the type its set's other
+    pieces all have; a helm with no such set (masks, feathers, earrings ...) or a set whose pieces are all both (Derring,
+    Leather, Chainmail, Chakra) stays 'bg', listed under both types."""
+    recs = {s: [r for r in mh4u.armor_records(s) if r['id'] and r['name'] and not r['name'].upper().startswith('DUMMY')]
+            for s in SLOTS}
+    sid = lambda r: struct.unpack_from('<H', bytes.fromhex(r['raw']), 0x1c)[0]
+    wear = lambda r: ('b' if r['wear']['blade'] else '') + ('g' if r['wear']['gunner'] else '')
+    by = {}
+    for s in SLOTS:
+        for r in recs[s]:
+            by.setdefault(sid(r), []).append((s, r))
+    rest = [s for s in SLOTS if s != 'helm']
+    out = {}
+    for r in recs['helm']:
+        w = wear(r)
+        if w in ('b', 'g'):
+            out[r['id']] = w; continue
+        ws = {wear(x) for s, x in by.get(sid(r), []) if s != 'helm'}
+        if len(ws) == 1 and ws <= {'b', 'g'}:
+            out[r['id']] = ws.pop(); continue
+        seq = [[x for t, x in by.get(sid(r) + k, []) if t == s] for k, s in enumerate(rest, 1)]
+        if all(len(v) == 1 for v in seq):
+            ws = {wear(v[0]) for v in seq}
+            if len(ws) == 1 and ws <= {'b', 'g'}:
+                out[r['id']] = ws.pop(); continue
+        out[r['id']] = 'bg'
+    return out
+
 def build(docs, json_only):
     notes = []
     mdl, mats_db = models(docs, json_only, notes)
     armor = {}
+    ht = helm_types()
     for slot in SLOTS:
         rows = []
         for r in mh4u.armor_records(slot):
@@ -224,6 +260,8 @@ def build(docs, json_only):
                    'pig': r['dye'], 'rar': r['rarity']}
             if r['relic']:
                 row['relic'] = 1
+            if slot == 'helm':
+                row['ht'] = ht.get(r['id'], 'bg')       # the helm's own type, from its set (helm_types)
             rows.append(row)
         armor[slot] = rows
     pieces = {}
@@ -278,6 +316,9 @@ def build(docs, json_only):
                     '0x100d33c f; a value with bit 0x8000 picks row (v & 0x7fff) of 0x100dc58, 28 u32 per row).',
         'features': 'Features (CharMake: Features, Type 1-12) are face parts 200-211: 0xb08778 shows part '
                     '200 + (char +0x3a) - 1 and hides the rest; 0 = none. Their materials take colour type 4.',
+        'ht': "a helm row's own Blademaster / Gunner type (b, g, or bg for both): its set's, from the records (+0x1c "
+              "set id, or the helm-to-legs listing index; build_armor.py helm_types): 469 b, 469 g, 32 bg. The Head list "
+              "filters by it unless Settings -> Equipment treats head armour as both (the game's own rule: wear bits).",
         'colors': 'each material carries a colour type (materials.json `ct` = .mrl record +0x18 bits 23-30, the '
                   'same layout as MH3U) that multiplies its albedo map: 1 hair (the hair models), 2 skin (f_skin_BM / m_skin_BM '
                   'everywhere, and the face), 3 pigment (armour, and the inner wear, so Clothing Color is the '

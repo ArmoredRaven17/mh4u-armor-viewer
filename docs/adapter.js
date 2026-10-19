@@ -43,8 +43,11 @@ export function armorOptions(slot, type){
     if (!groups.has(k)) groups.set(k, { id: r.id, model: r[g], rare: r.rar, ids: [], names: [] });
     const e = groups.get(k);
     e.ids.push(r.id);
-    // the name and the Type filter count the pieces of that type only
-    if (type !== 'all' && r.wear.indexOf(type) < 0) continue;
+    // the name and the Type filter count the pieces of that type only. A helm's type is its SET's (armor.json `ht`,
+    // build_armor.py helm_types): the game lets nearly every helm be worn by both, so its wear bits say 'bg'; with
+    // Settings -> Equipment's "Treat Head Armors as Blademaster/Gunner" the panel asks for 'all' and the game's rule stands
+    const kind = (slot === 'helm' && r.ht) ? r.ht : r.wear;
+    if (type !== 'all' && kind.indexOf(type) < 0) continue;
     if (e.names.indexOf(r.name) < 0) e.names.push(r.name);
   }
   const out = [];
